@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margin_top">33.3dp</dimen>
+    <dimen name="map_height">144.7dp</dimen>
+    <dimen name="horizontal_margin">19dp</dimen>
+    <dimen name="map_bottom_margin">15dp</dimen>
+</resources>
