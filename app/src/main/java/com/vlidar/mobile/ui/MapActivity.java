@@ -1,9 +1,20 @@
 package com.vlidar.mobile.ui;
 
+import android.graphics.Outline;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewOutlineProvider;
 
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapOptions;
+import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.TextureMapView;
+import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.vlidar.mobile.R;
 
 import butterknife.BindView;
@@ -13,17 +24,23 @@ public abstract class MapActivity extends CheckPermissionsActivity {
     TextureMapView textureMapView;
 
     private AMap aMap;
+    private UiSettings mUiSettings;
+    private Marker mPoiMarker;
+    private int mZoomLevel = 16; //地图缩放级别，最大缩放级别为20
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         textureMapView.onCreate(savedInstanceState);
+        textureMapView.setOutlineProvider(new TextureVideoViewOutlineProvider(26));
+        textureMapView.setClipToOutline(true);
+        initAMap();
     }
 
     @Override
     protected void onPause() {
-        super.onPause();
         textureMapView.onPause();
+        super.onPause();
     }
 
     @Override
@@ -46,8 +63,11 @@ public abstract class MapActivity extends CheckPermissionsActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         textureMapView.onDestroy();
+        if (mPoiMarker != null) {
+            mPoiMarker.destroy();
+        }
+        super.onDestroy();
     }
 
     /**
@@ -59,19 +79,20 @@ public abstract class MapActivity extends CheckPermissionsActivity {
             aMap = textureMapView.getMap();
             //显示实时交通
             aMap.setTrafficEnabled(true);
-//            mUiSettings = aMap.getUiSettings();
-//            mUiSettings.setZoomPosition(AMapOptions.ZOOM_POSITION_RIGHT_CENTER);
-//            mUiSettings.setZoomControlsEnabled(false);
-//            mUiSettings.setScaleControlsEnabled(true);
-////            mUiSettings.setAllGesturesEnabled(true);
+            mUiSettings = aMap.getUiSettings();
+            mUiSettings.setZoomPosition(AMapOptions.ZOOM_POSITION_RIGHT_CENTER);
+            mUiSettings.setZoomControlsEnabled(false);
+            mUiSettings.setScaleControlsEnabled(false);
+            mUiSettings.setAllGesturesEnabled(true);
+            mUiSettings.setLogoBottomMargin(-70); //隐藏logo
 //            // 默认显示zoom级别
-//            aMap.moveCamera(CameraUpdateFactory.zoomTo(Float.valueOf(mZoomLevel)));
+            aMap.moveCamera(CameraUpdateFactory.zoomTo(Float.valueOf(mZoomLevel)));
 
             // 定位
 //            mUiSettings.setMyLocationButtonEnabled(true); // 是否显示默认的定位按钮
 //            aMap.addOnMyLocationChangeListener(this);
 //            aMap.setLocationSource(this);
-            aMap.setMyLocationEnabled(true); // 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
+//            aMap.setMyLocationEnabled(true); // 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
 //            setLocationStyle();
 
             // poi 点击
@@ -80,6 +101,60 @@ public abstract class MapActivity extends CheckPermissionsActivity {
 
             //地图手势事件
 //            aMap.setAMapGestureListener(this);
+        }
+    }
+
+    protected void setLatLng(double latitude, double longitude) {
+        LatLng latLng = new LatLng(latitude, longitude);
+        animMap(latLng);
+        addPOIMarker(latLng);
+    }
+
+    /**
+     * 传入经纬度绘制poi点
+     *
+     * @param latLng
+     */
+    private void addPOIMarker(LatLng latLng) {
+        if (mPoiMarker != null) {
+            mPoiMarker.destroy();
+        }
+        MarkerOptions markOptions = new MarkerOptions();
+        markOptions.position(latLng);
+        markOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.poi_mark));
+        mPoiMarker = aMap.addMarker(markOptions);
+    }
+
+    /**
+     * 移动地图中心点到指定位置
+     *
+     * @param latLng
+     */
+    private void animMap(LatLng latLng) {
+        if (latLng != null) {
+            aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, mZoomLevel));
+        }
+    }
+
+    /**
+     * 绘制TextureMapView圆角
+     */
+    protected class TextureVideoViewOutlineProvider extends ViewOutlineProvider {
+        private float mRadius;
+
+        public TextureVideoViewOutlineProvider(float radius) {
+            this.mRadius = radius;
+        }
+
+        @Override
+        public void getOutline(View view, Outline outline) {
+            Rect rect = new Rect();
+            view.getGlobalVisibleRect(rect);
+            int leftMargin = 0;
+            int topMargin = 0;
+            Rect selfRect = new Rect(leftMargin, topMargin,
+                    rect.right - rect.left - leftMargin, rect.bottom - rect.top - topMargin);
+            outline.setRoundRect(selfRect, mRadius);
         }
     }
 }

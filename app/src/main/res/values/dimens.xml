@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="margin_top">33.3dp</dimen>
+    <!-- Guide -->
+    <dimen name="guide_logo_marin_top">193dp</dimen>
+    <dimen name="guide_company_marin_top">237.7dp</dimen>
+
+    <!-- main -->
+    <dimen name="map_margin_top">33.3dp</dimen>
     <dimen name="map_height">144.7dp</dimen>
-    <dimen name="horizontal_margin">19dp</dimen>
-    <dimen name="map_bottom_margin">15dp</dimen>
+    <dimen name="main_margin_horizontal">19dp</dimen>
+    <dimen name="logo_margin_top">15dp</dimen>
+    <dimen name="latitude_margin_top">12.5dp</dimen>
+    <dimen name="check_status_margin_top">5.7dp</dimen>
+    <dimen name="latitude_longitude_margin_end">8.7dp</dimen>
+    <dimen name="longitude_margin_top">2.3dp</dimen>
+
+    <!-- Text Size-->
+    <dimen name="guide_company_text_size">12sp</dimen>
+    <dimen name="check_status_text_size">11sp</dimen>
+    <dimen name="latitude_longitude_text_size">11sp</dimen>
+
 </resources>
