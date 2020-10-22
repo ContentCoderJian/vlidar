@@ -1,10 +1,12 @@
-package com.vlidar.mobile.ui;
+package com.vlidar.mobile.ui.activity;
 
 import android.graphics.Outline;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewOutlineProvider;
+
+import androidx.annotation.NonNull;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.AMapOptions;
@@ -55,7 +57,7 @@ public abstract class MapActivity extends CheckPermissionsActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         mLogTrace.d("onSaveInstanceState");
         textureMapView.onSaveInstanceState(outState);
@@ -86,7 +88,7 @@ public abstract class MapActivity extends CheckPermissionsActivity {
             mUiSettings.setAllGesturesEnabled(true);
             mUiSettings.setLogoBottomMargin(-70); //隐藏logo
 //            // 默认显示zoom级别
-            aMap.moveCamera(CameraUpdateFactory.zoomTo(Float.valueOf(mZoomLevel)));
+            aMap.moveCamera(CameraUpdateFactory.zoomTo((float) mZoomLevel));
 
             // 定位
 //            mUiSettings.setMyLocationButtonEnabled(true); // 是否显示默认的定位按钮
@@ -121,8 +123,20 @@ public abstract class MapActivity extends CheckPermissionsActivity {
         }
         MarkerOptions markOptions = new MarkerOptions();
         markOptions.position(latLng);
-        markOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.poi_mark));
+        markOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.navi_map_gps_locked));
         mPoiMarker = aMap.addMarker(markOptions);
+    }
+
+    /**
+     * 设置旋转角度是以正北为起点,逆时针旋转的.
+     * 所以转化成顺时针效果要用360做差.
+     *
+     * @param angle
+     */
+    protected void setMarkerRotateAngle(float angle) {
+        if (mPoiMarker != null) {
+            mPoiMarker.setRotateAngle(angle);
+        }
     }
 
     /**
@@ -139,7 +153,7 @@ public abstract class MapActivity extends CheckPermissionsActivity {
     /**
      * 绘制TextureMapView圆角
      */
-    protected class TextureVideoViewOutlineProvider extends ViewOutlineProvider {
+    protected static class TextureVideoViewOutlineProvider extends ViewOutlineProvider {
         private float mRadius;
 
         public TextureVideoViewOutlineProvider(float radius) {

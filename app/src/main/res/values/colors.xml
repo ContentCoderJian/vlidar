@@ -5,6 +5,8 @@
     <color name="colorAccent">#03DAC5</color>
 
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorTranslateWhite">#4DFFFFFF</color>
+    <color name="colorTranslateWhite1">#99FFFFFF</color>
     <color name="colorGrey">#767678</color>
     <color name="colorButtonGrey">#8B7FA3</color>
 </resources>

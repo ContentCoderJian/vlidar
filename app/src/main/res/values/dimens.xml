@@ -13,10 +13,21 @@
     <dimen name="check_status_margin_top">5.7dp</dimen>
     <dimen name="latitude_longitude_margin_end">8.7dp</dimen>
     <dimen name="longitude_margin_top">2.3dp</dimen>
+    <dimen name="button_margin_top">32dp</dimen>
+    <dimen name="button_margin_bottom">67.3dp</dimen>
+    <dimen name="common_button_margin_top">8dp</dimen>
+    <dimen name="bottom_button_padding_start">120.7dp</dimen>
+    <dimen name="bottom_button_margin_icon">11dp</dimen>
+
+    <!-- common button-->
+    <dimen name="common_button_padding">15dp</dimen>
+    <dimen name="common_button_title_margin_top">44dp</dimen>
 
     <!-- Text Size-->
     <dimen name="guide_company_text_size">12sp</dimen>
     <dimen name="check_status_text_size">11sp</dimen>
     <dimen name="latitude_longitude_text_size">11sp</dimen>
+    <dimen name="common_button_text_size">12sp</dimen>
+    <dimen name="bottom_button_text_size">12sp</dimen>
 
 </resources>

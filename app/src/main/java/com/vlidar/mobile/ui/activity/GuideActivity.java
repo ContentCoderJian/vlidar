@@ -1,4 +1,4 @@
-package com.vlidar.mobile.ui;
+package com.vlidar.mobile.ui.activity;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
