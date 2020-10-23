@@ -6,115 +6,128 @@
     android:background="@drawable/background"
     tools:context=".ui.activity.MainActivity">
 
-    <com.amap.api.maps.TextureMapView
-        android:id="@+id/map"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/map_height"
-        android:layout_marginStart="@dimen/main_margin_horizontal"
-        android:layout_marginTop="@dimen/map_margin_top"
-        android:layout_marginEnd="@dimen/main_margin_horizontal"
-        android:background="@drawable/map" />
-
-    <ImageView
-        android:id="@+id/iv_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/map"
-        android:layout_marginStart="@dimen/main_margin_horizontal"
-        android:layout_marginTop="@dimen/logo_margin_top"
-        android:src="@drawable/logo_min" />
-
-    <TextView
-        android:id="@+id/tv_self_checking_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/iv_logo"
-        android:layout_marginStart="@dimen/main_margin_horizontal"
-        android:layout_marginTop="@dimen/check_status_margin_top"
-        android:src="@drawable/logo_min"
-        android:text="自检完成"
-        android:textColor="@color/colorGrey"
-        android:textSize="@dimen/check_status_text_size" />
-
-    <ImageButton
-        android:id="@+id/ib_up_down"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/map"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="-5dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="14dp"
-        android:background="@android:color/transparent"
-        android:padding="5dp"
-        android:src="@drawable/down" />
-
-    <TextView
-        android:id="@+id/tv_latitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/map"
-        android:layout_marginTop="@dimen/latitude_margin_top"
-        android:layout_marginEnd="@dimen/latitude_longitude_margin_end"
-        android:layout_toStartOf="@id/ib_up_down"
-        android:src="@drawable/logo_min"
-        android:text="31°55'46.8192&quot;N"
-        android:textColor="@color/colorWhite"
-        android:textSize="@dimen/latitude_longitude_text_size" />
-
-    <TextView
-        android:id="@+id/tv_longitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_latitude"
-        android:layout_marginTop="@dimen/longitude_margin_top"
-        android:layout_marginEnd="@dimen/latitude_longitude_margin_end"
-        android:layout_toStartOf="@id/ib_up_down"
-        android:src="@drawable/logo_min"
-        android:text="118°49'12.2988&quot;E"
-        android:textColor="@color/colorWhite"
-        android:textSize="@dimen/latitude_longitude_text_size" />
-
     <RelativeLayout
-        android:id="@+id/rl_common_button"
+        android:id="@+id/rl_map_with_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/iv_logo"
-        android:layout_marginStart="@dimen/main_margin_horizontal"
-        android:layout_marginTop="@dimen/button_margin_top"
-        android:layout_marginEnd="@dimen/main_margin_horizontal">
+        android:layout_height="match_parent"
+        android:layout_above="@id/rl_time_scan">
 
-        <com.vlidar.mobile.ui.view.CommonButton
-            android:id="@+id/cb_power"
+        <com.amap.api.maps.TextureMapView
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/map_height"
+            android:layout_marginStart="@dimen/main_margin_horizontal"
+            android:layout_marginTop="@dimen/map_margin_top"
+            android:layout_marginEnd="@dimen/main_margin_horizontal"
+            android:background="@drawable/map" />
+
+        <ImageView
+            android:id="@+id/iv_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/map"
+            android:layout_marginStart="@dimen/main_margin_horizontal"
+            android:layout_marginTop="@dimen/logo_margin_top"
+            android:src="@drawable/logo_min" />
+
+        <TextView
+            android:id="@+id/tv_self_checking_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_logo"
+            android:layout_marginStart="@dimen/main_margin_horizontal"
+            android:layout_marginTop="@dimen/check_status_margin_top"
+            android:src="@drawable/logo_min"
+            android:text="自检完成"
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/check_status_text_size" />
+
+        <RelativeLayout
+            android:id="@+id/rl_show_hide_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/map">
+
+            <ImageButton
+                android:id="@+id/ib_up_down"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="@dimen/logo_margin_top"
+                android:layout_marginEnd="@dimen/main_margin_horizontal"
+                android:background="@android:color/transparent"
+                android:src="@drawable/down" />
+
+            <TextView
+                android:id="@+id/tv_latitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/latitude_margin_top"
+                android:layout_marginEnd="@dimen/latitude_longitude_margin_end"
+                android:layout_toStartOf="@id/ib_up_down"
+                android:src="@drawable/logo_min"
+                android:text="31°55'46.8192&quot;N"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/latitude_longitude_text_size" />
+
+            <TextView
+                android:id="@+id/tv_longitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_latitude"
+                android:layout_marginTop="@dimen/longitude_margin_top"
+                android:layout_marginEnd="@dimen/latitude_longitude_margin_end"
+                android:layout_toStartOf="@id/ib_up_down"
+                android:src="@drawable/logo_min"
+                android:text="118°49'12.2988&quot;E"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/latitude_longitude_text_size" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/rl_common_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_logo"
+            android:layout_marginStart="@dimen/main_margin_horizontal"
+            android:layout_marginTop="@dimen/button_margin_top"
+            android:layout_marginEnd="@dimen/main_margin_horizontal">
+
+            <com.vlidar.mobile.ui.view.CommonButton
+                android:id="@+id/cb_power"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/common_button_selector" />
+
+            <com.vlidar.mobile.ui.view.CommonButton
+                android:id="@+id/cb_radar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/common_button_selector" />
+
+            <com.vlidar.mobile.ui.view.CommonButton
+                android:id="@+id/cb_bt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/common_button_selector"
+                tools:ignore="RelativeOverlap" />
+
+        </RelativeLayout>
+
+        <com.vlidar.mobile.ui.view.CommonButton
+            android:id="@+id/cb_imu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rl_common_button"
+            android:layout_marginStart="@dimen/main_margin_horizontal"
+            android:layout_marginTop="@dimen/common_button_margin_top"
             android:background="@drawable/common_button_selector" />
-
-        <com.vlidar.mobile.ui.view.CommonButton
-            android:id="@+id/cb_radar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/common_button_selector" />
-
-        <com.vlidar.mobile.ui.view.CommonButton
-            android:id="@+id/cb_bt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:background="@drawable/common_button_selector"
-            tools:ignore="RelativeOverlap" />
 
     </RelativeLayout>
 
-    <com.vlidar.mobile.ui.view.CommonButton
-        android:id="@+id/cb_imu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/rl_common_button"
-        android:layout_marginStart="@dimen/main_margin_horizontal"
-        android:layout_marginTop="@dimen/common_button_margin_top"
-        android:background="@drawable/common_button_selector" />
 
     <RelativeLayout
         android:id="@+id/rl_time_scan"

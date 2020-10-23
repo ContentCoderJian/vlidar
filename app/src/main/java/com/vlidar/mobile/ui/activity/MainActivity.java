@@ -4,6 +4,8 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -38,9 +40,16 @@ public class MainActivity extends MapActivity {
     RelativeLayout rlTimeScan;
     @BindView(R.id.tv_time_scan)
     TextView tvTimeScan;
+    @BindView(R.id.rl_map_with_button)
+    RelativeLayout rlMapWithButton;
 
     @BindDimen(R.dimen.main_margin_horizontal)
     int mainMarginHorizontal;
+    @BindDimen(R.dimen.map_margin_top)
+    int mapMarginTop;
+
+    private TranslateAnimation mShowMapTranslateAnimation;
+    private TranslateAnimation mHideMapTranslateAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +62,7 @@ public class MainActivity extends MapActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         setImuButtonMarginTop();
+        initAnimation();
     }
 
     /**
@@ -105,6 +115,60 @@ public class MainActivity extends MapActivity {
         cbImu.setValueText("关");
     }
 
+    private void initAnimation() {
+        mShowMapTranslateAnimation = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, -0.3f, Animation.RELATIVE_TO_SELF,
+                0.0f
+        );
+        mShowMapTranslateAnimation.setDuration(800);
+        mShowMapTranslateAnimation.setFillAfter(true);
+        mShowMapTranslateAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mLogTrace.d("mShowMapTranslateAnimation, onAnimationStart");
+                textureMapView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mLogTrace.d("mShowMapTranslateAnimation, onAnimationEnd");
+                ibUpDown.setImageResource(R.drawable.up);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        mHideMapTranslateAnimation = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                -0.3f
+        );
+        mHideMapTranslateAnimation.setDuration(800);
+        mHideMapTranslateAnimation.setFillAfter(true);
+        mHideMapTranslateAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mLogTrace.d("mHideMapTranslateAnimation, onAnimationStart");
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mLogTrace.d("mHideMapTranslateAnimation, onAnimationEnd");
+                textureMapView.setVisibility(View.INVISIBLE);
+                ibUpDown.setImageResource(R.drawable.down);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -121,18 +185,20 @@ public class MainActivity extends MapActivity {
                 R.drawable.up : R.drawable.down);
     }
 
-    @OnClick({R.id.ib_up_down, R.id.cb_power, R.id.cb_radar, R.id.cb_bt, R.id.cb_imu,
+    @OnClick({R.id.rl_show_hide_map, R.id.cb_power, R.id.cb_radar, R.id.cb_bt, R.id.cb_imu,
             R.id.rl_time_scan})
     void onClick(View view) {
         mLogTrace.d("onClick", "view: " + view);
         switch (view.getId()) {
-            case R.id.ib_up_down:
+            case R.id.rl_show_hide_map:
                 if (textureMapView.getVisibility() == View.VISIBLE) {
-                    textureMapView.setVisibility(View.GONE);
-                    ibUpDown.setImageResource(R.drawable.down);
+//                    textureMapView.setVisibility(View.GONE);
+//                    ibUpDown.setImageResource(R.drawable.down);
+                    rlMapWithButton.startAnimation(mHideMapTranslateAnimation);
                 } else {
-                    textureMapView.setVisibility(View.VISIBLE);
-                    ibUpDown.setImageResource(R.drawable.up);
+//                    textureMapView.setVisibility(View.VISIBLE);
+//                    ibUpDown.setImageResource(R.drawable.up);
+                    rlMapWithButton.startAnimation(mShowMapTranslateAnimation);
                 }
                 break;
             case R.id.cb_power:
