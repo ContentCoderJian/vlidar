@@ -18,7 +18,7 @@ import java.util.List;
  * 继承了Activity，实现Android6.0的运行时权限检测
  * 需要进行运行时权限检测的Activity可以继承这个类
  */
-public abstract class CheckPermissionsActivity extends BaseActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+public abstract class AbstractCheckPermissionsActivity extends BaseActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     /**
      * 需要进行检测的权限数组
      */

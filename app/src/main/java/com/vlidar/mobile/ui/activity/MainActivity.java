@@ -2,13 +2,12 @@ package com.vlidar.mobile.ui.activity;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.bluetooth.BluetoothDevice;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
-import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,11 +17,13 @@ import com.vlidar.mobile.ui.view.CommonButton;
 import com.vlidar.mobile.utils.LatLngUtils;
 import com.vlidar.mobile.utils.ScreenUtils;
 
+import java.util.Arrays;
+
 import butterknife.BindDimen;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class MainActivity extends MapActivity {
+public class MainActivity extends AbstractBtActivity {
     private static final int DURATION_ANIM = 900;
     @BindView(R.id.ib_up_down)
     ImageButton ibUpDown;
@@ -111,15 +112,33 @@ public class MainActivity extends MapActivity {
         // 蓝牙按钮一直可以点击
         cbBt.setTitleRes(R.string.bt);
         cbBt.setPicSrcRes(R.drawable.bt_selector);
-//        cbBt.setActivated(true); // 故障
-//        cbBt.setSelected(true);  // 在线
-        cbBt.setValueText("离线");
+        updateBtStatus();
 
         cbImu.setTitleRes(R.string.imu);
         cbImu.setEnabled(false);
         cbImu.setPicBgRes(R.drawable.imu_out_selector);
         cbImu.setPicSrcRes(R.drawable.imu_in_selector);
         cbImu.setValueText("关");
+    }
+
+    private void updateBtStatus() {
+        if (mBleSppUtils.isBluetoothEnable()) {
+            cbBt.setActivated(false);
+            cbBt.setSelected(false);
+            cbBt.setValueText("关闭");
+        } else if (!mBleSppUtils.isSppConnected()) {
+            cbBt.setActivated(false);
+            cbBt.setSelected(false);
+            cbBt.setValueText("离线");
+        } else if (mBleSppUtils.isSppConnected()) {
+            cbBt.setActivated(false);
+            cbBt.setSelected(true);
+            cbBt.setValueText("在线");
+        } else {
+            cbBt.setActivated(false);
+            cbBt.setSelected(true);
+            cbBt.setValueText("故障");
+        }
     }
 
     private void initAnimation() {
@@ -221,6 +240,9 @@ public class MainActivity extends MapActivity {
 
             case R.id.cb_bt:
                 cbBt.subViewCallOnClick();
+                if (!mBleSppUtils.isSppConnected()) {
+                    mBleSppUtils.startBtSettings();
+                }
                 break;
 
             case R.id.cb_imu:
@@ -239,4 +261,25 @@ public class MainActivity extends MapActivity {
     protected void handleMessages(Message msg) {
     }
 
+    @Override
+    public void onConnectSuccess(BluetoothDevice device) {
+        mLogTrace.d("onConnectSuccess", "device=" + device);
+        updateBtStatus();
+    }
+
+    @Override
+    public void onConnectFailed(String msg) {
+        mLogTrace.w("onConnectFailed", "msg=" + msg);
+        updateBtStatus();
+    }
+
+    @Override
+    public void onReceiveBytes(byte[] bytes) {
+        mLogTrace.i("onReceiveBytes", "bytes=" + Arrays.toString(bytes));
+    }
+
+    @Override
+    public void onSendBytes(byte[] bytes) {
+        mLogTrace.i("onSendBytes", "bytes=" + Arrays.toString(bytes));
+    }
 }

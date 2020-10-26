@@ -21,7 +21,7 @@ import com.vlidar.mobile.R;
 
 import butterknife.BindView;
 
-public abstract class MapActivity extends CheckPermissionsActivity {
+public abstract class AbstractMapActivity extends AbstractCheckPermissionsActivity {
     @BindView(R.id.map)
     TextureMapView textureMapView;
 
