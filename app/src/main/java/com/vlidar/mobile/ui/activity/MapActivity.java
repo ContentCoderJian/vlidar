@@ -156,7 +156,7 @@ public abstract class MapActivity extends CheckPermissionsActivity {
     protected static class TextureVideoViewOutlineProvider extends ViewOutlineProvider {
         private float mRadius;
 
-        public TextureVideoViewOutlineProvider(float radius) {
+        TextureVideoViewOutlineProvider(float radius) {
             this.mRadius = radius;
         }
 

@@ -1,5 +1,6 @@
 package com.vlidar.mobile.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -55,11 +56,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         AppTools.removeActivity(this);
     }
 
+    @SuppressLint("HandlerLeak")
     protected class MyHandler extends Handler {
-        private final WeakReference<BaseActivity> mActivty;
+        private final WeakReference<BaseActivity> mActivity;
 
         public MyHandler(BaseActivity activity) {
-            mActivty = new WeakReference<>(activity);
+            mActivity = new WeakReference<>(activity);
         }
 
         @Override

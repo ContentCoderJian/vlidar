@@ -2,7 +2,6 @@ package com.vlidar.mobile.ui.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -31,7 +30,7 @@ public abstract class CheckPermissionsActivity extends BaseActivity implements A
             Manifest.permission.READ_PHONE_STATE
     };
 
-    private static final int PERMISSON_REQUESTCODE = 0;
+    private static final int PERMISSION_REQUESTCODE = 0;
 
     /**
      * 判断是否需要检测，防止不停的弹框
@@ -50,13 +49,11 @@ public abstract class CheckPermissionsActivity extends BaseActivity implements A
      * @since 2.5.0
      */
     private void checkPermissions(String... permissions) {
-        List<String> needRequestPermissonList = findDeniedPermissions(permissions);
-        if (null != needRequestPermissonList
-                && needRequestPermissonList.size() > 0) {
+        List<String> needRequestPermissionList = findDeniedPermissions(permissions);
+        if (needRequestPermissionList.size() > 0) {
             ActivityCompat.requestPermissions(this,
-                    needRequestPermissonList.toArray(
-                            new String[needRequestPermissonList.size()]),
-                    PERMISSON_REQUESTCODE);
+                    needRequestPermissionList.toArray(new String[needRequestPermissionList.size()]),
+                    PERMISSION_REQUESTCODE);
         }
     }
 
@@ -67,16 +64,16 @@ public abstract class CheckPermissionsActivity extends BaseActivity implements A
      * @return
      */
     private List<String> findDeniedPermissions(String[] permissions) {
-        List<String> needRequestPermissonList = new ArrayList<String>();
+        List<String> needRequestPermissionList = new ArrayList<String>();
         for (String perm : permissions) {
             if (ContextCompat.checkSelfPermission(this,
                     perm) != PackageManager.PERMISSION_GRANTED
                     || ActivityCompat.shouldShowRequestPermissionRationale(
                     this, perm)) {
-                needRequestPermissonList.add(perm);
+                needRequestPermissionList.add(perm);
             }
         }
-        return needRequestPermissonList;
+        return needRequestPermissionList;
     }
 
     /**
@@ -97,7 +94,7 @@ public abstract class CheckPermissionsActivity extends BaseActivity implements A
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] paramArrayOfInt) {
-        if (requestCode == PERMISSON_REQUESTCODE) {
+        if (requestCode == PERMISSION_REQUESTCODE) {
             if (!verifyPermissions(paramArrayOfInt)) {
                 showMissingPermissionDialog();
                 isNeedCheck = false;
@@ -115,23 +112,11 @@ public abstract class CheckPermissionsActivity extends BaseActivity implements A
 
         // 拒绝, 退出应用
         builder.setNegativeButton("取消",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                });
+                (dialog, which) -> finish());
 
         builder.setPositiveButton("设置",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        startAppSettings();
-                    }
-                });
-
+                (dialog, which) -> startAppSettings());
         builder.setCancelable(false);
-
         builder.show();
     }
 
