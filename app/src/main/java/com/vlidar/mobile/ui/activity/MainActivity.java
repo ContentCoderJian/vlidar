@@ -2,7 +2,11 @@ package com.vlidar.mobile.ui.activity;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Message;
@@ -11,10 +15,12 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.vlidar.mobile.R;
 import com.vlidar.mobile.ui.view.CommonButton;
 import com.vlidar.mobile.utils.LatLngUtils;
+import com.vlidar.mobile.utils.LogTrace;
 import com.vlidar.mobile.utils.ScreenUtils;
 
 import java.util.Arrays;
@@ -24,7 +30,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 
 public class MainActivity extends AbstractBtActivity {
-    private static final int DURATION_ANIM = 900;
+    private static final int DURATION_ANIM = 500;
     @BindView(R.id.ib_up_down)
     ImageButton ibUpDown;
     @BindView(R.id.tv_latitude)
@@ -122,18 +128,18 @@ public class MainActivity extends AbstractBtActivity {
     }
 
     private void updateBtStatus() {
-        if (mBleSppUtils.isBluetoothEnable()) {
-            cbBt.setActivated(false);
-            cbBt.setSelected(false);
-            cbBt.setValueText("关闭");
-        } else if (!mBleSppUtils.isSppConnected()) {
-            cbBt.setActivated(false);
-            cbBt.setSelected(false);
-            cbBt.setValueText("离线");
-        } else if (mBleSppUtils.isSppConnected()) {
+        if (mBleSppUtils.isSppConnected()) {
             cbBt.setActivated(false);
             cbBt.setSelected(true);
             cbBt.setValueText("在线");
+        } else if (mBleSppUtils.isBluetoothEnable()) {
+            cbBt.setActivated(false);
+            cbBt.setSelected(false);
+            cbBt.setValueText("离线");
+        } else if (!mBleSppUtils.isBluetoothEnable()) {
+            cbBt.setActivated(false);
+            cbBt.setSelected(false);
+            cbBt.setValueText("关闭");
         } else {
             cbBt.setActivated(false);
             cbBt.setSelected(true);
@@ -262,24 +268,45 @@ public class MainActivity extends AbstractBtActivity {
     }
 
     @Override
+    public void onBluetoothStateChanged(boolean enable) {
+        mLogTrace.d("onBluetoothStateChanged", "enable=" + enable);
+        runOnUiThread(() -> {
+            updateBtStatus();
+        });
+    }
+
+    @Override
     public void onConnectSuccess(BluetoothDevice device) {
         mLogTrace.d("onConnectSuccess", "device=" + device);
-        updateBtStatus();
+        runOnUiThread(() -> {
+            updateBtStatus();
+        });
     }
 
     @Override
     public void onConnectFailed(String msg) {
         mLogTrace.w("onConnectFailed", "msg=" + msg);
-        updateBtStatus();
+        runOnUiThread(() -> {
+            updateBtStatus();
+        });
     }
 
     @Override
     public void onReceiveBytes(byte[] bytes) {
         mLogTrace.i("onReceiveBytes", "bytes=" + Arrays.toString(bytes));
+        Toast.makeText(this, "receive data : " + Arrays.toString(bytes), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onSendBytes(byte[] bytes) {
         mLogTrace.i("onSendBytes", "bytes=" + Arrays.toString(bytes));
     }
+
+    @Override
+    public void onDisconnected(BluetoothDevice bluetoothDevice) {
+        runOnUiThread(() -> {
+            updateBtStatus();
+        });
+    }
+
 }

@@ -30,27 +30,64 @@ public class BLESPPUtils {
     private OnBluetoothAction mOnBluetoothAction;
     private ConnectTask mConnectTask = new ConnectTask();
 
-    /**
-     * 搜索到新设备广播广播接收器
-     */
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (mOnBluetoothAction != null) mOnBluetoothAction.onFoundDevice(device);
-            }
-        }
-    };
+            if (action != null) {
+                switch (action) {
+                    case BluetoothDevice.ACTION_FOUND:
+                        BluetoothDevice device =
+                                intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                        if (mOnBluetoothAction != null) {
+                            mOnBluetoothAction.onFoundDevice(device);
+                        }
+                        break;
+                    case BluetoothAdapter.ACTION_DISCOVERY_FINISHED:
+                        if (mOnBluetoothAction != null) {
+                            mOnBluetoothAction.onFinishFoundDevice();
+                        }
+                        break;
+                    case BluetoothAdapter.ACTION_STATE_CHANGED:
+                        int blueState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
+                        switch (blueState) {
+                            case BluetoothAdapter.STATE_ON:
+                                mLogTrace.d("Bluetooth adapter is on.");
+                                if (mOnBluetoothAction != null) {
+                                    mOnBluetoothAction.onBluetoothStateChanged(true);
+                                }
+                                break;
+                            case BluetoothAdapter.STATE_OFF:
+                                mLogTrace.d("Bluetooth adapter is off.");
+                                if (mOnBluetoothAction != null) {
+                                    mOnBluetoothAction.onBluetoothStateChanged(false);
+                                }
+                                break;
+                            default:
+                                mLogTrace.d("blueState = " + blueState);
+                                break;
+                        }
+                        break;
 
-    /**
-     * 搜索结束广播接收器
-     */
-    private final BroadcastReceiver mFinishFoundReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                if (mOnBluetoothAction != null) mOnBluetoothAction.onFinishFoundDevice();
+                    case BluetoothDevice.ACTION_ACL_CONNECTED:
+                        BluetoothDevice aclConnectDevice =
+                                intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                        mLogTrace.d("device connected. aclConnectDevice=" + aclConnectDevice);
+                        connect(aclConnectDevice);
+                        break;
+
+                    case BluetoothDevice.ACTION_ACL_DISCONNECTED:
+                        BluetoothDevice aclDisconnectDevice =
+                                intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                        mLogTrace.d("device disconnected. aclDisconnectDevice=" + aclDisconnectDevice);
+                        if (mOnBluetoothAction != null) {
+                            mOnBluetoothAction.onDisconnected(aclDisconnectDevice);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+
             }
         }
     };
@@ -212,6 +249,13 @@ public class BLESPPUtils {
      */
     public interface OnBluetoothAction {
         /**
+         * 蓝牙打开还是关闭状态
+         *
+         * @param enable
+         */
+        void onBluetoothStateChanged(boolean enable);
+
+        /**
          * 当发现新设备
          *
          * @param device 设备
@@ -248,6 +292,11 @@ public class BLESPPUtils {
          * 当结束搜索设备
          */
         void onFinishFoundDevice();
+
+        /**
+         * 当断开蓝牙连接
+         */
+        void onDisconnected(BluetoothDevice bluetoothDevice);
     }
 
     /**
@@ -265,10 +314,13 @@ public class BLESPPUtils {
      * 初始化
      */
     public void onCreate() {
-        IntentFilter foundFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        mContext.registerReceiver(mReceiver, foundFilter);
-        IntentFilter finishFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        mContext.registerReceiver(mFinishFoundReceiver, finishFilter);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        mContext.registerReceiver(mReceiver, filter);
     }
 
     /**
@@ -280,7 +332,6 @@ public class BLESPPUtils {
             mConnectTask.isRunning = false;
             mConnectTask.cancel(true);
             mContext.unregisterReceiver(mReceiver);
-            mContext.unregisterReceiver(mFinishFoundReceiver);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -302,7 +353,7 @@ public class BLESPPUtils {
      * @param device 设备
      */
     public void connect(BluetoothDevice device) {
-        mBluetoothAdapter.cancelDiscovery();
+//        mBluetoothAdapter.cancelDiscovery();
         connect(device.getAddress());
     }
 
