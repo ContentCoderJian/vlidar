@@ -20,6 +20,7 @@ public class CommonButton extends RelativeLayout {
     private ImageView ivPic;
     private TextView tvTitle;
     private TextView tvValue;
+    private TextView tvValue1;
 
     public CommonButton(Context context) {
         this(context, null);
@@ -55,6 +56,7 @@ public class CommonButton extends RelativeLayout {
         ivPic = mRootLayout.findViewById(R.id.iv_pic);
         tvTitle = mRootLayout.findViewById(R.id.tv_title);
         tvValue = mRootLayout.findViewById(R.id.tv_value);
+        tvValue1 = mRootLayout.findViewById(R.id.tv_value1);
         tvTitle.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "fonts/PingFangSC" +
                 "-Regular" +
                 ".ttf"));
@@ -99,5 +101,9 @@ public class CommonButton extends RelativeLayout {
 
     public void setValueText(String value) {
         tvValue.setText(value);
+    }
+
+    public void setValue1Text(String value) {
+        tvValue1.setText(value);
     }
 }

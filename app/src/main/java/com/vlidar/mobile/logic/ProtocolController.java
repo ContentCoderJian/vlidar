@@ -4,6 +4,7 @@ import android.os.Build;
 
 import com.vlidar.mobile.utils.LogTrace;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -117,13 +118,25 @@ public class ProtocolController {
                 }
                 break;
             case Cmd.GPS_LOCATION:
-//                StringBuffer longitudeBuffer = new StringBuffer();
-//                longitudeBuffer.append(data[4]);
-//                longitudeBuffer.append(".");
-//                longitudeBuffer.append(data[5]);
-//                longitudeBuffer.append(data[6]);
-//                longitudeBuffer.append(data[7]);
-//                longitudeBuffer.append(data[8]);
+                StringBuffer longitudeBuffer = new StringBuffer();
+                longitudeBuffer.append(0xff & data[4]);
+                longitudeBuffer.append(".");
+                longitudeBuffer.append(0xff & data[5]);
+                longitudeBuffer.append(0xff & data[6]);
+                longitudeBuffer.append(0xff & data[7]);
+                longitudeBuffer.append(0xff & data[8]);
+
+                StringBuffer latitudeBuffer = new StringBuffer();
+                latitudeBuffer.append(0xff & data[9]);
+                latitudeBuffer.append(".");
+                latitudeBuffer.append(0xff & data[10]);
+                latitudeBuffer.append(0xff & data[11]);
+                latitudeBuffer.append(0xff & data[12]);
+                latitudeBuffer.append(0xff & data[13]);
+
+                for (ProtocolObserver protocolObserver : observers) {
+                    protocolObserver.updateGPSLocation(Double.parseDouble(longitudeBuffer.toString()), Double.parseDouble(latitudeBuffer.toString()));
+                }
 
                 break;
             case Cmd.MCU_UPDATE:
@@ -239,6 +252,8 @@ public class ProtocolController {
         for (int i = 0; i < 8; i++) {
             value |= ((long) (arr[i] & 0xff)) << (8 * i);
         }
-        return Double.longBitsToDouble(value);
+        double result = Double.longBitsToDouble(value);
+        DecimalFormat df2 = new DecimalFormat("0.000000");
+        return Double.parseDouble(df2.format(result));
     }
 }

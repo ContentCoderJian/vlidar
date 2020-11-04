@@ -31,4 +31,18 @@
         android:textColor="@drawable/common_button_value_text_selector"
         android:textSize="@dimen/common_button_text_size" />
 
+    <TextView
+        android:id="@+id/tv_value1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_pic"
+        android:layout_alignTop="@+id/tv_title"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_toEndOf="@+id/tv_title"
+        android:clickable="false"
+        android:textColor="@drawable/common_button_value_text_selector"
+        android:textSize="6sp" />
+
+
 </RelativeLayout>

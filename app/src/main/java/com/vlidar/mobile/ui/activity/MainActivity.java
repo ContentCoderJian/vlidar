@@ -139,14 +139,23 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbBt.setActivated(false);
             cbBt.setSelected(false);
             cbBt.setValueText("离线");
+            cbImu.setValueText("关");
+            cbImu.setActivated(false);
+            cbImu.setValue1Text(null);
         } else if (!mBleSppUtils.isBluetoothEnable()) {
             cbBt.setActivated(false);
             cbBt.setSelected(false);
             cbBt.setValueText("关闭");
+            cbImu.setValueText("关");
+            cbImu.setActivated(false);
+            cbImu.setValue1Text(null);
         } else {
             cbBt.setActivated(false);
             cbBt.setSelected(true);
             cbBt.setValueText("故障");
+            cbImu.setValueText("关");
+            cbImu.setActivated(false);
+            cbImu.setValue1Text(null);
         }
     }
 
@@ -283,7 +292,6 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         setLatLng(31.929672, 118.820083);
         tvLatitude.setText(LatLngUtils.DDtoDMS(31.929672) + "N");
         tvLongitude.setText(LatLngUtils.DDtoDMS(118.820083) + "E");
-        mLogTrace.d("updateView", "31°55.90856' ：" + LatLngUtils.DMStoDD("31°55.90856'"));
         setMarkerRotateAngle(-60F);
         ibUpDown.setImageResource(textureMapView.getVisibility() == View.VISIBLE ?
                 R.drawable.up : R.drawable.down);
@@ -390,11 +398,21 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     public void updateIMU(double eularYaw, double eularPitch, double eularRoll) {
         mLogTrace.d("updateIMU", "eularYaw: " + eularYaw + ", eularPitch: " + eularPitch + ", " +
                 "eularRoll: " + eularRoll);
+        runOnUiThread(() -> {
+            cbImu.setValueText("开");
+            cbImu.setActivated(true);
+            cbImu.setValue1Text("yaw: " + eularYaw + "\npitch: " + eularPitch + "\nroll: " + eularRoll);
+        });
     }
 
     @Override
     public void updateGPSLocation(double latitude, double longitude) {
-
+        mLogTrace.d("updateGPSLocation", "latitude:" + latitude + ", longitude: " + longitude);
+        runOnUiThread(() -> {
+            setLatLng(latitude, longitude);
+            tvLatitude.setText(LatLngUtils.DDtoDMS(latitude) + "N");
+            tvLongitude.setText(LatLngUtils.DDtoDMS(longitude) + "E");
+        });
     }
 
     @Override

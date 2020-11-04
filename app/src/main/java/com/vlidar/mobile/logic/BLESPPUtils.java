@@ -88,6 +88,7 @@ public class BLESPPUtils {
                         mLogTrace.d("device disconnected. aclDisconnectDevice=" + aclDisconnectDevice);
                         mConnectTask.isRunning = false;
                         mConnectTask.mIsConnectSpp = false;
+                        mConnectTask.cancel(true);
                         if (mOnBluetoothAction != null) {
                             mOnBluetoothAction.onDisconnected(aclDisconnectDevice);
                         }
