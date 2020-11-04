@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.vlidar.mobile.R;
 import com.vlidar.mobile.utils.AppTools;
+import com.vlidar.mobile.logic.BLESPPUtils;
 import com.vlidar.mobile.utils.StatusBarUtils;
 
 import butterknife.BindView;
@@ -25,6 +26,7 @@ public class GuideActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         tvGuideCompany.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/PingFangSC-Thin" +
                 ".ttf"));
+        BLESPPUtils.getInstance(this);
     }
 
     @Override

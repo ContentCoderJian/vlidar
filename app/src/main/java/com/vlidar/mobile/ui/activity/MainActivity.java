@@ -2,11 +2,7 @@ package com.vlidar.mobile.ui.activity;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Message;
@@ -18,9 +14,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vlidar.mobile.R;
+import com.vlidar.mobile.logic.ProtocolController;
+import com.vlidar.mobile.logic.ProtocolObserver;
+import com.vlidar.mobile.logic.Status;
 import com.vlidar.mobile.ui.view.CommonButton;
 import com.vlidar.mobile.utils.LatLngUtils;
-import com.vlidar.mobile.utils.LogTrace;
 import com.vlidar.mobile.utils.ScreenUtils;
 
 import java.util.Arrays;
@@ -29,8 +27,8 @@ import butterknife.BindDimen;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class MainActivity extends AbstractBtActivity {
-    private static final int DURATION_ANIM = 500;
+public class MainActivity extends AbstractBtActivity implements ProtocolObserver {
+    private static final int DURATION_ANIM = 400;
     @BindView(R.id.ib_up_down)
     ImageButton ibUpDown;
     @BindView(R.id.tv_latitude)
@@ -63,11 +61,16 @@ public class MainActivity extends AbstractBtActivity {
     private ObjectAnimator mShowMapObjectAnimator;
     private ObjectAnimator mHideMapObjectAnimator;
 
+    private ProtocolController mProtocolController;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
         initViews();
+        mBleSppUtils.setOnBluetoothAction(this);
+        mProtocolController = ProtocolController.getInstance();
+        mProtocolController.addObservers(this);
     }
 
     @Override
@@ -147,6 +150,60 @@ public class MainActivity extends AbstractBtActivity {
         }
     }
 
+    private void updatePower(int status) {
+        switch (status) {
+            case Status.POWER.NOT_WORKING:
+                cbPower.setActivated(false);
+                cbPower.setSelected(false);
+                cbPower.setValueText("关");
+                break;
+            case Status.POWER.WORKING:
+                cbPower.setActivated(true);
+                cbPower.setSelected(false);
+                cbPower.setValueText("开");
+                break;
+
+            case Status.POWER.EXCEPTION:
+                cbPower.setSelected(true);
+                cbPower.setActivated(false);
+                cbPower.setValueText("异常");
+                break;
+            default:
+                mLogTrace.d("updatePower", "invalid status, " + status);
+                break;
+        }
+    }
+
+    private void updateRadar(int status) {
+        switch (status) {
+            case Status.RADAR.NO_SCAN:
+                tvTimeScan.setText("开始扫描");
+                rlTimeScan.setEnabled(true);
+                cbRadar.setActivated(false);
+                cbRadar.setSelected(false);
+                cbRadar.setValueText("停止");
+                break;
+            case Status.RADAR.SCANNING:
+                tvTimeScan.setText("正在扫描");
+                rlTimeScan.setEnabled(false);
+                cbRadar.setActivated(true);
+                cbRadar.setSelected(false);
+                cbRadar.setValueText("扫描中");
+                break;
+
+            case Status.RADAR.DATA_PROCESSING:
+                tvTimeScan.setText("处理数据");
+                rlTimeScan.setEnabled(false);
+                cbRadar.setActivated(true);
+                cbRadar.setSelected(false);
+                cbRadar.setValueText("数据处理中");
+                break;
+            default:
+                mLogTrace.d("updateRadar", "invalid status, " + status);
+                break;
+        }
+    }
+
     private void initAnimation() {
         mHideMapObjectAnimator = ObjectAnimator.ofFloat(rlMapWithButton, "translationY",
                 -mTranslationY);
@@ -210,6 +267,15 @@ public class MainActivity extends AbstractBtActivity {
     protected void onResume() {
         super.onResume();
         updateViews();
+        updateBtStatus();
+        updatePower(mProtocolController.getPowerState());
+        updateRadar(mProtocolController.getRadarState());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mProtocolController.removeObservers(this);
     }
 
     private void updateViews() {
@@ -217,6 +283,7 @@ public class MainActivity extends AbstractBtActivity {
         setLatLng(31.929672, 118.820083);
         tvLatitude.setText(LatLngUtils.DDtoDMS(31.929672) + "N");
         tvLongitude.setText(LatLngUtils.DDtoDMS(118.820083) + "E");
+        mLogTrace.d("updateView", "31°55.90856' ：" + LatLngUtils.DMStoDD("31°55.90856'"));
         setMarkerRotateAngle(-60F);
         ibUpDown.setImageResource(textureMapView.getVisibility() == View.VISIBLE ?
                 R.drawable.up : R.drawable.down);
@@ -246,9 +313,9 @@ public class MainActivity extends AbstractBtActivity {
 
             case R.id.cb_bt:
                 cbBt.subViewCallOnClick();
-                if (!mBleSppUtils.isSppConnected()) {
-                    mBleSppUtils.startBtSettings();
-                }
+//                if (!mBleSppUtils.isSppConnected()) {
+                mBleSppUtils.startBtSettings();
+//                }
                 break;
 
             case R.id.cb_imu:
@@ -257,6 +324,7 @@ public class MainActivity extends AbstractBtActivity {
 
             case R.id.rl_time_scan:
 //                tvTimeScan.callOnClick();
+                mBleSppUtils.send(mProtocolController.sendOnceScan());
                 break;
             default:
                 break;
@@ -270,17 +338,13 @@ public class MainActivity extends AbstractBtActivity {
     @Override
     public void onBluetoothStateChanged(boolean enable) {
         mLogTrace.d("onBluetoothStateChanged", "enable=" + enable);
-        runOnUiThread(() -> {
-            updateBtStatus();
-        });
+        runOnUiThread(this::updateBtStatus);
     }
 
     @Override
     public void onConnectSuccess(BluetoothDevice device) {
         mLogTrace.d("onConnectSuccess", "device=" + device);
-        runOnUiThread(() -> {
-            updateBtStatus();
-        });
+        runOnUiThread(this::updateBtStatus);
     }
 
     @Override
@@ -288,13 +352,16 @@ public class MainActivity extends AbstractBtActivity {
         mLogTrace.w("onConnectFailed", "msg=" + msg);
         runOnUiThread(() -> {
             updateBtStatus();
+            Toast.makeText(this, "receive data : " + msg, Toast.LENGTH_SHORT).show();
         });
     }
 
     @Override
-    public void onReceiveBytes(byte[] bytes) {
-        mLogTrace.i("onReceiveBytes", "bytes=" + Arrays.toString(bytes));
-        Toast.makeText(this, "receive data : " + Arrays.toString(bytes), Toast.LENGTH_SHORT).show();
+    public void onReceiveBytes(final byte[] bytes) {
+//        mLogTrace.i("onReceiveBytes", "bytes=" + Arrays.toString(bytes));
+//        runOnUiThread(() -> Toast.makeText(MainActivity.this, "receive data : " + Arrays
+//        .toString(bytes),
+//                Toast.LENGTH_SHORT).show());
     }
 
     @Override
@@ -309,4 +376,29 @@ public class MainActivity extends AbstractBtActivity {
         });
     }
 
+    @Override
+    public void updatePowerStatus(int state) {
+        runOnUiThread(() -> updatePower(state));
+    }
+
+    @Override
+    public void updateRadarStatus(int state) {
+        runOnUiThread(() -> updateRadar(state));
+    }
+
+    @Override
+    public void updateIMU(double eularYaw, double eularPitch, double eularRoll) {
+        mLogTrace.d("updateIMU", "eularYaw: " + eularYaw + ", eularPitch: " + eularPitch + ", " +
+                "eularRoll: " + eularRoll);
+    }
+
+    @Override
+    public void updateGPSLocation(double latitude, double longitude) {
+
+    }
+
+    @Override
+    public void updateMCUUpdateStatus(int status) {
+
+    }
 }

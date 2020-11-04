@@ -1,7 +1,9 @@
-package com.vlidar.mobile.utils;
+package com.vlidar.mobile.logic;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,10 +12,13 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.provider.Settings;
 
+import com.vlidar.mobile.utils.LogTrace;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Formatter;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -27,8 +32,10 @@ public class BLESPPUtils {
     private static final LogTrace mLogTrace = new LogTrace("BleSpp", "BLESPPUtils");
     private Context mContext;
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    private BluetoothManager mBluetoothManager;
     private OnBluetoothAction mOnBluetoothAction;
     private ConnectTask mConnectTask = new ConnectTask();
+    private static BLESPPUtils mBLESPPUtils;
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -79,6 +86,8 @@ public class BLESPPUtils {
                         BluetoothDevice aclDisconnectDevice =
                                 intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                         mLogTrace.d("device disconnected. aclDisconnectDevice=" + aclDisconnectDevice);
+                        mConnectTask.isRunning = false;
+                        mConnectTask.mIsConnectSpp = false;
                         if (mOnBluetoothAction != null) {
                             mOnBluetoothAction.onDisconnected(aclDisconnectDevice);
                         }
@@ -100,6 +109,7 @@ public class BLESPPUtils {
         private BluetoothSocket bluetoothSocket;
         private BluetoothDevice remoteDevice;
         private OnBluetoothAction onBluetoothAction;
+        private ProtocolController mProtocolController;
         private boolean isRunning = false;
         private boolean mIsConnectSpp = false;
 
@@ -124,7 +134,9 @@ public class BLESPPUtils {
 
             // 检查有没有获取到
             if (bluetoothSocket == null) {
-                onBluetoothAction.onConnectFailed("连接失败:获取Socket失败");
+                if (onBluetoothAction != null) {
+                    onBluetoothAction.onConnectFailed("连接失败:获取Socket失败");
+                }
                 isRunning = false;
                 mIsConnectSpp = false;
                 return null;
@@ -136,12 +148,16 @@ public class BLESPPUtils {
                 bluetoothSocket.connect();
                 mLogTrace.d("doInBackground", "连接成功");
                 mIsConnectSpp = true;
-                onBluetoothAction.onConnectSuccess(remoteDevice);
+                if (onBluetoothAction != null) {
+                    onBluetoothAction.onConnectSuccess(remoteDevice);
+                }
             } catch (Exception connectException) {
                 connectException.printStackTrace();
                 mIsConnectSpp = false;
                 mLogTrace.e("doInBackground", "连接失败:" + connectException.getMessage());
-                onBluetoothAction.onConnectFailed("连接失败:" + connectException.getMessage());
+                if (onBluetoothAction != null) {
+                    onBluetoothAction.onConnectFailed("连接失败:" + connectException.getMessage());
+                }
                 return null;
             }
 
@@ -154,7 +170,10 @@ public class BLESPPUtils {
                     byte[] buffer = new byte[256];
                     // 等待有数据
                     while (inputStream.available() == 0 && isRunning) {
-                        if (System.currentTimeMillis() < 0) break;
+                        if (System.currentTimeMillis() < 0) {
+                            mLogTrace.d("current time < 0.");
+                            break;
+                        }
                     }
                     while (isRunning) {
                         try {
@@ -166,26 +185,35 @@ public class BLESPPUtils {
                             if (inputStream.available() == 0) break;
                         } catch (Exception e) {
                             e.printStackTrace();
-                            onBluetoothAction.onConnectFailed("接收数据单次失败：" + e.getMessage());
+                            if (onBluetoothAction != null) {
+                                onBluetoothAction.onConnectFailed("接收数据单次失败：" + e.getMessage());
+                            }
                             break;
                         }
                     }
                     try {
                         // 返回数据
-                        mLogTrace.d("doInBackground", "当前累计收到的数据=>" + byte2Hex(result));
-                        if (isValidData(result)) { // TODO 一次未接收到完整的数据包可能会有问题
-                            onBluetoothAction.onReceiveBytes(result);
+                        mLogTrace.d("doInBackground", "当前收到的数据=>" + byte2Hex(result));
+                        if (isValidData(result)) {
+                            if (onBluetoothAction != null) {
+                                onBluetoothAction.onReceiveBytes(result);
+                            }
+                            mProtocolController.updateData(result);
                             // 清空
                             result = new byte[0];
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        onBluetoothAction.onConnectFailed("验证收到数据结束标志出错：" + e.getMessage());
+                        if (onBluetoothAction != null) {
+                            onBluetoothAction.onConnectFailed("验证收到数据结束标志出错：" + e.getMessage());
+                        }
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                onBluetoothAction.onConnectFailed("接收数据失败：" + e.getMessage());
+                if (onBluetoothAction != null) {
+                    onBluetoothAction.onConnectFailed("接收数据失败：" + e.getMessage());
+                }
             }
             return null;
         }
@@ -210,7 +238,9 @@ public class BLESPPUtils {
         void send(byte[] msg) {
             try {
                 bluetoothSocket.getOutputStream().write(msg);
-                onBluetoothAction.onSendBytes(msg);
+                if (onBluetoothAction != null) {
+                    onBluetoothAction.onSendBytes(msg);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -228,7 +258,8 @@ public class BLESPPUtils {
             // mLogTrace.d("isValidData, data.length:" + length);
             int length2 = length - 2;
             int length1 = length - 1;
-            // mLogTrace.d("isValidData, data[0]:" + data[0] + ", data[1]:" + data[1] + ", data["
+            // mLogTrace.d("isValidData, data[0]:" + data[0] + ", data[1]:" + data[1] + ",
+            // data["
             // + length2 + "]:" + data[length2] + ", data[" + length1 + "]:" + data[length1]);
             return data.length > 4
                     && data[0] == 0x0D
@@ -302,12 +333,26 @@ public class BLESPPUtils {
     /**
      * 构造蓝牙工具
      *
-     * @param context           上下文
-     * @param onBluetoothAction 蓝牙状态改变回调
+     * @param context 上下文
      */
-    public BLESPPUtils(Context context, OnBluetoothAction onBluetoothAction) {
+    private BLESPPUtils(Context context) {
         mContext = context;
-        mOnBluetoothAction = onBluetoothAction;
+        mBluetoothManager =
+                (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter.getProfileProxy(context, proxyListener, BluetoothProfile.HEADSET);
+        mConnectTask.mProtocolController = ProtocolController.getInstance();
+    }
+
+    public synchronized static BLESPPUtils getInstance(Context context) {
+        if (mBLESPPUtils == null) {
+            mBLESPPUtils = new BLESPPUtils(context);
+        }
+        return mBLESPPUtils;
+    }
+
+    public void setOnBluetoothAction(OnBluetoothAction onBluetoothAction) {
+        this.mOnBluetoothAction = onBluetoothAction;
+        mConnectTask.onBluetoothAction = mOnBluetoothAction;
     }
 
     /**
@@ -411,6 +456,23 @@ public class BLESPPUtils {
     }
 
     /**
+     * 判断当前蓝牙是否已连接
+     *
+     * @return
+     */
+    public boolean isBTConnected() {
+        int a2dp = mBluetoothAdapter.getProfileConnectionState(BluetoothProfile.A2DP);
+        int headset = mBluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET);
+        int health = mBluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEALTH);
+        return a2dp == BluetoothAdapter.STATE_CONNECTED || headset == BluetoothAdapter.STATE_CONNECTED
+                || health == BluetoothAdapter.STATE_CONNECTED;
+    }
+
+    private List<BluetoothDevice> getConnectedDevice() {
+        return mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
+    }
+
+    /**
      * 开启蓝牙
      */
     public void enableBluetooth() {
@@ -443,10 +505,38 @@ public class BLESPPUtils {
     private static String byte2Hex(byte[] bytes) {
         Formatter formatter = new Formatter();
         for (byte b : bytes) {
-            formatter.format("%02x", b);
+            formatter.format("%02X", b);
         }
         String hash = formatter.toString();
         formatter.close();
         return hash;
     }
+
+    private BluetoothProfile.ServiceListener proxyListener =
+            new BluetoothProfile.ServiceListener() {
+                @Override
+                public void onServiceConnected(int profile, BluetoothProfile proxy) {
+                    mLogTrace.d("onServiceConnected", "BluetoothProfile profile: " + profile);
+                    if (proxy != null) {
+                        List<BluetoothDevice> cd = proxy.getConnectedDevices();
+                        if (cd != null) {
+                            mLogTrace.d("onServiceConnected", "BluetoothDevice size: " + cd.size());
+                            for (int i = 0; i < cd.size(); i++) {
+                                BluetoothDevice t = cd.get(i);
+                                mLogTrace.d("onServiceConnected",
+                                        "BluetoothDevice : " + t.getName() + "|" + t.getAddress());
+                            }
+                            if (cd.size() > 0) {
+                                connect(cd.get(0)); // TODO 目前只支持连一个蓝牙设备的spp，不支持一对多
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onServiceDisconnected(int profile) {
+
+                }
+
+            };
 }

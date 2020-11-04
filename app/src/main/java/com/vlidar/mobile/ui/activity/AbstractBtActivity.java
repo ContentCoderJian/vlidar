@@ -5,7 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.os.Message;
 
-import com.vlidar.mobile.utils.BLESPPUtils;
+import com.vlidar.mobile.logic.BLESPPUtils;
 
 public abstract class AbstractBtActivity extends AbstractMapActivity implements BLESPPUtils.OnBluetoothAction {
     protected BLESPPUtils mBleSppUtils;
@@ -13,8 +13,13 @@ public abstract class AbstractBtActivity extends AbstractMapActivity implements 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBleSppUtils = new BLESPPUtils(this, this);
+        mBleSppUtils = BLESPPUtils.getInstance(this);
         mBleSppUtils.onCreate();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override

@@ -2,11 +2,13 @@ package com.vlidar.mobile.ui.activity;
 
 import android.graphics.Outline;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.AMapOptions;
@@ -34,8 +36,10 @@ public abstract class AbstractMapActivity extends AbstractCheckPermissionsActivi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         textureMapView.onCreate(savedInstanceState);
-        textureMapView.setOutlineProvider(new TextureVideoViewOutlineProvider(26));
-        textureMapView.setClipToOutline(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            textureMapView.setOutlineProvider(new TextureVideoViewOutlineProvider(26));
+            textureMapView.setClipToOutline(true);
+        }
         initAMap();
     }
 
@@ -153,6 +157,7 @@ public abstract class AbstractMapActivity extends AbstractCheckPermissionsActivi
     /**
      * 绘制TextureMapView圆角
      */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     protected static class TextureVideoViewOutlineProvider extends ViewOutlineProvider {
         private float mRadius;
 
