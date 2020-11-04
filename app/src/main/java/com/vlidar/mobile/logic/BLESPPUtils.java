@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.provider.Settings;
 
 import com.vlidar.mobile.utils.LogTrace;
@@ -86,7 +87,7 @@ public class BLESPPUtils {
                         BluetoothDevice aclDisconnectDevice =
                                 intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                         mLogTrace.d("device disconnected. aclDisconnectDevice=" + aclDisconnectDevice);
-                        mConnectTask.isRunning = false;
+//                        mConnectTask.isRunning = false;
                         mConnectTask.mIsConnectSpp = false;
                         mConnectTask.cancel(true);
                         if (mOnBluetoothAction != null) {
@@ -124,7 +125,9 @@ public class BLESPPUtils {
             try {
                 UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
                 remoteDevice = bluetoothAdapter.getRemoteDevice(bluetoothDevicesMac[0]);
-                bluetoothSocket = remoteDevice.createRfcommSocketToServiceRecord(SPP_UUID);
+                if (isCancelled()) return null;
+                bluetoothSocket =
+                        remoteDevice.createRfcommSocketToServiceRecord(SPP_UUID);
             } catch (Exception e) {
                 mLogTrace.e("doInBackground", "获取Socket失败");
                 isRunning = false;
@@ -146,6 +149,7 @@ public class BLESPPUtils {
             // 尝试连接
             try {
                 // 等待连接，会阻塞线程
+                if (isCancelled()) return null;
                 bluetoothSocket.connect();
                 mLogTrace.d("doInBackground", "连接成功");
                 mIsConnectSpp = true;
@@ -164,8 +168,10 @@ public class BLESPPUtils {
 
             // 开始监听数据接收
             try {
+                if (isCancelled()) return null;
                 InputStream inputStream = bluetoothSocket.getInputStream();
                 byte[] result = new byte[0];
+                if (isCancelled()) return null;
                 while (isRunning) {
                     mLogTrace.d("doInBackground", "looping");
                     byte[] buffer = new byte[256];
@@ -178,6 +184,7 @@ public class BLESPPUtils {
                     }
                     while (isRunning) {
                         try {
+                            if (isCancelled()) return null;
                             int num = inputStream.read(buffer);
                             byte[] temp = new byte[result.length + num];
                             System.arraycopy(result, 0, temp, 0, result.length);
@@ -195,6 +202,7 @@ public class BLESPPUtils {
                     try {
                         // 返回数据
                         mLogTrace.d("doInBackground", "当前收到的数据=>" + byte2Hex(result));
+                        if (isCancelled()) return null;
                         if (isValidData(result)) {
                             if (onBluetoothAction != null) {
                                 onBluetoothAction.onReceiveBytes(result);
@@ -409,15 +417,16 @@ public class BLESPPUtils {
      * @param deviceMac 要连接的设备的 MAC
      */
     public void connect(String deviceMac) {
-        if (mConnectTask.getStatus() == AsyncTask.Status.RUNNING && mConnectTask.isRunning) {
-            if (mOnBluetoothAction != null) {
+        if (mConnectTask.getStatus() == AsyncTask.Status.RUNNING /*&& mConnectTask.isRunning*/) {
+/*            if (mOnBluetoothAction != null) {
                 mOnBluetoothAction.onConnectFailed("有正在连接的任务");
             }
-            return;
+            return;*/
+            mConnectTask.cancel(true);
         }
         mConnectTask.onBluetoothAction = mOnBluetoothAction;
         try {
-            mConnectTask.execute(deviceMac);
+            new Handler().postDelayed(() -> mConnectTask.execute(deviceMac), 200);
         } catch (Exception e) {
             e.printStackTrace();
         }
