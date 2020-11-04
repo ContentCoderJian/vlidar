@@ -233,7 +233,8 @@ public class BLESPPUtils {
                 mLogTrace.d("onCancelled", "开始释放资源");
                 isRunning = false;
                 mIsConnectSpp = false;
-                bluetoothSocket.close();
+                if (bluetoothSocket != null)
+                    bluetoothSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -383,7 +384,7 @@ public class BLESPPUtils {
     public void onDestroy() {
         try {
             mLogTrace.d("onDestroy", "开始释放资源");
-            mConnectTask.isRunning = false;
+//            mConnectTask.isRunning = false;
             mConnectTask.cancel(true);
             mContext.unregisterReceiver(mReceiver);
         } catch (Exception e) {
@@ -425,10 +426,23 @@ public class BLESPPUtils {
             mConnectTask.cancel(true);
         }
         mConnectTask.onBluetoothAction = mOnBluetoothAction;
-        try {
-            new Handler().postDelayed(() -> mConnectTask.execute(deviceMac), 200);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (!mConnectTask.isRunning) {
+            try {
+                mConnectTask.execute(deviceMac);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            new Thread(() -> {
+                while (mConnectTask.isRunning) {
+                    try {
+                        Thread.sleep(50);
+                        mConnectTask.execute(deviceMac);
+                    } catch (Exception e) {
+//                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
     }
 
@@ -530,7 +544,8 @@ public class BLESPPUtils {
                     if (proxy != null) {
                         List<BluetoothDevice> cd = proxy.getConnectedDevices();
                         if (cd != null) {
-                            mLogTrace.d("onServiceConnected", "BluetoothDevice size: " + cd.size());
+                            mLogTrace.d("onServiceConnected",
+                                    "BluetoothDevice size: " + cd.size());
                             for (int i = 0; i < cd.size(); i++) {
                                 BluetoothDevice t = cd.get(i);
                                 mLogTrace.d("onServiceConnected",
