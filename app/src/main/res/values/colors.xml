@@ -9,4 +9,5 @@
     <color name="colorTranslateWhite1">#99FFFFFF</color>
     <color name="colorGrey">#767678</color>
     <color name="colorButtonGrey">#8B7FA3</color>
+    <color name="colorTranslateBlack">#CC000000</color>
 </resources>

@@ -14,7 +14,7 @@ import butterknife.BindView;
 
 public class GuideActivity extends BaseActivity {
     private static final int MSG_GOTO_MAIN = 1;
-    private static final int DELAY_2S = 2000;
+    private static final int DELAY_GOTO = 1500;
     @BindView(R.id.tv_guide_company)
     TextView tvGuideCompany;
 
@@ -38,7 +38,7 @@ public class GuideActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        myHandler.sendEmptyMessageDelayed(MSG_GOTO_MAIN, DELAY_2S);
+        myHandler.sendEmptyMessageDelayed(MSG_GOTO_MAIN, DELAY_GOTO);
     }
 
     @Override

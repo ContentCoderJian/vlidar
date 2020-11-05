@@ -21,6 +21,18 @@
             android:layout_marginEnd="@dimen/main_margin_horizontal"
             android:background="@drawable/map" />
 
+        <TextView
+            android:id="@+id/tv_no_gps"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/map_height"
+            android:layout_marginStart="@dimen/main_margin_horizontal"
+            android:layout_marginTop="@dimen/map_margin_top"
+            android:layout_marginEnd="@dimen/main_margin_horizontal"
+            android:background="@drawable/map"
+            android:gravity="center"
+            android:text="@string/no_gps"
+            android:textSize="20sp" />
+
         <ImageView
             android:id="@+id/iv_logo"
             android:layout_width="wrap_content"
@@ -66,7 +78,7 @@
                 android:layout_marginEnd="@dimen/latitude_longitude_margin_end"
                 android:layout_toStartOf="@id/ib_up_down"
                 android:src="@drawable/logo_min"
-                android:text="31°55'46.8192&quot;N"
+                android:text="0°0'0&quot;N"
                 android:textColor="@color/colorWhite"
                 android:textSize="@dimen/latitude_longitude_text_size" />
 
@@ -79,7 +91,7 @@
                 android:layout_marginEnd="@dimen/latitude_longitude_margin_end"
                 android:layout_toStartOf="@id/ib_up_down"
                 android:src="@drawable/logo_min"
-                android:text="118°49'12.2988&quot;E"
+                android:text="0°0'0&quot;E"
                 android:textColor="@color/colorWhite"
                 android:textSize="@dimen/latitude_longitude_text_size" />
         </RelativeLayout>

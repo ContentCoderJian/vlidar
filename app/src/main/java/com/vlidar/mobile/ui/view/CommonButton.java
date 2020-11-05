@@ -5,6 +5,10 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,6 +25,9 @@ public class CommonButton extends RelativeLayout {
     private TextView tvTitle;
     private TextView tvValue;
     private TextView tvValue1;
+
+    private AlphaAnimation mAlphaAnimation;
+    private RotateAnimation mRotateAnimation;
 
     public CommonButton(Context context) {
         this(context, null);
@@ -81,6 +88,66 @@ public class CommonButton extends RelativeLayout {
         tvTitle.callOnClick();
         tvValue.callOnClick();
         ivPic.callOnClick();
+    }
+
+    public void startTwinkleAnim() {
+        startAlphaAnimation(ivPic);
+    }
+
+    public void stopTwinkleAnim() {
+        stopAlphaAnimation(ivPic);
+    }
+
+    public void startRotateAnim() {
+        startRotateAnimation(ivPic);
+    }
+
+    public void stopRotateAnim() {
+        stopRotateAnimation(ivPic);
+    }
+
+    private void startRotateAnimation(ImageView imageView) {
+        if (mRotateAnimation == null) {
+            mRotateAnimation = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF, 0.5f);
+            mRotateAnimation.setDuration(1000);
+            mRotateAnimation.setInterpolator(new LinearInterpolator());
+//            mRotateAnimation.setFillAfter(true);
+//            mRotateAnimation.setFillBefore(true);
+            mRotateAnimation.setRepeatCount(AlphaAnimation.INFINITE);
+        }
+        imageView.startAnimation(mRotateAnimation);
+    }
+
+    private void stopRotateAnimation(ImageView imageView) {
+        //清除动画
+        imageView.clearAnimation();
+        if (mRotateAnimation != null) {
+            mRotateAnimation.cancel();
+            mRotateAnimation = null;
+        }
+    }
+
+    private void startAlphaAnimation(ImageView imageView) {
+        if (mAlphaAnimation == null) {
+            mAlphaAnimation = new AlphaAnimation(1F, 0F);
+            mAlphaAnimation.setDuration(1200);
+            mAlphaAnimation.setInterpolator(new LinearInterpolator());
+//            mAlphaAnimation.setFillAfter(true);
+//            mAlphaAnimation.setFillBefore(true);
+//            mAlphaAnimation.setRepeatMode(AlphaAnimation.RESTART);
+            mAlphaAnimation.setRepeatCount(AlphaAnimation.INFINITE);
+        }
+        imageView.startAnimation(mAlphaAnimation);
+    }
+
+    private void stopAlphaAnimation(ImageView imageView) {
+        //清除动画
+        imageView.clearAnimation();
+        if (mAlphaAnimation != null) {
+            mAlphaAnimation.cancel();
+            mAlphaAnimation = null;
+        }
     }
 
     public void setPicSrcRes(int resId) {

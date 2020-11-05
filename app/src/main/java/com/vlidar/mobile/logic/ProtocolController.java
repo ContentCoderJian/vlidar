@@ -99,7 +99,7 @@ public class ProtocolController {
                 if (data[4] != radarState) {
                     radarState = data[4];
                     for (ProtocolObserver protocolObserver : observers) {
-                        protocolObserver.updatePowerStatus(radarState);
+                        protocolObserver.updateRadarStatus(radarState);
                     }
                 }
                 break;
@@ -118,24 +118,26 @@ public class ProtocolController {
                 }
                 break;
             case Cmd.GPS_LOCATION:
-                StringBuffer longitudeBuffer = new StringBuffer();
-                longitudeBuffer.append(0xff & data[4]);
-                longitudeBuffer.append(".");
-                longitudeBuffer.append(0xff & data[5]);
-                longitudeBuffer.append(0xff & data[6]);
-                longitudeBuffer.append(0xff & data[7]);
-                longitudeBuffer.append(0xff & data[8]);
-
                 StringBuffer latitudeBuffer = new StringBuffer();
-                latitudeBuffer.append(0xff & data[9]);
+                latitudeBuffer.append(0xff & data[4]);
                 latitudeBuffer.append(".");
-                latitudeBuffer.append(0xff & data[10]);
-                latitudeBuffer.append(0xff & data[11]);
-                latitudeBuffer.append(0xff & data[12]);
-                latitudeBuffer.append(0xff & data[13]);
+                latitudeBuffer.append(0xff & data[5]);
+                latitudeBuffer.append(0xff & data[6]);
+                latitudeBuffer.append(0xff & data[7]);
+                latitudeBuffer.append(0xff & data[8]);
 
+                StringBuffer longitudeBuffer = new StringBuffer();
+                longitudeBuffer.append(0xff & data[9]);
+                longitudeBuffer.append(".");
+                longitudeBuffer.append(0xff & data[10]);
+                longitudeBuffer.append(0xff & data[11]);
+                latitudeBuffer.append(0xff & data[12]);
+                longitudeBuffer.append(0xff & data[13]);
+
+                latitude = Double.parseDouble(latitudeBuffer.toString());
+                longitude = Double.parseDouble(longitudeBuffer.toString());
                 for (ProtocolObserver protocolObserver : observers) {
-                    protocolObserver.updateGPSLocation(Double.parseDouble(longitudeBuffer.toString()), Double.parseDouble(latitudeBuffer.toString()));
+                    protocolObserver.updateGPSLocation(latitude, longitude);
                 }
 
                 break;
