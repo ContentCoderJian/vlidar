@@ -8,10 +8,8 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,8 +36,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     TextView tvLatitude;
     @BindView(R.id.tv_longitude)
     TextView tvLongitude;
-    @BindView(R.id.tv_self_checking_status)
-    TextView tvSelfCheckingStatus;
+    //    @BindView(R.id.tv_self_checking_status)
+//    TextView tvSelfCheckingStatus;
     @BindView(R.id.cb_power)
     CommonButton cbPower;
     @BindView(R.id.cb_radar)
@@ -48,10 +46,12 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     CommonButton cbBt;
     @BindView(R.id.cb_imu)
     CommonButton cbImu;
-    @BindView(R.id.rl_time_scan)
-    RelativeLayout rlTimeScan;
-    @BindView(R.id.tv_time_scan)
-    TextView tvTimeScan;
+    @BindView(R.id.cb_timer_scan)
+    CommonButton cbTimerScan;
+    @BindView(R.id.rl_scan_once)
+    RelativeLayout rlScanOnce;
+    @BindView(R.id.tv_scan_once)
+    TextView tvScanOnce;
     @BindView(R.id.rl_map_with_button)
     RelativeLayout rlMapWithButton;
     @BindView(R.id.tv_no_gps)
@@ -81,7 +81,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        setImuButtonMarginTop();
+        setButtonMarginTop();
         mTranslationY = textureMapView.getMeasuredHeight() + mapMarginTop;
         mLogTrace.d("onWindowFocusChanged", "mTranslationY=" + mTranslationY);
         initAnimation();
@@ -90,13 +90,19 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     /**
      * 计算出第一行button的列间距，作为该button的marginTop
      */
-    private void setImuButtonMarginTop() {
+    private void setButtonMarginTop() {
         mLogTrace.d("setImuButtonMarginTop");
         RelativeLayout.LayoutParams layoutParams =
                 (RelativeLayout.LayoutParams) cbImu.getLayoutParams();
         layoutParams.setMargins(mainMarginHorizontal,
                 ((ScreenUtils.getScreenWidth(this) - 3 * cbImu.getMeasuredWidth() - 2 * mainMarginHorizontal) / 2), 0, 0);
         cbImu.setLayoutParams(layoutParams);
+
+        RelativeLayout.LayoutParams layoutParams1 =
+                (RelativeLayout.LayoutParams) cbTimerScan.getLayoutParams();
+        layoutParams1.setMargins(0,
+                ((ScreenUtils.getScreenWidth(this) - 3 * cbTimerScan.getMeasuredWidth() - 2 * mainMarginHorizontal) / 2), 0, 0);
+        cbTimerScan.setLayoutParams(layoutParams1);
     }
 
     private void initViews() {
@@ -106,10 +112,11 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         tvLongitude.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/PingFangSC" +
                 "-Regular" +
                 ".ttf"));
-        tvSelfCheckingStatus.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/PingFangSC" +
-                "-Regular" +
-                ".ttf"));
-        tvTimeScan.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/PingFangSC" +
+//        tvSelfCheckingStatus.setTypeface(Typeface.createFromAsset(getAssets(),
+//        "fonts/PingFangSC" +
+//                "-Regular" +
+//                ".ttf"));
+        tvScanOnce.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/PingFangSC" +
                 "-Regular" +
                 ".ttf"));
         cbPower.setTitleRes(R.string.power);
@@ -133,6 +140,11 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         cbImu.setPicBgRes(R.drawable.imu_out_selector);
         cbImu.setPicSrcRes(R.drawable.imu_in_selector);
         cbImu.setValueText("关");
+
+        cbTimerScan.setTitleRes(R.string.time_scan);
+        cbTimerScan.setEnabled(false);
+        cbTimerScan.setPicSrcRes(R.drawable.timer_scan_selector);
+        cbTimerScan.setValueText("关");
     }
 
     private void updateBtStatus() {
@@ -141,6 +153,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbBt.setSelected(true);
             cbBt.setValueText("在线");
             cbBt.startTwinkleAnim();
+            cbTimerScan.setEnabled(true);
         } else if (mBleSppUtils.isBluetoothEnable()) {
             cbBt.stopTwinkleAnim();
             cbBt.setActivated(false);
@@ -149,6 +162,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setValueText("关");
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
+            cbTimerScan.setEnabled(false);
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
@@ -160,6 +174,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setValueText("关");
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
+            cbTimerScan.setEnabled(false);
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
@@ -171,6 +186,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setValueText("关");
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
+            cbTimerScan.setEnabled(false);
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
@@ -182,6 +198,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         tvNoGps.setVisibility(View.VISIBLE);
         tvLatitude.setText("0°0'0\"N");
         tvLongitude.setText("0°0'0\"E");
+        // TODO 调试UI，先默认打开
+//        rlTimeScan.setEnabled(false);  // 无GPS信息获取到，不可定时扫描
     }
 
     private void updatePower(int status) {
@@ -214,16 +232,14 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     private void updateRadar(int status) {
         switch (status) {
             case Status.RADAR.NO_SCAN:
-                tvTimeScan.setText("开始扫描");
-                rlTimeScan.setEnabled(true);
+                cbTimerScan.setEnabled(mBleSppUtils.isSppConnected());
                 cbRadar.setActivated(false);
                 cbRadar.setSelected(false);
                 cbRadar.setValueText("停止");
                 cbRadar.stopRotateAnim();
                 break;
             case Status.RADAR.SCANNING:
-                tvTimeScan.setText("正在扫描");
-                rlTimeScan.setEnabled(false);
+                cbTimerScan.setEnabled(false);
                 cbRadar.setActivated(true);
                 cbRadar.setSelected(false);
                 cbRadar.setValueText("扫描中");
@@ -231,8 +247,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 break;
 
             case Status.RADAR.DATA_PROCESSING:
-                tvTimeScan.setText("处理数据");
-                rlTimeScan.setEnabled(false);
+                cbTimerScan.setEnabled(false);
                 cbRadar.setActivated(true);
                 cbRadar.setSelected(false);
                 cbRadar.setValueText("数据处理中");
@@ -354,7 +369,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     }
 
     @OnClick({R.id.rl_show_hide_map, R.id.cb_power, R.id.cb_radar, R.id.cb_bt, R.id.cb_imu,
-            R.id.rl_time_scan})
+            R.id.rl_scan_once})
     void onClick(View view) {
         mLogTrace.d("onClick", "view: " + view);
         switch (view.getId()) {
@@ -386,7 +401,10 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 cbImu.subViewCallOnClick();
                 break;
 
-            case R.id.rl_time_scan:
+            case R.id.cb_timer_scan:
+                break;
+
+            case R.id.rl_scan_once:
 //                tvTimeScan.callOnClick();
                 mBleSppUtils.send(mProtocolController.sendOnceScan());
                 break;
@@ -472,6 +490,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             setLatLng(latitude, longitude);
             tvLatitude.setText(LatLngUtils.DDtoDMS(latitude) + "N");
             tvLongitude.setText(LatLngUtils.DDtoDMS(longitude) + "E");
+            rlScanOnce.setEnabled(true);
         });
     }
 

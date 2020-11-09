@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/timer_error" android:state_activated="true"
+        android:state_enabled="true" />
+    <item android:drawable="@drawable/timer_open" android:state_enabled="true"
+        android:state_selected="true" />
+    <item android:drawable="@drawable/timer_close" />
+
+</selector>

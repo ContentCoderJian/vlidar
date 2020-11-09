@@ -6,7 +6,8 @@
     <string name="radar">雷达</string>
     <string name="bt">蓝牙</string>
     <string name="imu">IMU</string>
-    <string name="time_scan">定时并扫描</string>
+    <string name="time_scan">定时扫描</string>
+    <string name="scan_once">单次扫描</string>
     <string name="start_scan">开始扫描</string>
     <string name="scanning">正在扫描</string>
     <string name="no_gps">未获取到GPS信息</string>
