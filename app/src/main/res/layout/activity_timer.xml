@@ -4,14 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".ui.activity.GuideActivity">
+    android:paddingStart="@dimen/main_margin_horizontal"
+    android:paddingTop="@dimen/map_margin_top"
+    android:paddingEnd="@dimen/main_margin_horizontal"
+    android:paddingBottom="@dimen/timer_bottom_button_margin"
+    tools:context=".ui.activity.TimerActivity">
 
     <ImageButton
         android:id="@+id/ib_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/main_margin_horizontal"
-        android:layout_marginTop="@dimen/map_margin_top"
         android:background="@null"
         android:src="@drawable/timer_back_selector" />
 
@@ -20,18 +22,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="@dimen/map_margin_top"
-        android:layout_marginEnd="@dimen/main_margin_horizontal"
         android:background="@null"
         android:src="@drawable/timer_add_selector" />
 
+    <com.vlidar.jrecyclerview.JRecycleView
+        android:id="@+id/recycle_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/ib_scan"
+        android:layout_below="@id/ib_back"
+        android:layout_marginTop="@dimen/timer_list_margin_top"
+        android:layout_marginBottom="@dimen/timer_list_margin_top" />
 
     <ImageButton
+        android:id="@+id/ib_scan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/timer_bottom_button_margin"
         android:background="@drawable/timer_bottom_selector"
         android:src="@drawable/scan_white" />
 

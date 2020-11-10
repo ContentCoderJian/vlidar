@@ -19,6 +19,7 @@ import com.vlidar.mobile.logic.ProtocolController;
 import com.vlidar.mobile.logic.ProtocolObserver;
 import com.vlidar.mobile.logic.Status;
 import com.vlidar.mobile.ui.view.CommonButton;
+import com.vlidar.mobile.utils.AppTools;
 import com.vlidar.mobile.utils.LatLngUtils;
 import com.vlidar.mobile.utils.ScreenUtils;
 
@@ -142,18 +143,19 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         cbImu.setValueText("关");
 
         cbTimerScan.setTitleRes(R.string.time_scan);
-        cbTimerScan.setEnabled(false);
+        // TODO 暂时开
+        cbTimerScan.setEnabled(true);
         cbTimerScan.setPicSrcRes(R.drawable.timer_scan_selector);
         cbTimerScan.setValueText("关");
     }
 
     private void updateBtStatus() {
         if (mBleSppUtils.isSppConnected()) {
+            rlScanOnce.setEnabled(true);
             cbBt.setActivated(false);
             cbBt.setSelected(true);
             cbBt.setValueText("在线");
             cbBt.startTwinkleAnim();
-            cbTimerScan.setEnabled(true);
         } else if (mBleSppUtils.isBluetoothEnable()) {
             cbBt.stopTwinkleAnim();
             cbBt.setActivated(false);
@@ -162,7 +164,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setValueText("关");
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
-            cbTimerScan.setEnabled(false);
+            rlScanOnce.setEnabled(false);
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
@@ -174,7 +176,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setValueText("关");
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
-            cbTimerScan.setEnabled(false);
+            rlScanOnce.setEnabled(false);
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
@@ -186,7 +188,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setValueText("关");
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
-            cbTimerScan.setEnabled(false);
+            rlScanOnce.setEnabled(false);
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
@@ -199,7 +201,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         tvLatitude.setText("0°0'0\"N");
         tvLongitude.setText("0°0'0\"E");
         // TODO 调试UI，先默认打开
-//        rlTimeScan.setEnabled(false);  // 无GPS信息获取到，不可定时扫描
+//        cbTimerScan.setEnabled(false);  // 无GPS信息获取到，不可定时扫描
     }
 
     private void updatePower(int status) {
@@ -216,7 +218,6 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 cbPower.setValueText("开");
                 cbPower.startRotateAnim();
                 break;
-
             case Status.POWER.EXCEPTION:
                 cbPower.setSelected(true);
                 cbPower.setActivated(false);
@@ -232,14 +233,14 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     private void updateRadar(int status) {
         switch (status) {
             case Status.RADAR.NO_SCAN:
-                cbTimerScan.setEnabled(mBleSppUtils.isSppConnected());
+                rlScanOnce.setEnabled(mBleSppUtils.isSppConnected());
                 cbRadar.setActivated(false);
                 cbRadar.setSelected(false);
                 cbRadar.setValueText("停止");
                 cbRadar.stopRotateAnim();
                 break;
             case Status.RADAR.SCANNING:
-                cbTimerScan.setEnabled(false);
+                rlScanOnce.setEnabled(false);
                 cbRadar.setActivated(true);
                 cbRadar.setSelected(false);
                 cbRadar.setValueText("扫描中");
@@ -247,7 +248,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 break;
 
             case Status.RADAR.DATA_PROCESSING:
-                cbTimerScan.setEnabled(false);
+                rlScanOnce.setEnabled(false);
                 cbRadar.setActivated(true);
                 cbRadar.setSelected(false);
                 cbRadar.setValueText("数据处理中");
@@ -369,7 +370,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     }
 
     @OnClick({R.id.rl_show_hide_map, R.id.cb_power, R.id.cb_radar, R.id.cb_bt, R.id.cb_imu,
-            R.id.rl_scan_once})
+            R.id.cb_timer_scan, R.id.rl_scan_once})
     void onClick(View view) {
         mLogTrace.d("onClick", "view: " + view);
         switch (view.getId()) {
@@ -402,6 +403,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 break;
 
             case R.id.cb_timer_scan:
+                cbTimerScan.subViewCallOnClick();
+                AppTools.startForwardActivity(this, TimerActivity.class);
                 break;
 
             case R.id.rl_scan_once:

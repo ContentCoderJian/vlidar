@@ -23,14 +23,17 @@
     <dimen name="common_button_padding">15dp</dimen>
     <dimen name="common_button_title_margin_top">44dp</dimen>
 
+    <!-- Timer -->
+    <dimen name="timer_bottom_button_margin">60dp</dimen>
+    <dimen name="timer_list_margin_top">16.7dp</dimen>
+    <dimen name="list_margin">8dp</dimen>
+
     <!-- Text Size-->
     <dimen name="guide_company_text_size">12sp</dimen>
     <dimen name="check_status_text_size">11sp</dimen>
     <dimen name="latitude_longitude_text_size">11sp</dimen>
     <dimen name="common_button_text_size">12sp</dimen>
     <dimen name="bottom_button_text_size">12sp</dimen>
-
-    <!-- Timer -->
-    <dimen name="timer_bottom_button_margin">60dp</dimen>
+    <dimen name="timer_list_time_text_size">24sp</dimen>
 
 </resources>

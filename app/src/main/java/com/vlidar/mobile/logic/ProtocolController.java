@@ -5,7 +5,6 @@ import android.os.Build;
 import com.vlidar.mobile.utils.LogTrace;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;

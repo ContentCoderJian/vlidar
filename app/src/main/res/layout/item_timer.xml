@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rl_timer_background"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/timer_list_selector">
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/main_margin_horizontal"
+        android:text="01:30"
+        android:textColor="@color/colorTimerGreen"
+        android:textSize="@dimen/timer_list_time_text_size" />
+
+    <com.kyleduo.switchbutton.SwitchButton
+        android:id="@+id/switch_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/main_margin_horizontal"
+        app:kswAnimationDuration="300"
+        app:kswBackDrawable="@drawable/switch_back_drawable"
+        app:kswThumbDrawable="@drawable/bottom_switch"
+        app:kswThumbMarginBottom="2dp"
+        app:kswThumbMarginTop="2dp"
+        app:kswThumbRangeRatio="1.98"
+        tools:ignore="RelativeOverlap" />
+
+</RelativeLayout>
