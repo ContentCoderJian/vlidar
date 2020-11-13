@@ -47,8 +47,12 @@ public class TimerActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         jRecycleView.addItemDecoration(new SimpleDividerDecoration(this,
                 mItemHeight, colorTransparent, false));
-        addFakeData();
         mTimePopupWindow = new TimePopupWindow(this);
+        mTimePopupWindow.setOnAddTimeDoneListener(scanTimer -> {
+            mLogTrace.d("onAddTimeDone", "scanTimer:" + scanTimer);
+            mScanTimers.add(scanTimer);
+            initRecyclerView(mScanTimers);
+        });
     }
 
     @Override
@@ -81,7 +85,7 @@ public class TimerActivity extends BaseActivity {
 
             case R.id.ib_add:
                 mTimePopupWindow.darkenBackground(0.6F);
-                mTimePopupWindow.setTabSelected(0);
+                mTimePopupWindow.resetData();
                 mTimePopupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
                 break;
 
@@ -93,25 +97,12 @@ public class TimerActivity extends BaseActivity {
         }
     }
 
-    private void addFakeData() {
-        mScanTimers.clear();
-        mScanTimers.add(new ScanTimer("01:30", "200", "2"));
-        mScanTimers.add(new ScanTimer("03:30", null, null));
-        mScanTimers.add(new ScanTimer("05:30", null, null));
-        mScanTimers.add(new ScanTimer("11:10", null, null));
-        mScanTimers.add(new ScanTimer("13:00", null, null));
-        mScanTimers.add(new ScanTimer("15:30", null, null));
-        mScanTimers.add(new ScanTimer("16:43", null, null));
-        mScanTimers.add(new ScanTimer("19:57", null, null));
-        mScanTimers.add(new ScanTimer("23:00", null, null));
-        mScanTimers.add(new ScanTimer("23:10", null, null));
-    }
-
     private void initRecyclerView(List<ScanTimer> scanTimers) {
         mTimerAdapter = new TimerAdapter(this, scanTimers);
         mTimerAdapter.setOnDeleteListener(position -> {
             mLogTrace.d("onDeleteClick, position = " + position);
-
+            mScanTimers.remove(position);
+            initRecyclerView(mScanTimers);
         });
         mRefreshAndLoadMoreAdapter = new JRefreshAndLoadMoreAdapter(this, mTimerAdapter);
         mRefreshAndLoadMoreAdapter.setIsOpenRefresh(false);

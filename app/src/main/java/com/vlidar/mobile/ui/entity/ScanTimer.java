@@ -3,37 +3,88 @@ package com.vlidar.mobile.ui.entity;
 import java.util.Objects;
 
 public class ScanTimer {
-    private String BeginTime;
-    private String interval;
-    private String times;
+    private int beginMonth;
+    private int beginDay;
+    private int beginHour;
+    private int beginMinute;
+    private int beginSecond;
+    private int intervalHour;
+    private int intervalMinute;
+    private int times;
 
-    public ScanTimer(String beginTime, String interval, String times) {
-        BeginTime = beginTime;
-        this.interval = interval;
+    public ScanTimer(int beginMonth, int beginDay, int beginHour, int beginMinute,
+                     int beginSecond, int intervalHour, int intervalMinute, int times) {
+        this.beginMonth = beginMonth;
+        this.beginDay = beginDay;
+        this.beginHour = beginHour;
+        this.beginMinute = beginMinute;
+        this.beginSecond = beginSecond;
+        this.intervalHour = intervalHour;
+        this.intervalMinute = intervalMinute;
         this.times = times;
     }
 
-    public String getBeginTime() {
-        return BeginTime;
+    public int getBeginMonth() {
+        return beginMonth;
     }
 
-    public void setBeginTime(String beginTime) {
-        BeginTime = beginTime;
+    public void setBeginMonth(int beginMonth) {
+        this.beginMonth = beginMonth;
     }
 
-    public String getInterval() {
-        return interval;
+    public int getBeginDay() {
+        return beginDay;
     }
 
-    public void setInterval(String interval) {
-        this.interval = interval;
+    public void setBeginDay(int beginDay) {
+        this.beginDay = beginDay;
     }
 
-    public String getTimes() {
+    public int getBeginHour() {
+        return beginHour;
+    }
+
+    public void setBeginHour(int beginHour) {
+        this.beginHour = beginHour;
+    }
+
+    public int getBeginMinute() {
+        return beginMinute;
+    }
+
+    public void setBeginMinute(int beginMinute) {
+        this.beginMinute = beginMinute;
+    }
+
+    public int getBeginSecond() {
+        return beginSecond;
+    }
+
+    public void setBeginSecond(int beginSecond) {
+        this.beginSecond = beginSecond;
+    }
+
+    public int getIntervalHour() {
+        return intervalHour;
+    }
+
+    public void setIntervalHour(int intervalHour) {
+        this.intervalHour = intervalHour;
+    }
+
+    public int getIntervalMinute() {
+        return intervalMinute;
+    }
+
+    public void setIntervalMinute(int intervalMinute) {
+        this.intervalMinute = intervalMinute;
+    }
+
+    public int getTimes() {
         return times;
     }
 
-    public void setTimes(String times) {
+    public void setTimes(int times) {
         this.times = times;
     }
 
@@ -42,22 +93,33 @@ public class ScanTimer {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ScanTimer scanTimer = (ScanTimer) o;
-        return BeginTime.equals(scanTimer.BeginTime) &&
-                interval.equals(scanTimer.interval) &&
-                times.equals(scanTimer.times);
+        return beginMonth == scanTimer.beginMonth &&
+                beginDay == scanTimer.beginDay &&
+                beginHour == scanTimer.beginHour &&
+                beginMinute == scanTimer.beginMinute &&
+                beginSecond == scanTimer.beginSecond &&
+                intervalHour == scanTimer.intervalHour &&
+                intervalMinute == scanTimer.intervalMinute &&
+                times == scanTimer.times;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(BeginTime, interval, times);
+        return Objects.hash(beginMonth, beginDay, beginHour, beginMinute, beginSecond,
+                intervalHour, intervalMinute, times);
     }
 
     @Override
     public String toString() {
         return "ScanTimer{" +
-                "BeginTime='" + BeginTime + '\'' +
-                ", interval='" + interval + '\'' +
-                ", times='" + times + '\'' +
+                "beginMonth=" + beginMonth +
+                ", beginDay=" + beginDay +
+                ", beginHour=" + beginHour +
+                ", beginMinute=" + beginMinute +
+                ", beginSecond=" + beginSecond +
+                ", intervalHour=" + intervalHour +
+                ", intervalMinute=" + intervalMinute +
+                ", times=" + times +
                 '}';
     }
 }

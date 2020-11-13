@@ -64,7 +64,7 @@
             app:tabIndicator="@drawable/white_focus_line"
             app:tabIndicatorColor="@color/colorWhite"
             app:tabIndicatorFullWidth="false"
-            app:tabMinWidth="96dp"
+            app:tabMinWidth="110dp"
             app:tabMode="fixed"
             app:tabPaddingBottom="10dp"
             app:tabPaddingEnd="16dp"

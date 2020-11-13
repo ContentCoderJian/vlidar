@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
@@ -75,7 +76,7 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
             if (msg.what == WheelConstants.WHEEL_SCROLL_HANDLER_WHAT) {
                 if (mOnWheelItemSelectedListener != null) {
                     mOnWheelItemSelectedListener.onItemSelected
-                            (getCurrentPosition(), getSelectionItem());
+                            (WheelView.this, getCurrentPosition(), getSelectionItem());
                 }
                 if (mJoinWheelView != null) {
                     if (!mJoinMap.isEmpty()) {
@@ -94,7 +95,8 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (mOnWheelItemClickListener != null) {
-                mOnWheelItemClickListener.onItemClick(getCurrentPosition(), getSelectionItem());
+                mOnWheelItemClickListener.onItemClick(WheelView.this, getCurrentPosition(),
+                        getSelectionItem());
             }
         }
     };
@@ -385,12 +387,12 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
     @Override
     public void setSelection(final int selection) {
         mSelection = selection;
-        setVisibility(View.INVISIBLE);
+//        setVisibility(View.INVISIBLE);
         WheelView.this.postDelayed(() -> {
             WheelView.super.setSelection(getRealPosition(selection));
             refreshCurrentPosition(false);
-            setVisibility(View.VISIBLE);
-        }, 500);
+//            setVisibility(View.VISIBLE);
+        }, 50);
     }
 
     /**
@@ -666,6 +668,9 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
                              float textAlpha, boolean textBold, boolean selected) {
         textView.setTextColor(textColor);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
+        textView.setTypeface(Typeface.createFromAsset(getContext().getAssets(), "fonts/PingFangSC" +
+                "-Regular" +
+                ".ttf"));
 //        textView.setBackgroundColor(selected ? Color.parseColor("#6006D4") : Color.TRANSPARENT);
         itemView.setAlpha(textAlpha);
         try {
@@ -681,6 +686,10 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
             Rect targetRect = new Rect(0, mItemH * (mWheelSize / 2), getWidth
                     (), mItemH * (mWheelSize / 2 + 1));
             mTextPaint.setTextSize(mExtraTextSize);
+            mTextPaint.setTypeface(Typeface.createFromAsset(getContext().getAssets(), "fonts" +
+                    "/PingFangSC" +
+                    "-Regular" +
+                    ".ttf"));
             mTextPaint.setColor(mExtraTextColor);
             Paint.FontMetricsInt fontMetrics = mTextPaint.getFontMetricsInt();
             int baseline = (targetRect.bottom + targetRect.top - fontMetrics
@@ -704,11 +713,11 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
     }
 
     public interface OnWheelItemSelectedListener<T> {
-        void onItemSelected(int position, T t);
+        void onItemSelected(View view, int position, T t);
     }
 
     public interface OnWheelItemClickListener<T> {
-        void onItemClick(int position, T t);
+        void onItemClick(View view, int position, T t);
     }
 
     public static class WheelViewStyle {

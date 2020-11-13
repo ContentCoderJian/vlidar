@@ -76,7 +76,8 @@ public class WheelViewDialog<T> implements View.OnClickListener {
         mStyle.selectedTextZoom = 1.2f;
         mWheelView.setStyle(mStyle);
 
-        mWheelView.setOnWheelItemSelectedListener((position, text) -> {
+        mWheelView.setOnWheelItemSelectedListener((view, position, text) -> {
+            view = mWheelView;
             mSelectedPos = position;
             mSelectedText = text;
         });

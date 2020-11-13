@@ -32,7 +32,7 @@
         android:layout_above="@id/ib_scan"
         android:layout_below="@id/ib_back"
         android:layout_marginTop="@dimen/timer_list_margin_top"
-        android:layout_marginBottom="@dimen/timer_list_margin_bottom" />
+        android:layout_marginBottom="@dimen/timer_bottom_button_margin" />
 
     <ImageButton
         android:id="@+id/ib_scan"

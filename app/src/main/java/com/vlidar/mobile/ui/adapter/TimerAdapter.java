@@ -54,7 +54,16 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                                  int position) {
         ScanTimer scanTimer = mData.get(position);
         TimerHolder viewHolder = (TimerHolder) holder;
-        viewHolder.tvTime.setText(scanTimer.getBeginTime());
+        StringBuilder timeBuilder = new StringBuilder();
+        if (scanTimer.getBeginHour() < 10) {
+            timeBuilder.append("0");
+        }
+        timeBuilder.append(scanTimer.getBeginHour()).append(":");
+        if (scanTimer.getBeginMinute() < 10) {
+            timeBuilder.append("0");
+        }
+        timeBuilder.append(scanTimer.getBeginMinute());
+        viewHolder.tvTime.setText(timeBuilder.toString());
         viewHolder.rlTimerBg.setOnClickListener(v -> {
             mLogTrace.d("onBindViewHolder, rlTimerBg-->onClick", "position=" + position);
             viewHolder.switchButton.toggle();
