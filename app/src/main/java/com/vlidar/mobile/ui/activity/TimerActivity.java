@@ -2,6 +2,7 @@ package com.vlidar.mobile.ui.activity;
 
 import android.os.Bundle;
 import android.os.Message;
+import android.view.Gravity;
 import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,7 +13,11 @@ import com.vlidar.mobile.R;
 import com.vlidar.mobile.ui.adapter.TimerAdapter;
 import com.vlidar.mobile.ui.entity.ScanTimer;
 import com.vlidar.mobile.ui.view.SimpleDividerDecoration;
+import com.vlidar.mobile.ui.view.TimePopupWindow;
+import com.vlidar.wheelview.adapter.ArrayWheelAdapter;
+import com.vlidar.wheelview.widget.WheelView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -34,6 +39,8 @@ public class TimerActivity extends BaseActivity {
     private JRefreshAndLoadMoreAdapter mRefreshAndLoadMoreAdapter;
     private TimerAdapter mTimerAdapter;
 
+    private TimePopupWindow mTimePopupWindow;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_timer);
@@ -41,6 +48,7 @@ public class TimerActivity extends BaseActivity {
         jRecycleView.addItemDecoration(new SimpleDividerDecoration(this,
                 mItemHeight, colorTransparent, false));
         addFakeData();
+        mTimePopupWindow = new TimePopupWindow(this);
     }
 
     @Override
@@ -72,7 +80,9 @@ public class TimerActivity extends BaseActivity {
                 break;
 
             case R.id.ib_add:
-
+                mTimePopupWindow.darkenBackground(0.6F);
+                mTimePopupWindow.setTabSelected(0);
+                mTimePopupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
                 break;
 
             case R.id.ib_scan:

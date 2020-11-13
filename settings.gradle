@@ -1,2 +1,2 @@
 rootProject.name = 'vlidar'
-include ':app', ':jrecyclerview'
+include ':app', ':jrecyclerview', ':wheelview'

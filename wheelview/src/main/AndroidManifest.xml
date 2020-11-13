@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.vlidar.wheelview">
+
+    <application android:allowBackup="false"></application>
+
+</manifest>

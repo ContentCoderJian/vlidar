@@ -26,7 +26,11 @@
     <!-- Timer -->
     <dimen name="timer_bottom_button_margin">60dp</dimen>
     <dimen name="timer_list_margin_top">16.7dp</dimen>
+    <dimen name="timer_list_margin_bottom">20dp</dimen>
     <dimen name="list_margin">8dp</dimen>
+    <dimen name="timer_button_margin_top">13.3dp</dimen>
+    <dimen name="tab_height">41.3dp</dimen>
+    <dimen name="wheel_margin_top">15dp</dimen>
 
     <!-- Text Size-->
     <dimen name="guide_company_text_size">12sp</dimen>
@@ -35,5 +39,8 @@
     <dimen name="common_button_text_size">12sp</dimen>
     <dimen name="bottom_button_text_size">12sp</dimen>
     <dimen name="timer_list_time_text_size">24sp</dimen>
+    <dimen name="time_selected_text_size">20sp</dimen>
+    <dimen name="time_outer_text_size">16sp</dimen>
+    <dimen name="time_extra_text_size">12sp</dimen>
 
 </resources>
