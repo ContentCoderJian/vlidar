@@ -62,12 +62,17 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (scanTimer.getBeginMinute() < 10) {
             timeBuilder.append("0");
         }
-        timeBuilder.append(scanTimer.getBeginMinute());
+        timeBuilder.append(scanTimer.getBeginMinute()).append(":");
+        if (scanTimer.getBeginSecond() < 10) {
+            timeBuilder.append("0");
+        }
+        timeBuilder.append(scanTimer.getBeginSecond());
         viewHolder.tvTime.setText(timeBuilder.toString());
         viewHolder.rlTimerBg.setOnClickListener(v -> {
             mLogTrace.d("onBindViewHolder, rlTimerBg-->onClick", "position=" + position);
             viewHolder.switchButton.toggle();
         });
+        viewHolder.switchButton.setCheckedImmediatelyNoEvent(true);
         viewHolder.switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -76,10 +81,10 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             }
         });
         viewHolder.ibSwipeDelete.setOnClickListener(v -> {
+            viewHolder.getSwipeItemLayout().close();
             if (onDeleteListener != null) {
                 onDeleteListener.onDeleteClick(position);
             }
-            viewHolder.getSwipeItemLayout().close();
         });
     }
 
