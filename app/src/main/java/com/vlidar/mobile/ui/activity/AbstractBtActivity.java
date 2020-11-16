@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Message;
 
 import com.vlidar.mobile.logic.BLESPPUtils;
+import com.vlidar.mobile.ui.activity.amap.AbstractMapActivity;
 
 public abstract class AbstractBtActivity extends AbstractMapActivity implements BLESPPUtils.OnBluetoothAction {
     protected BLESPPUtils mBleSppUtils;

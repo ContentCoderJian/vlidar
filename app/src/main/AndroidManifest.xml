@@ -37,6 +37,11 @@
             android:name="com.vlidar.mobile.ui.activity.TimerActivity"
             android:launchMode="singleTask" />
 
+        <activity
+            android:name="com.vlidar.mobile.ui.activity.amap.EnLargeMapActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/ScaleMapStyle" />
+
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="1bad11d98ce73f646ad81e734069df70" />

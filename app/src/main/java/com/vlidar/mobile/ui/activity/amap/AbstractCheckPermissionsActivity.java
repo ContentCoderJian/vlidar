@@ -1,4 +1,4 @@
-package com.vlidar.mobile.ui.activity;
+package com.vlidar.mobile.ui.activity.amap;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -10,6 +10,8 @@ import android.view.KeyEvent;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.vlidar.mobile.ui.activity.BaseActivity;
 
 import java.util.ArrayList;
 import java.util.List;

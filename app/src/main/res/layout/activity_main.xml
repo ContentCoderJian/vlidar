@@ -21,18 +21,6 @@
             android:layout_marginEnd="@dimen/main_margin_horizontal"
             android:background="@drawable/map" />
 
-        <TextView
-            android:id="@+id/tv_no_gps"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/map_height"
-            android:layout_marginStart="@dimen/main_margin_horizontal"
-            android:layout_marginTop="@dimen/map_margin_top"
-            android:layout_marginEnd="@dimen/main_margin_horizontal"
-            android:background="@drawable/map"
-            android:gravity="center"
-            android:text="@string/no_gps"
-            android:textSize="20sp" />
-
         <ImageView
             android:id="@+id/iv_logo"
             android:layout_width="wrap_content"
@@ -42,17 +30,17 @@
             android:layout_marginTop="@dimen/logo_margin_top"
             android:src="@drawable/logo_min" />
 
-<!--        <TextView
-            android:id="@+id/tv_self_checking_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/iv_logo"
-            android:layout_marginStart="@dimen/main_margin_horizontal"
-            android:layout_marginTop="@dimen/check_status_margin_top"
-            android:src="@drawable/logo_min"
-            android:text="自检完成"
-            android:textColor="@color/colorGrey"
-            android:textSize="@dimen/check_status_text_size" />-->
+        <!--        <TextView
+                    android:id="@+id/tv_self_checking_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/iv_logo"
+                    android:layout_marginStart="@dimen/main_margin_horizontal"
+                    android:layout_marginTop="@dimen/check_status_margin_top"
+                    android:src="@drawable/logo_min"
+                    android:text="自检完成"
+                    android:textColor="@color/colorGrey"
+                    android:textSize="@dimen/check_status_text_size" />-->
 
         <RelativeLayout
             android:id="@+id/rl_show_hide_map"
@@ -80,7 +68,8 @@
                 android:src="@drawable/logo_min"
                 android:text="0°0'0&quot;N"
                 android:textColor="@color/colorWhite"
-                android:textSize="@dimen/latitude_longitude_text_size" />
+                android:textSize="@dimen/latitude_longitude_text_size"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tv_longitude"
@@ -92,6 +81,22 @@
                 android:layout_toStartOf="@id/ib_up_down"
                 android:src="@drawable/logo_min"
                 android:text="0°0'0&quot;E"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/latitude_longitude_text_size"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_no_gps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4.5dp"
+                android:layout_marginEnd="@dimen/latitude_longitude_margin_end"
+                android:layout_marginBottom="-8dp"
+                android:layout_toStartOf="@id/ib_up_down"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:src="@drawable/logo_min"
+                android:text="@string/no_gps"
                 android:textColor="@color/colorWhite"
                 android:textSize="@dimen/latitude_longitude_text_size" />
         </RelativeLayout>

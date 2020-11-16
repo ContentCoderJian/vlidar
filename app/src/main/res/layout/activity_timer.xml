@@ -14,7 +14,12 @@
         android:id="@+id/ib_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="-15dp"
+        android:layout_marginTop="-15dp"
+        android:layout_marginEnd="-15dp"
+        android:layout_marginBottom="-15dp"
         android:background="@null"
+        android:padding="15dp"
         android:src="@drawable/timer_back_selector" />
 
     <ImageButton
@@ -22,7 +27,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:layout_marginStart="-15dp"
+        android:layout_marginTop="-15dp"
+        android:layout_marginEnd="-15dp"
+        android:layout_marginBottom="-15dp"
         android:background="@null"
+        android:padding="15dp"
         android:src="@drawable/timer_add_selector" />
 
     <com.vlidar.jrecyclerview.JRecycleView

@@ -16,4 +16,14 @@
     <style name="TabLayoutTextStyle">
         <item name="android:textSize">@dimen/bottom_button_text_size</item>
     </style>
+
+    <style name="ScaleMapStyle" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowAnimationStyle">@style/ScaleStyle</item>
+    </style>
+    <style name="ScaleStyle" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/scale_large</item>
+        <item name="android:activityOpenExitAnimation">@anim/scale_small</item>
+        <item name="android:activityCloseEnterAnimation">@anim/scale_large</item>
+        <item name="android:activityCloseExitAnimation">@anim/scale_small</item>
+    </style>
 </resources>

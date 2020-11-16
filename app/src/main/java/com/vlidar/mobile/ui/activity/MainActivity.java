@@ -5,6 +5,8 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.graphics.Typeface;
+import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
@@ -14,10 +16,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
 import com.vlidar.mobile.R;
 import com.vlidar.mobile.logic.ProtocolController;
 import com.vlidar.mobile.logic.ProtocolObserver;
 import com.vlidar.mobile.logic.Status;
+import com.vlidar.mobile.ui.activity.amap.EnLargeMapActivity;
 import com.vlidar.mobile.ui.view.CommonButton;
 import com.vlidar.mobile.utils.AppTools;
 import com.vlidar.mobile.utils.LatLngUtils;
@@ -30,7 +34,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 
 public class MainActivity extends AbstractBtActivity implements ProtocolObserver {
-    private static final int DURATION_ANIM = 400;
+    private static final int DURATION_ANIM = 350;
     @BindView(R.id.ib_up_down)
     ImageButton ibUpDown;
     @BindView(R.id.tv_latitude)
@@ -196,8 +200,9 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     }
 
     private void resetNoGps() {
-        textureMapView.setVisibility(View.INVISIBLE);
         tvNoGps.setVisibility(View.VISIBLE);
+        tvLongitude.setVisibility(View.GONE);
+        tvLatitude.setVisibility(View.GONE);
         tvLatitude.setText("0°0'0\"N");
         tvLongitude.setText("0°0'0\"E");
         // TODO 调试UI，先默认打开
@@ -275,7 +280,6 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             public void onAnimationEnd(Animator animation) {
                 mLogTrace.d("mHideMapObjectAnimator, onAnimationEnd");
                 textureMapView.setVisibility(View.INVISIBLE);
-                tvNoGps.setVisibility(View.INVISIBLE);
                 ibUpDown.setImageResource(R.drawable.down);
             }
 
@@ -299,18 +303,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             @Override
             public void onAnimationStart(Animator animation) {
                 mLogTrace.d("mShowMapObjectAnimator, onAnimationStart");
-                if (mBleSppUtils.isSppConnected() && mProtocolController.getLatitude() != 0 && mProtocolController.getLongitude() != 0) {
-                    textureMapView.setVisibility(View.VISIBLE);
-                    tvNoGps.setVisibility(View.INVISIBLE);
-//                    setLatLng(mProtocolController.getLatitude(), mProtocolController
-//                    .getLongitude());
-//                    tvLatitude.setText(LatLngUtils.DDtoDMS(mProtocolController.getLatitude()) +
-//                    "N");
-//                    tvLongitude.setText(LatLngUtils.DDtoDMS(mProtocolController.getLatitude())
-//                    + "E");
-                } else {
-                    resetNoGps();
-                }
+                textureMapView.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -344,6 +337,13 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         mProtocolController.removeObservers(this);
     }
 
+    @Override
+    protected void zoomMap() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(EnLargeMapActivity.ACTION_LATLNG, mLatLng);
+        AppTools.startForwardActivity(this, EnLargeMapActivity.class, bundle, false);
+    }
+
     @SuppressLint("SetTextI18n")
     private void updateViews() {
         // TODO 测试，先用景枫中心经纬度
@@ -352,17 +352,17 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 //        tvLongitude.setText(LatLngUtils.DDtoDMS(118.820083) + "E");
 //        setMarkerRotateAngle(-60F);
         if (mBleSppUtils.isSppConnected() && mProtocolController.getLatitude() != 0 && mProtocolController.getLongitude() != 0) {
-            textureMapView.setVisibility(View.VISIBLE);
-            tvNoGps.setVisibility(View.INVISIBLE);
+            tvNoGps.setVisibility(View.GONE);
             setLatLng(mProtocolController.getLatitude(), mProtocolController.getLongitude());
             tvLatitude.setText(LatLngUtils.DDtoDMS(mProtocolController.getLatitude()) + "N");
             tvLongitude.setText(LatLngUtils.DDtoDMS(mProtocolController.getLatitude()) + "E");
+            tvLatitude.setVisibility(View.VISIBLE);
+            tvLongitude.setVisibility(View.VISIBLE);
         } else {
             resetNoGps();
         }
-        boolean mapOrTextVisible =
-                textureMapView.getVisibility() == View.VISIBLE || tvNoGps.getVisibility() == View.VISIBLE;
-        ibUpDown.setImageResource(mapOrTextVisible ? R.drawable.up : R.drawable.down);
+        ibUpDown.setImageResource(textureMapView.getVisibility() == View.VISIBLE ? R.drawable.up
+                : R.drawable.down);
 
         updateBtStatus();
         updatePower(mProtocolController.getPowerState());
@@ -375,7 +375,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         mLogTrace.d("onClick", "view: " + view);
         switch (view.getId()) {
             case R.id.rl_show_hide_map:
-                if (textureMapView.getVisibility() == View.VISIBLE || tvNoGps.getVisibility() == View.VISIBLE) {
+                if (textureMapView.getVisibility() == View.VISIBLE) {
                     mLogTrace.d("onClick, hide map.");
                     mHideMapObjectAnimator.start();
                 } else {
@@ -488,11 +488,12 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     public void updateGPSLocation(double latitude, double longitude) {
         mLogTrace.d("updateGPSLocation", "latitude:" + latitude + ", longitude: " + longitude);
         runOnUiThread(() -> {
-            textureMapView.setVisibility(View.VISIBLE);
             tvNoGps.setVisibility(View.INVISIBLE);
             setLatLng(latitude, longitude);
             tvLatitude.setText(LatLngUtils.DDtoDMS(latitude) + "N");
             tvLongitude.setText(LatLngUtils.DDtoDMS(longitude) + "E");
+            tvLatitude.setVisibility(View.VISIBLE);
+            tvLongitude.setVisibility(View.VISIBLE);
             rlScanOnce.setEnabled(true);
         });
     }
@@ -501,4 +502,5 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     public void updateMCUUpdateStatus(int status) {
 
     }
+
 }
