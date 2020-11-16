@@ -1,10 +1,12 @@
 package com.vlidar.mobile.ui.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.Gravity;
 import android.view.View;
 
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.vlidar.jrecyclerview.JRecycleView;
@@ -18,8 +20,9 @@ import com.vlidar.wheelview.adapter.ArrayWheelAdapter;
 import com.vlidar.wheelview.widget.WheelView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import butterknife.BindColor;
 import butterknife.BindDimen;
@@ -35,7 +38,7 @@ public class TimerActivity extends BaseActivity {
     @BindColor(android.R.color.transparent)
     int colorTransparent;
 
-    private List<ScanTimer> mScanTimers = new CopyOnWriteArrayList<>();
+    private List<ScanTimer> mScanTimers = new ArrayList<>();
     private JRefreshAndLoadMoreAdapter mRefreshAndLoadMoreAdapter;
     private TimerAdapter mTimerAdapter;
 
@@ -50,7 +53,9 @@ public class TimerActivity extends BaseActivity {
         mTimePopupWindow = new TimePopupWindow(this);
         mTimePopupWindow.setOnAddTimeDoneListener(scanTimer -> {
             mLogTrace.d("onAddTimeDone", "scanTimer:" + scanTimer);
+            mScanTimers.remove(scanTimer);
             mScanTimers.add(scanTimer);
+            sortScanTimes();
             initRecyclerView(mScanTimers);
         });
     }
@@ -102,6 +107,7 @@ public class TimerActivity extends BaseActivity {
         mTimerAdapter.setOnDeleteListener(position -> {
             mLogTrace.d("onDeleteClick, position = " + position);
             mScanTimers.remove(position);
+            sortScanTimes();
             initRecyclerView(mScanTimers);
         });
         mRefreshAndLoadMoreAdapter = new JRefreshAndLoadMoreAdapter(this, mTimerAdapter);
@@ -109,6 +115,29 @@ public class TimerActivity extends BaseActivity {
         mRefreshAndLoadMoreAdapter.setIsOpenLoadMore(false);
         jRecycleView.setLayoutManager(new LinearLayoutManager(this));
         jRecycleView.setAdapter(mRefreshAndLoadMoreAdapter);
+    }
+
+    private void sortScanTimes() {
+        Collections.sort(mScanTimers, (o1, o2) -> {
+            if (o1.getBeginMonth() != o2.getBeginMonth()) {
+                return o1.getBeginMonth() - o2.getBeginMonth();
+            } else if (o1.getBeginDay() != o2.getBeginDay()) {
+                return o1.getBeginDay() - o2.getBeginDay();
+            } else if (o1.getBeginHour() != o2.getBeginHour()) {
+                return o1.getBeginHour() - o2.getBeginHour();
+            } else if (o1.getBeginMinute() != o2.getBeginMinute()) {
+                return o1.getBeginMinute() - o2.getBeginMinute();
+            } else if (o1.getBeginSecond() != o2.getBeginSecond()) {
+                return o1.getBeginSecond() - o2.getBeginSecond();
+            } else if (o1.getTimes() != o2.getTimes()) {
+                return o1.getTimes() - o2.getTimes();
+            } else if (o1.getIntervalHour() != o2.getIntervalHour()) {
+                return o1.getIntervalHour() - o2.getIntervalHour();
+            } else if (o1.getIntervalMinute() != o2.getIntervalMinute()) {
+                return o1.getIntervalMinute() - o2.getIntervalMinute();
+            }
+            return 0;
+        });
     }
 
     @Override

@@ -68,6 +68,27 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
         timeBuilder.append(scanTimer.getBeginSecond());
         viewHolder.tvTime.setText(timeBuilder.toString());
+
+        if (scanTimer.getTimes() > 0) {
+            StringBuilder intervalBuilder = new StringBuilder("间隔");
+            if (scanTimer.getIntervalHour() < 10) {
+                intervalBuilder.append("0");
+            }
+            intervalBuilder.append(scanTimer.getIntervalHour()).append(":");
+            if (scanTimer.getIntervalMinute() < 10) {
+                intervalBuilder.append("0");
+            }
+            intervalBuilder.append(scanTimer.getIntervalMinute());
+            viewHolder.tvInterval.setText(intervalBuilder.toString());
+            viewHolder.tvInterval.setVisibility(View.VISIBLE);
+            viewHolder.tvTimes.setText(scanTimer.getTimes() + "次");
+            viewHolder.tvTimes.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.tvTimes.setText(null);
+            viewHolder.tvTimes.setVisibility(View.GONE);
+            viewHolder.tvInterval.setText(null);
+            viewHolder.tvInterval.setVisibility(View.GONE);
+        }
         viewHolder.rlTimerBg.setOnClickListener(v -> {
             mLogTrace.d("onBindViewHolder, rlTimerBg-->onClick", "position=" + position);
             viewHolder.switchButton.toggle();
@@ -99,6 +120,8 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     class TimerHolder extends JSwipeViewHolder {
         private RelativeLayout rlTimerBg;
         private TextView tvTime;
+        private TextView tvInterval;
+        private TextView tvTimes;
         private SwitchButton switchButton;
         private ImageButton ibSwipeDelete;
 
@@ -121,6 +144,14 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             rlTimerBg = frameLayout.findViewById(R.id.rl_timer_background);
             tvTime = frameLayout.findViewById(R.id.tv_time);
             tvTime.setTypeface(Typeface.createFromAsset(mActivity.getAssets(), "fonts" +
+                    "/PingFangSC" +
+                    "-Medium.ttf"));
+            tvInterval = frameLayout.findViewById(R.id.tv_interval);
+            tvInterval.setTypeface(Typeface.createFromAsset(mActivity.getAssets(), "fonts" +
+                    "/PingFangSC" +
+                    "-Medium.ttf"));
+            tvTimes = frameLayout.findViewById(R.id.tv_times);
+            tvTimes.setTypeface(Typeface.createFromAsset(mActivity.getAssets(), "fonts" +
                     "/PingFangSC" +
                     "-Medium.ttf"));
             switchButton = frameLayout.findViewById(R.id.switch_button);

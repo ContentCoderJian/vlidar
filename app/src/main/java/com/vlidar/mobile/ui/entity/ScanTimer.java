@@ -14,8 +14,8 @@ public class ScanTimer {
 
     public ScanTimer(int beginMonth, int beginDay, int beginHour, int beginMinute,
                      int beginSecond, int intervalHour, int intervalMinute, int times) {
-        this.beginMonth = beginMonth;
-        this.beginDay = beginDay;
+        this.beginMonth = 0;
+        this.beginDay = 0;
         this.beginHour = beginHour;
         this.beginMinute = beginMinute;
         this.beginSecond = beginSecond;
@@ -97,16 +97,12 @@ public class ScanTimer {
                 beginDay == scanTimer.beginDay &&
                 beginHour == scanTimer.beginHour &&
                 beginMinute == scanTimer.beginMinute &&
-                beginSecond == scanTimer.beginSecond &&
-                intervalHour == scanTimer.intervalHour &&
-                intervalMinute == scanTimer.intervalMinute &&
-                times == scanTimer.times;
+                beginSecond == scanTimer.beginSecond;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(beginMonth, beginDay, beginHour, beginMinute, beginSecond,
-                intervalHour, intervalMinute, times);
+        return Objects.hash(beginMonth, beginDay, beginHour, beginMinute, beginSecond);
     }
 
     @Override
