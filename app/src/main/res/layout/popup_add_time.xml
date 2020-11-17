@@ -64,11 +64,11 @@
             app:tabIndicator="@drawable/white_focus_line"
             app:tabIndicatorColor="@color/colorWhite"
             app:tabIndicatorFullWidth="false"
-            app:tabMinWidth="110dp"
+            app:tabMinWidth="114dp"
             app:tabMode="fixed"
             app:tabPaddingBottom="10dp"
-            app:tabPaddingEnd="16dp"
-            app:tabPaddingStart="16dp"
+            app:tabPaddingEnd="10dp"
+            app:tabPaddingStart="10dp"
             app:tabPaddingTop="@dimen/common_button_padding"
             app:tabRippleColor="@android:color/transparent"
             app:tabSelectedTextColor="@color/colorWhite"
@@ -76,11 +76,35 @@
             app:tabTextColor="@color/colorWhite" />
 
         <LinearLayout
+            android:id="@+id/ll_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/tab_layout"
             android:layout_marginTop="@dimen/wheel_margin_top"
             android:orientation="horizontal">
+
+            <com.vlidar.wheelview.widget.WheelView
+                android:id="@+id/month_wheel_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <com.vlidar.wheelview.widget.WheelView
+                android:id="@+id/day_wheel_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tab_layout"
+            android:layout_marginTop="@dimen/wheel_margin_top"
+            android:orientation="horizontal"
+            android:visibility="invisible">
 
             <com.vlidar.wheelview.widget.WheelView
                 android:id="@+id/hour_wheel_view"
@@ -96,6 +120,46 @@
 
             <com.vlidar.wheelview.widget.WheelView
                 android:id="@+id/second_wheel_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_times"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tab_layout"
+            android:layout_marginTop="@dimen/wheel_margin_top"
+            android:orientation="horizontal"
+            android:visibility="invisible">
+
+            <com.vlidar.wheelview.widget.WheelView
+                android:id="@+id/times_wheel_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_interval"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tab_layout"
+            android:layout_marginTop="@dimen/wheel_margin_top"
+            android:orientation="horizontal"
+            android:visibility="invisible">
+
+            <com.vlidar.wheelview.widget.WheelView
+                android:id="@+id/interval_hour_wheel_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <com.vlidar.wheelview.widget.WheelView
+                android:id="@+id/interval_minute_wheel_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />

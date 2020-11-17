@@ -22,7 +22,9 @@ public class EnLargeMapActivity extends AbstractMapActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        setLatLng(mLatLng.latitude, mLatLng.longitude);
+        if (mLatLng != null) {
+            setLatLng(mLatLng.latitude, mLatLng.longitude);
+        }
     }
 
     @Override

@@ -14,8 +14,8 @@ public class ScanTimer {
 
     public ScanTimer(int beginMonth, int beginDay, int beginHour, int beginMinute,
                      int beginSecond, int intervalHour, int intervalMinute, int times) {
-        this.beginMonth = 0;
-        this.beginDay = 0;
+        this.beginMonth = beginMonth;
+        this.beginDay = beginDay;
         this.beginHour = beginHour;
         this.beginMinute = beginMinute;
         this.beginSecond = beginSecond;

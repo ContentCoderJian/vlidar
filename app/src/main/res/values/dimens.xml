@@ -38,7 +38,7 @@
     <dimen name="latitude_longitude_text_size">11sp</dimen>
     <dimen name="common_button_text_size">12sp</dimen>
     <dimen name="bottom_button_text_size">12sp</dimen>
-    <dimen name="timer_list_time_text_size">24sp</dimen>
+    <dimen name="timer_list_time_text_size">14sp</dimen>
     <dimen name="timer_list_interval_text_size">12sp</dimen>
     <dimen name="time_selected_text_size">20sp</dimen>
     <dimen name="time_outer_text_size">16sp</dimen>

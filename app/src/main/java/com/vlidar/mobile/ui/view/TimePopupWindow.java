@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -28,15 +29,28 @@ import java.util.Calendar;
 
 public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelItemSelectedListener<String> {
     private static final LogTrace mLogTrace = new LogTrace("UI", "TimePopupWindow");
-    private static final String[] tabs = new String[]{"开始", "循环/间隔"};
+    private static final String[] tabs = new String[]{"开始日期", "开始时间", "循环次数", "间隔时间"};
 
     private View mView; // PopupWindow 菜单布局
     private Activity mContext; // 上下文参数
 
     private TabLayout mTabLayout;
+
+    private LinearLayout llDate;
+    private WheelView<String> mMonthWheelView;
+    private WheelView<String> mDayWheelView;
+
+    private LinearLayout llTime;
     private WheelView<String> mHourWheelView;
     private WheelView<String> mMinuteWheelView;
     private WheelView<String> mSecondWheelView;
+
+    private LinearLayout llTimes;
+    private WheelView<String> mTimesWheelView;
+
+    private LinearLayout llInterval;
+    private WheelView<String> mIntervalHourWheelView;
+    private WheelView<String> mIntervalMinuteWheelView;
 
     private int mCurrentTab = 0;
 
@@ -51,6 +65,14 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
 
     private int mLoopTimes;
     private OnAddTimeDoneListener mOnAddTimeDoneListener;
+
+    private int mCurrentMonth;
+    private int mCurrentDay;
+    private int mCurrentHour;
+    private int mCurrentMinute;
+    private int mCurrentSecond;
+    private int mBeginMonthAfter5Days;
+    private int mBeginDayAfter5Days;
 
     public TimePopupWindow(Activity context) {
         super(context);
@@ -115,7 +137,8 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
         mTabLayout = mView.findViewById(R.id.tab_layout);
         mTabLayout.addTab(mTabLayout.newTab().setCustomView(R.layout.tab_item), 0, true);
         mTabLayout.addTab(mTabLayout.newTab().setCustomView(R.layout.tab_item), 1, false);
-//        mTabLayout.addTab(mTabLayout.newTab().setCustomView(R.layout.tab_item), 2, false);
+        mTabLayout.addTab(mTabLayout.newTab().setCustomView(R.layout.tab_item), 2, false);
+        mTabLayout.addTab(mTabLayout.newTab().setCustomView(R.layout.tab_item), 3, false);
         for (int i = 0; i < mTabLayout.getTabCount(); i++) {
             ((TextView) mTabLayout.getTabAt(i).getCustomView().findViewById(R.id.tv_tab)).setText(tabs[i]);
             ((TextView) mTabLayout.getTabAt(i).getCustomView().findViewById(R.id.tv_tab)).setTypeface(Typeface.createFromAsset(mContext.getAssets(), "fonts/PingFangSC" +
@@ -127,29 +150,11 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mLogTrace.d("onTabSelected", "tab=" + tab.getPosition());
-                if (mCurrentTab == 0 && tab.getPosition() > 0) {
-                    mHourWheelView.setWheelData(createLoopTimes());
-                    mHourWheelView.setSelection(mLoopTimes);
-                    mHourWheelView.setExtraText("次", Color.WHITE,
-                            (int) mContext.getResources().getDimension(R.dimen.time_extra_text_size), 0);
-                    mMinuteWheelView.setSelection(mIntervalHour);
-                    mMinuteWheelView.setExtraText("时", Color.WHITE,
-                            (int) mContext.getResources().getDimension(R.dimen.time_extra_text_size), 0);
-                    mSecondWheelView.setSelection(mIntervalMinute);
-                    mSecondWheelView.setExtraText("分", Color.WHITE,
-                            (int) mContext.getResources().getDimension(R.dimen.time_extra_text_size), 0);
-                } else if (mCurrentTab >= 1 && tab.getPosition() == 0) {
-                    mHourWheelView.setWheelData(createHours());
-                    mHourWheelView.setSelection(mBeginHour);
-                    mHourWheelView.setExtraText("时", Color.WHITE,
-                            (int) mContext.getResources().getDimension(R.dimen.time_extra_text_size), 0);
-                    mMinuteWheelView.setSelection(mBeginMinute);
-                    mMinuteWheelView.setExtraText("分", Color.WHITE,
-                            (int) mContext.getResources().getDimension(R.dimen.time_extra_text_size), 0);
-                    mSecondWheelView.setSelection(mBeginSecond);
-                    mSecondWheelView.setExtraText("秒", Color.WHITE,
-                            (int) mContext.getResources().getDimension(R.dimen.time_extra_text_size), 0);
+                if (mCurrentTab == tab.getPosition()) {
+                    mLogTrace.d("onTabSelected", "The same tab, do nothing.");
+                    return;
                 }
+                updateWheelState(tab.getPosition());
                 mCurrentTab = tab.getPosition();
             }
 
@@ -161,15 +166,78 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+
+        llDate = mView.findViewById(R.id.ll_date);
+        llTime = mView.findViewById(R.id.ll_time);
+        llTimes = mView.findViewById(R.id.ll_times);
+        llInterval = mView.findViewById(R.id.ll_interval);
+
+        mMonthWheelView = mView.findViewById(R.id.month_wheel_view);
+        mDayWheelView = mView.findViewById(R.id.day_wheel_view);
         mHourWheelView = mView.findViewById(R.id.hour_wheel_view);
         mMinuteWheelView = mView.findViewById(R.id.minute_wheel_view);
         mSecondWheelView = mView.findViewById(R.id.second_wheel_view);
+        mTimesWheelView = mView.findViewById(R.id.times_wheel_view);
+        mIntervalHourWheelView = mView.findViewById(R.id.interval_hour_wheel_view);
+        mIntervalMinuteWheelView = mView.findViewById(R.id.interval_minute_wheel_view);
 
-        initWheelView(mHourWheelView, createHours(), "时");
-        initWheelView(mMinuteWheelView, createMinutesSeconds(), "分");
-        initWheelView(mSecondWheelView, createMinutesSeconds(), "秒");
+        initWheelView(mMonthWheelView, createMonths(), "月", false);
+        initWheelView(mDayWheelView, createDays(), "日", false);
+        initWheelView(mHourWheelView, createValidHours(), "时", false);
+        initWheelView(mMinuteWheelView, createMinutes(), "分", false);
+        initWheelView(mSecondWheelView, createSeconds(), "秒", false);
+        initWheelView(mTimesWheelView, createLoopTimes(), "次", true);
+        initWheelView(mIntervalHourWheelView, createHours(), "小时", true);
+        initWheelView(mIntervalMinuteWheelView, createMinutesSeconds(0), "分钟", true);
 
         setOnDismissListener(() -> darkenBackground(1F));
+    }
+
+    private void updateWheelState(int tabPosition) {
+        switch (tabPosition) {
+            case 0:
+                llTime.setVisibility(View.INVISIBLE);
+                llTimes.setVisibility(View.INVISIBLE);
+                llInterval.setVisibility(View.INVISIBLE);
+                llDate.setVisibility(View.VISIBLE);
+                updateWheel(mMonthWheelView, createMonths(), 0, "月", false);
+                updateWheel(mDayWheelView, createDays(), 0, "日", false);
+                break;
+            case 1:
+                llDate.setVisibility(View.INVISIBLE);
+                llTimes.setVisibility(View.INVISIBLE);
+                llInterval.setVisibility(View.INVISIBLE);
+                llTime.setVisibility(View.VISIBLE);
+                setLimitBeginHour();
+                setLimitBeginMinute();
+//                updateWheel(mHourWheelView, createValidHours(), 0, "时", false);
+//                updateWheel(mMinuteWheelView, createMinutes(), 0, "分", false);
+                updateWheel(mSecondWheelView, createSeconds(), 0, "秒", false);
+                break;
+            case 2:
+                llTime.setVisibility(View.INVISIBLE);
+                llDate.setVisibility(View.INVISIBLE);
+                llInterval.setVisibility(View.INVISIBLE);
+                llTimes.setVisibility(View.VISIBLE);
+                break;
+            case 3:
+                llTime.setVisibility(View.INVISIBLE);
+                llDate.setVisibility(View.INVISIBLE);
+                llTimes.setVisibility(View.INVISIBLE);
+                llInterval.setVisibility(View.VISIBLE);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void updateWheel(WheelView<String> wheelView, ArrayList<String> data, int selectedIndex,
+                             String sign, boolean isLoop) {
+        wheelView.setLoop(isLoop);
+        wheelView.setWheelData(data);
+//        wheelView.setSelection(selectedIndex);
+        wheelView.setExtraText(sign, Color.WHITE,
+                (int) mContext.getResources().getDimension(R.dimen.time_extra_text_size), 0);
     }
 
     public void resetData() {
@@ -181,20 +249,17 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
         setTime();
     }
 
-    private void initWheelView(WheelView<String> wheelView, ArrayList<String> data, String extra) {
+    private void initWheelView(WheelView<String> wheelView, ArrayList<String> data, String extra,
+                               boolean isLoop) {
         wheelView.setWheelAdapter(new ArrayWheelAdapter<>(mContext));
         wheelView.setSkin(WheelView.Skin.None);
-        wheelView.setLoop(true);
-        //        mWheelView.setWheelClickable(true);
 
         WheelView.WheelViewStyle style = new WheelView.WheelViewStyle();
         style.textSize = 16;
         style.selectedTextSize = 20;
         wheelView.setStyle(style);
 
-        wheelView.setWheelData(data);
-        wheelView.setExtraText(extra, Color.WHITE,
-                (int) mContext.getResources().getDimension(R.dimen.time_extra_text_size), 0);
+        updateWheel(wheelView, data, 0, extra, isLoop);
         wheelView.setOnWheelItemSelectedListener(this);
     }
 
@@ -221,6 +286,42 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
         mContext.getWindow().setAttributes(lp);
     }
 
+    private ArrayList<String> createMonths() {
+        ArrayList<String> list = new ArrayList<>();
+        for (int i = mCurrentMonth; i <= mBeginMonthAfter5Days; i++) {
+            if (i < 10) {
+                list.add("0" + i);
+            } else {
+                list.add("" + i);
+            }
+        }
+        return list;
+    }
+
+    private ArrayList<String> createDays() {
+        ArrayList<String> list = new ArrayList<>();
+        for (int i = mCurrentDay; i <= mBeginDayAfter5Days; i++) {
+            if (i < 10) {
+                list.add("0" + i);
+            } else {
+                list.add("" + i);
+            }
+        }
+        return list;
+    }
+
+    private ArrayList<String> createValidHours() {
+        ArrayList<String> list = new ArrayList<>();
+        for (int i = mCurrentHour; i < 24; i++) {
+            if (i < 10) {
+                list.add("0" + i);
+            } else {
+                list.add("" + i);
+            }
+        }
+        return list;
+    }
+
     private ArrayList<String> createHours() {
         ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < 24; i++) {
@@ -233,7 +334,19 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
         return list;
     }
 
-    private ArrayList<String> createMinutesSeconds() {
+    private ArrayList<String> createMinutes() {
+        ArrayList<String> list = new ArrayList<>();
+        for (int i = mCurrentMinute; i < 60; i++) {
+            if (i < 10) {
+                list.add("0" + i);
+            } else {
+                list.add("" + i);
+            }
+        }
+        return list;
+    }
+
+    private ArrayList<String> createSeconds() {
         ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < 60; i++) {
             if (i < 10) {
@@ -245,9 +358,21 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
         return list;
     }
 
+    private ArrayList<String> createMinutesSeconds(int limit) {
+        ArrayList<String> list = new ArrayList<>();
+        for (int i = limit; i < 60; i++) {
+            if (i < 10) {
+                list.add("0" + i);
+            } else {
+                list.add("" + i);
+            }
+        }
+        return list;
+    }
+
     private ArrayList<String> createLoopTimes() {
         ArrayList<String> list = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i <= 50; i++) {
             if (i < 10) {
                 list.add("0" + i);
             } else {
@@ -260,51 +385,121 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
     private void setTime() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        mBeginMonth = calendar.get(Calendar.MONTH) + 1;
-        mBeginDay = calendar.get(Calendar.DAY_OF_MONTH);
-        mBeginHour = calendar.get(Calendar.HOUR_OF_DAY);
-        mBeginMinute = calendar.get(Calendar.MINUTE);
-        mBeginSecond = calendar.get(Calendar.SECOND);
-        mLogTrace.d("setTime",
-                "hour:" + mBeginHour + ", minute:" + mBeginMinute + ", seconds:" + mBeginSecond);
 
-        mHourWheelView.setSelection(mBeginHour);
-        mMinuteWheelView.setSelection(mBeginMinute);
-        mSecondWheelView.setSelection(mBeginSecond);
+        // 从10分钟以后开始算
+        calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 10);
+
+        mCurrentMonth = mBeginMonth = calendar.get(Calendar.MONTH) + 1;
+        mCurrentDay = mBeginDay = calendar.get(Calendar.DAY_OF_MONTH);
+        mCurrentHour = mBeginHour = calendar.get(Calendar.HOUR_OF_DAY);
+        mCurrentMinute = mBeginMinute = calendar.get(Calendar.MINUTE);
+        mCurrentSecond = mBeginSecond = calendar.get(Calendar.SECOND);
+        mLogTrace.d("setTime", "month: " + mBeginMonth + ", day: " + mBeginDay +
+                ", hour:" + mBeginHour + ", minute:" + mBeginMinute + ", seconds:" + mBeginSecond);
+
+        // 设置日期不能超过5天
+        calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) + 5);
+        mBeginMonthAfter5Days = calendar.get(Calendar.MONTH) + 1;
+        mBeginDayAfter5Days = calendar.get(Calendar.DAY_OF_MONTH);
+        mLogTrace.d("setTime", "mBeginMonthAfter5Days:" + mBeginMonthAfter5Days + ", " +
+                "mBeginDayAfter5Days:" + mBeginDayAfter5Days);
+
+        updateWheelState(mCurrentTab);
     }
 
     @Override
     public void onItemSelected(View view, int position, String str) {
         switch (view.getId()) {
+            case R.id.month_wheel_view:
+                mLogTrace.d("onItemSelected, begin month-->",
+                        "position=" + position + ", str=" + str);
+                mBeginMonth = Integer.parseInt(str);
+                break;
+
+            case R.id.day_wheel_view:
+                mLogTrace.d("onItemSelected, begin day-->",
+                        "position=" + position + ", str=" + str);
+                mBeginDay = Integer.parseInt(str);
+//                setLimitBeginHour();
+//                setLimitBeginMinute();
+                break;
+
             case R.id.hour_wheel_view:
-                mLogTrace.d("onItemSelected, hour-->", "position=" + position + ", str=" + str);
-                if (mCurrentTab == 0) {
-                    mBeginHour = position;
-                } else {
-                    mLoopTimes = position;
-                }
+                mLogTrace.d("onItemSelected, begin hour-->",
+                        "position=" + position + ", str=" + str);
+                mBeginHour = Integer.parseInt(str);
+                setLimitBeginMinute();
                 break;
 
             case R.id.minute_wheel_view:
-                mLogTrace.d("onItemSelected, minute-->", "position=" + position + ", str=" + str);
-                if (mCurrentTab == 0) {
-                    mBeginMinute = position;
-                } else {
-                    mIntervalHour = position;
-                }
+                mLogTrace.d("onItemSelected, begin minute-->",
+                        "position=" + position + ", str=" + str);
+                mBeginMinute = Integer.parseInt(str);
                 break;
 
             case R.id.second_wheel_view:
-                mLogTrace.d("onItemSelected, second-->", "position=" + position + ", str=" + str);
-                if (mCurrentTab == 0) {
-                    mBeginSecond = position;
-                } else {
-                    mIntervalMinute = position;
-                }
+                mLogTrace.d("onItemSelected, begin second-->",
+                        "position=" + position + ", str=" + str);
+                mBeginSecond = Integer.parseInt(str);
+                break;
+
+            case R.id.times_wheel_view:
+                mLogTrace.d("onItemSelected, loop times-->",
+                        "position=" + position + ", str=" + str);
+                mLoopTimes = Integer.parseInt(str);
+                setLimitIntervalMinute();
+                break;
+            case R.id.interval_hour_wheel_view:
+                mLogTrace.d("onItemSelected, interval hour-->",
+                        "position=" + position + ", str=" + str);
+                mIntervalHour = Integer.parseInt(str);
+                setLimitIntervalMinute();
+                break;
+
+            case R.id.interval_minute_wheel_view:
+                mLogTrace.d("onItemSelected, interval minute-->",
+                        "position=" + position + ", str=" + str);
+                mIntervalMinute = Integer.parseInt(str);
                 break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 如果设了循环次数，间隔不能小于20分钟
+     */
+    private void setLimitIntervalMinute() {
+        if (mLoopTimes > 0 && mIntervalHour <= 0) {
+            updateWheel(mIntervalMinuteWheelView, createMinutesSeconds(20), 0, "分钟", true);
+        } else {
+            updateWheel(mIntervalMinuteWheelView, createMinutesSeconds(0), 0, "分钟", true);
+        }
+        mIntervalMinuteWheelView.setSelection(0);
+    }
+
+    /**
+     * 选择当日时，选择的小时不能小于当前时间，选择后续时间，可以选择24小时
+     */
+    private void setLimitBeginHour() {
+        if (mBeginDay <= mCurrentDay) {
+            updateWheel(mHourWheelView, createValidHours(), 0, "时", false);
+        } else {
+            updateWheel(mHourWheelView, createHours(), 0, "时", false);
+        }
+        mHourWheelView.setSelection(0);
+    }
+
+    /**
+     * 选择当日时，选择的分钟不能小于当前时间，选择后续时间，可以选择任意时间
+     */
+    private void setLimitBeginMinute() {
+        if (mBeginDay <= mCurrentDay && mBeginHour <= mCurrentHour) {
+            updateWheel(mMinuteWheelView, createMinutes(), 0, "分", false);
+        } else {
+            updateWheel(mMinuteWheelView, createMinutesSeconds(0), 0, "分", false);
+        }
+        mMinuteWheelView.setSelection(0);
     }
 
     public void setOnAddTimeDoneListener(OnAddTimeDoneListener onAddTimeDoneListener) {

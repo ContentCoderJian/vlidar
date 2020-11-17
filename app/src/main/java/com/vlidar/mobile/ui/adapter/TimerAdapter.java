@@ -54,6 +54,16 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                                  int position) {
         ScanTimer scanTimer = mData.get(position);
         TimerHolder viewHolder = (TimerHolder) holder;
+        StringBuilder dateBuilder = new StringBuilder();
+        if (scanTimer.getBeginMonth() < 10) {
+            dateBuilder.append("0");
+        }
+        dateBuilder.append(scanTimer.getBeginMonth()).append("月");
+        if (scanTimer.getBeginDay() < 10) {
+            dateBuilder.append("0");
+        }
+        dateBuilder.append(scanTimer.getBeginDay()).append("日");
+        viewHolder.tvDate.setText(dateBuilder.toString());
         StringBuilder timeBuilder = new StringBuilder();
         if (scanTimer.getBeginHour() < 10) {
             timeBuilder.append("0");
@@ -119,6 +129,7 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     class TimerHolder extends JSwipeViewHolder {
         private RelativeLayout rlTimerBg;
+        private TextView tvDate;
         private TextView tvTime;
         private TextView tvInterval;
         private TextView tvTimes;
@@ -142,6 +153,10 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @Override
         public void initItem(FrameLayout frameLayout) {
             rlTimerBg = frameLayout.findViewById(R.id.rl_timer_background);
+            tvDate = frameLayout.findViewById(R.id.tv_date);
+            tvDate.setTypeface(Typeface.createFromAsset(mActivity.getAssets(), "fonts" +
+                    "/PingFangSC" +
+                    "-Medium.ttf"));
             tvTime = frameLayout.findViewById(R.id.tv_time);
             tvTime.setTypeface(Typeface.createFromAsset(mActivity.getAssets(), "fonts" +
                     "/PingFangSC" +
