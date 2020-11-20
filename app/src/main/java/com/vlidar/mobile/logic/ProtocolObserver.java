@@ -12,5 +12,7 @@ public interface ProtocolObserver {
 
     void updateGPSLocation(double latitude, double longitude);
 
-    void updateMCUUpdateStatus(int status);
+    void updateMCUUpdateStatus(int status, String info);
+
+    void updateAppUpdateStatus(int status, String info);
 }

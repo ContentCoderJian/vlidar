@@ -9,4 +9,6 @@ public interface Cmd {
     int TIME_SCAN = 0x05;     // app
     int GPS_LOCATION = 0x06;  // soc
     int MCU_UPDATE = 0x07;           // soc
+    int APP_UPDATE = 0x08;           // soc
+    int TIME_UPDATE = 0x09;           // app
 }

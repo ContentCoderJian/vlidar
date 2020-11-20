@@ -46,17 +46,10 @@
             android:id="@+id/rl_show_hide_map"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/map">
-
-            <ImageButton
-                android:id="@+id/ib_up_down"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="@dimen/logo_margin_top"
-                android:layout_marginEnd="@dimen/main_margin_horizontal"
-                android:background="@android:color/transparent"
-                android:src="@drawable/down" />
+            android:layout_below="@id/map"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/main_margin_horizontal"
+            android:paddingBottom="8dp">
 
             <TextView
                 android:id="@+id/tv_latitude"
@@ -64,7 +57,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/latitude_margin_top"
                 android:layout_marginEnd="@dimen/latitude_longitude_margin_end"
-                android:layout_toStartOf="@id/ib_up_down"
                 android:src="@drawable/logo_min"
                 android:text="0°0'0&quot;N"
                 android:textColor="@color/colorWhite"
@@ -78,7 +70,6 @@
                 android:layout_below="@id/tv_latitude"
                 android:layout_marginTop="@dimen/longitude_margin_top"
                 android:layout_marginEnd="@dimen/latitude_longitude_margin_end"
-                android:layout_toStartOf="@id/ib_up_down"
                 android:src="@drawable/logo_min"
                 android:text="0°0'0&quot;E"
                 android:textColor="@color/colorWhite"
@@ -92,13 +83,21 @@
                 android:layout_marginTop="4.5dp"
                 android:layout_marginEnd="@dimen/latitude_longitude_margin_end"
                 android:layout_marginBottom="-8dp"
-                android:layout_toStartOf="@id/ib_up_down"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:src="@drawable/logo_min"
                 android:text="@string/no_gps"
                 android:textColor="@color/colorWhite"
                 android:textSize="@dimen/latitude_longitude_text_size" />
+
+            <ImageButton
+                android:id="@+id/ib_up_down"
+                android:layout_width="wrap_content"
+                android:layout_toEndOf="@id/tv_no_gps"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/logo_margin_top"
+                android:background="@android:color/transparent"
+                android:src="@drawable/down" />
         </RelativeLayout>
 
         <RelativeLayout

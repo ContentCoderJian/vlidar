@@ -18,6 +18,8 @@ import com.kyleduo.switchbutton.SwitchButton;
 import com.vlidar.jrecyclerview.config.JRecycleConfig;
 import com.vlidar.jrecyclerview.swipe.JSwipeViewHolder;
 import com.vlidar.mobile.R;
+import com.vlidar.mobile.logic.BLESPPUtils;
+import com.vlidar.mobile.logic.ProtocolController;
 import com.vlidar.mobile.ui.entity.ScanTimer;
 import com.vlidar.mobile.utils.LogTrace;
 
@@ -31,6 +33,7 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final Activity mActivity;
 
     private OnDeleteListener onDeleteListener;
+    private OnCheckedListener onCheckedListener;
 
     public TimerAdapter(Activity activity, List<ScanTimer> data) {
         mData = data;
@@ -40,6 +43,10 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public void setOnDeleteListener(OnDeleteListener onDeleteListener) {
         this.onDeleteListener = onDeleteListener;
+    }
+
+    public void setOnCheckedListener(OnCheckedListener onCheckedListener) {
+        this.onCheckedListener = onCheckedListener;
     }
 
     @NonNull
@@ -103,12 +110,14 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             mLogTrace.d("onBindViewHolder, rlTimerBg-->onClick", "position=" + position);
             viewHolder.switchButton.toggle();
         });
-        viewHolder.switchButton.setCheckedImmediatelyNoEvent(true);
-        viewHolder.switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mLogTrace.d("onBindViewHolder, switchButton-->onCheckedChanged",
-                        "position=" + position + ", isChecked=" + isChecked);
+        viewHolder.switchButton.setCheckedImmediatelyNoEvent(scanTimer.isChecked());
+        viewHolder.switchButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            mLogTrace.d("onBindViewHolder, switchButton-->onCheckedChanged",
+                    "position=" + position + ", isChecked=" + isChecked);
+            scanTimer.setChecked(isChecked);
+            scanTimer.save();
+            if (onCheckedListener != null) {
+                onCheckedListener.onChecked(isChecked);
             }
         });
         viewHolder.ibSwipeDelete.setOnClickListener(v -> {
@@ -176,5 +185,9 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public interface OnDeleteListener {
         void onDeleteClick(int position);
+    }
+
+    public interface OnCheckedListener {
+        void onChecked(boolean checked);
     }
 }

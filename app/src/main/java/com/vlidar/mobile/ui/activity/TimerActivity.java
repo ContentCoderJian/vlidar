@@ -1,27 +1,30 @@
 package com.vlidar.mobile.ui.activity;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.Gravity;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
+import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.vlidar.jrecyclerview.JRecycleView;
 import com.vlidar.jrecyclerview.adapter.JRefreshAndLoadMoreAdapter;
 import com.vlidar.mobile.R;
+import com.vlidar.mobile.logic.BLESPPUtils;
+import com.vlidar.mobile.logic.ProtocolController;
+import com.vlidar.mobile.logic.ProtocolObserver;
 import com.vlidar.mobile.ui.adapter.TimerAdapter;
 import com.vlidar.mobile.ui.entity.ScanTimer;
 import com.vlidar.mobile.ui.view.SimpleDividerDecoration;
 import com.vlidar.mobile.ui.view.TimePopupWindow;
-import com.vlidar.wheelview.adapter.ArrayWheelAdapter;
-import com.vlidar.wheelview.widget.WheelView;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindColor;
@@ -29,33 +32,46 @@ import butterknife.BindDimen;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class TimerActivity extends BaseActivity {
+public class TimerActivity extends BaseActivity implements ProtocolObserver {
     @BindView(R.id.recycle_view)
     JRecycleView jRecycleView;
+
+    @BindView(R.id.ib_scan)
+    ImageView ibScan;
 
     @BindDimen(R.dimen.list_margin)
     int mItemHeight;
     @BindColor(android.R.color.transparent)
     int colorTransparent;
 
+    private ProtocolController mProtocolController;
+    private BLESPPUtils mBleSppUtils;
+
     private List<ScanTimer> mScanTimers = new ArrayList<>();
     private JRefreshAndLoadMoreAdapter mRefreshAndLoadMoreAdapter;
     private TimerAdapter mTimerAdapter;
 
     private TimePopupWindow mTimePopupWindow;
+    private RotateAnimation mRotateAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_timer);
         super.onCreate(savedInstanceState);
+        mProtocolController = ProtocolController.getInstance();
+        mProtocolController.addObservers(this);
+        mBleSppUtils = BLESPPUtils.getInstance(this);
         jRecycleView.addItemDecoration(new SimpleDividerDecoration(this,
                 mItemHeight, colorTransparent, false));
         mTimePopupWindow = new TimePopupWindow(this);
         mTimePopupWindow.setOnAddTimeDoneListener(scanTimer -> {
             mLogTrace.d("onAddTimeDone", "scanTimer:" + scanTimer);
-            mScanTimers.remove(scanTimer);
-            mScanTimers.add(scanTimer);
-            sortScanTimes();
+            if (mScanTimers.contains(scanTimer)) {
+                mScanTimers.get(mScanTimers.indexOf(scanTimer)).delete();
+            }
+            scanTimer.save();
+            mScanTimers = mProtocolController.getScanTimes();
+            mBleSppUtils.send(mProtocolController.sendScanTimer());
             initRecyclerView(mScanTimers);
         });
     }
@@ -68,6 +84,8 @@ public class TimerActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        mScanTimers = mProtocolController.getScanTimes();
+        startOrStopRotate();
         initRecyclerView(mScanTimers);
     }
 
@@ -95,7 +113,13 @@ public class TimerActivity extends BaseActivity {
                 break;
 
             case R.id.ib_scan:
-
+                for (ScanTimer scanTimer : mScanTimers) {
+                    scanTimer.setChecked(true);
+                    scanTimer.save();
+                }
+                mScanTimers = mProtocolController.getScanTimes();
+                initRecyclerView(mScanTimers);
+                mBleSppUtils.send(mProtocolController.sendScanTimer());
                 break;
             default:
                 break;
@@ -104,11 +128,19 @@ public class TimerActivity extends BaseActivity {
 
     private void initRecyclerView(List<ScanTimer> scanTimers) {
         mTimerAdapter = new TimerAdapter(this, scanTimers);
+        startOrStopRotate();
         mTimerAdapter.setOnDeleteListener(position -> {
             mLogTrace.d("onDeleteClick, position = " + position);
+            mScanTimers.get(position).delete();
             mScanTimers.remove(position);
-            sortScanTimes();
+            mScanTimers = mProtocolController.getScanTimes();
+            mBleSppUtils.send(mProtocolController.sendScanTimer());
             initRecyclerView(mScanTimers);
+        });
+        mTimerAdapter.setOnCheckedListener(checked -> {
+            mScanTimers = mProtocolController.getScanTimes();
+            startOrStopRotate();
+            mBleSppUtils.send(ProtocolController.getInstance().sendScanTimer());
         });
         mRefreshAndLoadMoreAdapter = new JRefreshAndLoadMoreAdapter(this, mTimerAdapter);
         mRefreshAndLoadMoreAdapter.setIsOpenRefresh(false);
@@ -117,30 +149,73 @@ public class TimerActivity extends BaseActivity {
         jRecycleView.setAdapter(mRefreshAndLoadMoreAdapter);
     }
 
-    private void sortScanTimes() {
-        Collections.sort(mScanTimers, (o1, o2) -> {
-            if (o1.getBeginMonth() != o2.getBeginMonth()) {
-                return o1.getBeginMonth() - o2.getBeginMonth();
-            } else if (o1.getBeginDay() != o2.getBeginDay()) {
-                return o1.getBeginDay() - o2.getBeginDay();
-            } else if (o1.getBeginHour() != o2.getBeginHour()) {
-                return o1.getBeginHour() - o2.getBeginHour();
-            } else if (o1.getBeginMinute() != o2.getBeginMinute()) {
-                return o1.getBeginMinute() - o2.getBeginMinute();
-            } else if (o1.getBeginSecond() != o2.getBeginSecond()) {
-                return o1.getBeginSecond() - o2.getBeginSecond();
-            } else if (o1.getTimes() != o2.getTimes()) {
-                return o1.getTimes() - o2.getTimes();
-            } else if (o1.getIntervalHour() != o2.getIntervalHour()) {
-                return o1.getIntervalHour() - o2.getIntervalHour();
-            } else if (o1.getIntervalMinute() != o2.getIntervalMinute()) {
-                return o1.getIntervalMinute() - o2.getIntervalMinute();
+    private void startOrStopRotate() {
+        for (ScanTimer scanTimer : mScanTimers) {
+            if (scanTimer.isChecked()) {
+                startRotateAnimation(ibScan);
+                return;
             }
-            return 0;
-        });
+        }
+        stopRotateAnimation(ibScan);
+    }
+
+    private void startRotateAnimation(ImageView imageView) {
+        if (mRotateAnimation == null) {
+            mRotateAnimation = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF, 0.5f);
+            mRotateAnimation.setDuration(1000);
+            mRotateAnimation.setInterpolator(new LinearInterpolator());
+//            mRotateAnimation.setFillAfter(true);
+//            mRotateAnimation.setFillBefore(true);
+            mRotateAnimation.setRepeatCount(AlphaAnimation.INFINITE);
+        }
+        imageView.startAnimation(mRotateAnimation);
+    }
+
+    private void stopRotateAnimation(ImageView imageView) {
+        //清除动画
+        imageView.clearAnimation();
+        if (mRotateAnimation != null) {
+            mRotateAnimation.cancel();
+            mRotateAnimation = null;
+        }
     }
 
     @Override
     protected void handleMessages(Message msg) {
+    }
+
+    @Override
+    public void updatePowerStatus(int state) {
+
+    }
+
+    @Override
+    public void updateRadarStatus(int state) {
+
+    }
+
+    @Override
+    public void updateIMU(double eularYaw, double eularPitch, double eularRoll) {
+
+    }
+
+    @Override
+    public void updateGPSLocation(double latitude, double longitude) {
+
+    }
+
+    @Override
+    public void updateMCUUpdateStatus(int status, String info) {
+        if (status == 0 || status == 1 || status == 2) {
+            runOnUiThread(() -> Toast.makeText(TimerActivity.this, info, Toast.LENGTH_SHORT).show());
+        }
+    }
+
+    @Override
+    public void updateAppUpdateStatus(int status, String info) {
+        if (status == 1 || status == 2) {
+            runOnUiThread(() -> Toast.makeText(TimerActivity.this, info, Toast.LENGTH_SHORT).show());
+        }
     }
 }

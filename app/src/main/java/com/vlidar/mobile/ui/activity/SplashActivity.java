@@ -12,7 +12,7 @@ import com.vlidar.mobile.utils.StatusBarUtils;
 
 import butterknife.BindView;
 
-public class GuideActivity extends BaseActivity {
+public class SplashActivity extends BaseActivity {
     private static final int MSG_GOTO_MAIN = 1;
     private static final int DELAY_GOTO = 1500;
     @BindView(R.id.tv_guide_company)

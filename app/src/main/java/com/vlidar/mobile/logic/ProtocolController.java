@@ -1,12 +1,19 @@
 package com.vlidar.mobile.logic;
 
 import android.os.Build;
+import android.os.Handler;
 
+import com.vlidar.mobile.ui.entity.ScanTimer;
 import com.vlidar.mobile.utils.LogTrace;
 
+import org.litepal.LitePal;
+
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -21,6 +28,7 @@ public class ProtocolController {
     private LogTrace mLogTrace = new LogTrace("Protocol", "ProtocolController");
     private static ProtocolController mProtocolController;
     private List<ProtocolObserver> observers = new CopyOnWriteArrayList<>();
+    private List<ScanTimer> scanTimers = new ArrayList<>();
 
     private BlockingQueue queue;
     private ExecutorService singleThreadPool;
@@ -28,6 +36,7 @@ public class ProtocolController {
     private int powerState;
     private int radarState;
     private int mcuState;
+    private int appUpdateState;
     private double eularYaw; // 偏航角
     private double eularPitch;  // 俯仰角
     private double eularRoll;   // 滚转角
@@ -59,6 +68,10 @@ public class ProtocolController {
         singleThreadPool = Executors.newSingleThreadExecutor();
         queue = new ArrayBlockingQueue<Integer>(8);
         singleThreadPool.execute(handleDataRunnable);
+
+        LitePal.getDatabase();
+        getScanTimes();
+        mLogTrace.d("init", "scanTimers: " + scanTimers);
     }
 
     public synchronized static ProtocolController getInstance() {
@@ -144,7 +157,17 @@ public class ProtocolController {
                 if (data[4] != mcuState) {
                     mcuState = data[4];
                     for (ProtocolObserver protocolObserver : observers) {
-                        protocolObserver.updatePowerStatus(mcuState);
+                        protocolObserver.updateMCUUpdateStatus(mcuState,
+                                getMCUpdateStatus(mcuState));
+                    }
+                }
+                break;
+            case Cmd.APP_UPDATE:
+                if (data[4] != appUpdateState) {
+                    appUpdateState = data[4];
+                    for (ProtocolObserver protocolObserver : observers) {
+                        protocolObserver.updateAppUpdateStatus(appUpdateState,
+                                getAppUpdateStatus(appUpdateState));
                     }
                 }
                 break;
@@ -165,8 +188,116 @@ public class ProtocolController {
         return observers.remove(protocolObserver);
     }
 
+    public List<ScanTimer> getScanTimes() {
+        scanTimers = LitePal.findAll(ScanTimer.class);
+        mLogTrace.d("getScanTimes", "scanTimers: " + scanTimers);
+        sortScanTimes();
+        return scanTimers;
+    }
+
+    private void sortScanTimes() {
+        Collections.sort(scanTimers, (o1, o2) -> {
+            if (o1.getBeginMonth() != o2.getBeginMonth()) {
+                return o1.getBeginMonth() - o2.getBeginMonth();
+            } else if (o1.getBeginDay() != o2.getBeginDay()) {
+                return o1.getBeginDay() - o2.getBeginDay();
+            } else if (o1.getBeginHour() != o2.getBeginHour()) {
+                return o1.getBeginHour() - o2.getBeginHour();
+            } else if (o1.getBeginMinute() != o2.getBeginMinute()) {
+                return o1.getBeginMinute() - o2.getBeginMinute();
+            } else if (o1.getBeginSecond() != o2.getBeginSecond()) {
+                return o1.getBeginSecond() - o2.getBeginSecond();
+            } else if (o1.getTimes() != o2.getTimes()) {
+                return o1.getTimes() - o2.getTimes();
+            } else if (o1.getIntervalHour() != o2.getIntervalHour()) {
+                return o1.getIntervalHour() - o2.getIntervalHour();
+            } else if (o1.getIntervalMinute() != o2.getIntervalMinute()) {
+                return o1.getIntervalMinute() - o2.getIntervalMinute();
+            }
+            return 0;
+        });
+    }
+
     public byte[] sendOnceScan() {
         return new byte[]{0x0D, 0x0A, 0x02, 0x04, 0x03, 0x0D, 0x0A};
+    }
+
+    public byte[] sendScanTimer() {
+        int realSize = 0;
+        for (ScanTimer scanTimer : scanTimers) {
+            if (scanTimer.isChecked()) {
+                ++realSize;
+            }
+        }
+        byte[] payload = new byte[realSize * 8 + 7];
+        payload[0] = 0x0D;
+        payload[1] = 0x0A;
+        payload[2] = (byte) ((realSize * 8 + 2) & 0xFF);
+        payload[3] = Cmd.TIME_SCAN;
+        payload[4] = (byte) (realSize & 0xFF);
+        payload[payload.length - 2] = 0x0D;
+        payload[payload.length - 1] = 0x0A;
+        int index = 5;
+        for (ScanTimer scanTimer : scanTimers) {
+            if (!scanTimer.isChecked()) {
+                continue;
+            }
+            payload[index++] = (byte) scanTimer.getBeginMonth();
+            payload[index++] = (byte) scanTimer.getBeginDay();
+            payload[index++] = (byte) scanTimer.getBeginHour();
+            payload[index++] = (byte) scanTimer.getBeginMinute();
+            payload[index++] = (byte) scanTimer.getBeginSecond();
+            payload[index++] = (byte) scanTimer.getIntervalHour();
+            payload[index++] = (byte) scanTimer.getIntervalMinute();
+            payload[index++] = (byte) scanTimer.getTimes();
+        }
+        mLogTrace.d("sendScanTimer", "payload: " + Arrays.toString(payload));
+        return payload;
+    }
+
+    public byte[] sendCurrentTime() {
+        byte[] payload = new byte[12];
+        payload[0] = 0x0D;
+        payload[1] = 0x0A;
+        payload[2] = 7;
+        payload[3] = Cmd.TIME_UPDATE;
+        payload[payload.length - 2] = 0x0D;
+        payload[payload.length - 1] = 0x0A;
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        payload[4] = (byte) (calendar.get(Calendar.YEAR) - 2000);
+        payload[5] = (byte) (calendar.get(Calendar.MONTH) + 1);
+        payload[6] = (byte) (calendar.get(Calendar.DAY_OF_MONTH));
+        payload[7] = (byte) (calendar.get(Calendar.HOUR_OF_DAY));
+        payload[8] = (byte) (calendar.get(Calendar.MINUTE));
+        payload[9] = (byte) (calendar.get(Calendar.SECOND));
+        mLogTrace.d("sendCurrentTime", "payload: " + Arrays.toString(payload));
+        return payload;
+    }
+
+    private String getMCUpdateStatus(int status) {
+        switch (status) {
+            case 0:
+                return "MCU升级成功。";
+            case 1:
+                return "MCU升级失败。";
+            case 2:
+                return "MCU升级中，请勿断电！";
+            default:
+                return "";
+        }
+    }
+
+    private String getAppUpdateStatus(int status) {
+        switch (status) {
+            case 1:
+                return "APP升级成功。";
+            case 2:
+                return "APP升级失败。";
+            default:
+                return "";
+        }
     }
 
     public int getPowerState() {

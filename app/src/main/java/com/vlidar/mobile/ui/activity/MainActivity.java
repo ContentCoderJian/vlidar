@@ -5,8 +5,6 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.graphics.Typeface;
-import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
@@ -16,7 +14,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amap.api.location.AMapLocation;
 import com.vlidar.mobile.R;
 import com.vlidar.mobile.logic.ProtocolController;
 import com.vlidar.mobile.logic.ProtocolObserver;
@@ -72,6 +69,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     private ObjectAnimator mHideMapObjectAnimator;
 
     private ProtocolController mProtocolController;
+
+    private int mSendTimeCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,12 +200,13 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 
     private void resetNoGps() {
         tvNoGps.setVisibility(View.VISIBLE);
-        tvLongitude.setVisibility(View.GONE);
-        tvLatitude.setVisibility(View.GONE);
+        tvLongitude.setVisibility(View.INVISIBLE);
+        tvLatitude.setVisibility(View.INVISIBLE);
         tvLatitude.setText("0°0'0\"N");
         tvLongitude.setText("0°0'0\"E");
-        // TODO 调试UI，先默认打开
+
 //        cbTimerScan.setEnabled(false);  // 无GPS信息获取到，不可定时扫描
+        cbTimerScan.setValueText("关");
     }
 
     private void updatePower(int status) {
@@ -339,9 +339,11 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 
     @Override
     protected void zoomMap() {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(EnLargeMapActivity.ACTION_LATLNG, mLatLng);
-        AppTools.startForwardActivity(this, EnLargeMapActivity.class, bundle, false);
+        if (mBleSppUtils.isSppConnected() && mProtocolController.getLatitude() != 0 && mProtocolController.getLongitude() != 0) {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(EnLargeMapActivity.ACTION_LATLNG, mLatLng);
+            AppTools.startForwardActivity(this, EnLargeMapActivity.class, bundle, false);
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -352,12 +354,14 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 //        tvLongitude.setText(LatLngUtils.DDtoDMS(118.820083) + "E");
 //        setMarkerRotateAngle(-60F);
         if (mBleSppUtils.isSppConnected() && mProtocolController.getLatitude() != 0 && mProtocolController.getLongitude() != 0) {
-            tvNoGps.setVisibility(View.GONE);
+            tvNoGps.setVisibility(View.INVISIBLE);
             setLatLng(mProtocolController.getLatitude(), mProtocolController.getLongitude());
             tvLatitude.setText(LatLngUtils.DDtoDMS(mProtocolController.getLatitude()) + "N");
             tvLongitude.setText(LatLngUtils.DDtoDMS(mProtocolController.getLatitude()) + "E");
             tvLatitude.setVisibility(View.VISIBLE);
             tvLongitude.setVisibility(View.VISIBLE);
+            cbTimerScan.setEnabled(true);
+            cbTimerScan.setValueText("开");
         } else {
             resetNoGps();
         }
@@ -430,6 +434,18 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     public void onConnectSuccess(BluetoothDevice device) {
         mLogTrace.d("onConnectSuccess", "device=" + device);
         runOnUiThread(this::updateBtStatus);
+        mSendTimeCount = 0;
+        new Thread(() -> {
+            while (mSendTimeCount <= 2) {
+                mBleSppUtils.send(mProtocolController.sendCurrentTime());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                mSendTimeCount++;
+            }
+        }).start();
     }
 
     @Override
@@ -495,12 +511,23 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             tvLatitude.setVisibility(View.VISIBLE);
             tvLongitude.setVisibility(View.VISIBLE);
             rlScanOnce.setEnabled(true);
+            cbTimerScan.setEnabled(true);
+            cbTimerScan.setValueText("开");
         });
     }
 
     @Override
-    public void updateMCUUpdateStatus(int status) {
+    public void updateMCUUpdateStatus(int status, String info) {
+        if (status == 0 || status == 1 || status == 2) {
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, info, Toast.LENGTH_SHORT).show());
+        }
+    }
 
+    @Override
+    public void updateAppUpdateStatus(int status, String info) {
+        if (status == 1 || status == 2) {
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, info, Toast.LENGTH_SHORT).show());
+        }
     }
 
 }

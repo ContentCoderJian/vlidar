@@ -1,8 +1,10 @@
 package com.vlidar.mobile.ui.entity;
 
+import org.litepal.crud.LitePalSupport;
+
 import java.util.Objects;
 
-public class ScanTimer {
+public class ScanTimer extends LitePalSupport {
     private int beginMonth;
     private int beginDay;
     private int beginHour;
@@ -11,6 +13,7 @@ public class ScanTimer {
     private int intervalHour;
     private int intervalMinute;
     private int times;
+    private boolean checked = true;
 
     public ScanTimer(int beginMonth, int beginDay, int beginHour, int beginMinute,
                      int beginSecond, int intervalHour, int intervalMinute, int times) {
@@ -88,6 +91,14 @@ public class ScanTimer {
         this.times = times;
     }
 
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -116,6 +127,7 @@ public class ScanTimer {
                 ", intervalHour=" + intervalHour +
                 ", intervalMinute=" + intervalMinute +
                 ", times=" + times +
+                ", checked=" + checked +
                 '}';
     }
 }
