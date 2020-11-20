@@ -39,6 +39,10 @@
             android:launchMode="singleTask" />
 
         <activity
+            android:name="com.vlidar.mobile.ui.activity.IMUActivity"
+            android:launchMode="singleTask" />
+
+        <activity
             android:name="com.vlidar.mobile.ui.activity.amap.EnLargeMapActivity"
             android:launchMode="singleTask"
             android:theme="@style/ScaleMapStyle" />

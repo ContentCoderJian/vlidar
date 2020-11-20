@@ -32,6 +32,10 @@
     <dimen name="tab_height">41.3dp</dimen>
     <dimen name="wheel_margin_top">15dp</dimen>
 
+    <!-- IMU -->
+    <dimen name="imu_margin_start">44dp</dimen>
+    <dimen name="imu_margin_top">52dp</dimen>
+
     <!-- Text Size-->
     <dimen name="guide_company_text_size">12sp</dimen>
     <dimen name="check_status_text_size">11sp</dimen>
@@ -43,5 +47,6 @@
     <dimen name="time_selected_text_size">20sp</dimen>
     <dimen name="time_outer_text_size">16sp</dimen>
     <dimen name="time_extra_text_size">12sp</dimen>
+    <dimen name="imu_text_size">24sp</dimen>
 
 </resources>

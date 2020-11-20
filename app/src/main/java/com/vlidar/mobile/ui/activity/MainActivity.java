@@ -147,7 +147,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 
         cbTimerScan.setTitleRes(R.string.time_scan);
         // TODO 暂时开
-        cbTimerScan.setEnabled(true);
+        cbTimerScan.setEnabled(false);
         cbTimerScan.setPicSrcRes(R.drawable.timer_scan_selector);
         cbTimerScan.setValueText("关");
     }
@@ -159,6 +159,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbBt.setSelected(true);
             cbBt.setValueText("在线");
             cbBt.startTwinkleAnim();
+            cbRadar.setEnabled(true);
+            cbRadar.setValueText("开");
         } else if (mBleSppUtils.isBluetoothEnable()) {
             cbBt.stopTwinkleAnim();
             cbBt.setActivated(false);
@@ -168,6 +170,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
+            cbRadar.setEnabled(false);
+            cbRadar.setValueText("关");
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
@@ -180,6 +184,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
+            cbRadar.setEnabled(false);
+            cbRadar.setValueText("关");
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
@@ -192,6 +198,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
+            cbRadar.setEnabled(false);
+            cbRadar.setValueText("关");
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
@@ -205,7 +213,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         tvLatitude.setText("0°0'0\"N");
         tvLongitude.setText("0°0'0\"E");
 
-//        cbTimerScan.setEnabled(false);  // 无GPS信息获取到，不可定时扫描
+        cbTimerScan.setEnabled(false);  // 无GPS信息获取到，不可定时扫描
         cbTimerScan.setValueText("关");
     }
 
@@ -393,6 +401,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 
             case R.id.cb_radar:
                 cbRadar.subViewCallOnClick();
+                AppTools.startForwardActivity(this, IMUActivity.class);
                 break;
 
             case R.id.cb_bt:
@@ -413,7 +422,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 
             case R.id.rl_scan_once:
 //                tvTimeScan.callOnClick();
-                mBleSppUtils.send(mProtocolController.sendOnceScan());
+                mBleSppUtils.send(mProtocolController.sendOnceScan((byte) 0x03));
                 break;
             default:
                 break;

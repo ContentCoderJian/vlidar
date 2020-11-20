@@ -218,8 +218,10 @@ public class ProtocolController {
         });
     }
 
-    public byte[] sendOnceScan() {
-        return new byte[]{0x0D, 0x0A, 0x02, 0x04, 0x03, 0x0D, 0x0A};
+    public byte[] sendOnceScan(byte scanMode) {
+        byte[] payload = new byte[]{0x0D, 0x0A, 0x02, 0x04, scanMode, 0x0D, 0x0A};
+        mLogTrace.d("sendOnceScan", "payload: " + Arrays.toString(payload));
+        return payload;
     }
 
     public byte[] sendScanTimer() {

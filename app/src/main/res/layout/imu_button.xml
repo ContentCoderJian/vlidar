@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_imu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/imu30" />
+
+    <ImageButton
+        android:id="@+id/ib_scan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/timer_bottom_selector"
+        android:clickable="false" />
+
+    <TextView
+        android:id="@+id/tv_imu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="30°"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/imu_text_size"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/iv_scan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/scan_white" />
+
+</RelativeLayout>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:paddingStart="@dimen/main_margin_horizontal"
+    android:paddingTop="@dimen/map_margin_top"
+    android:paddingEnd="@dimen/main_margin_horizontal"
+    android:paddingBottom="@dimen/timer_bottom_button_margin"
+    tools:context=".ui.activity.IMUActivity">
+
+    <ImageButton
+        android:id="@+id/ib_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-15dp"
+        android:layout_marginTop="-15dp"
+        android:layout_marginEnd="-15dp"
+        android:layout_marginBottom="-15dp"
+        android:background="@null"
+        android:padding="15dp"
+        android:src="@drawable/timer_back_selector" />
+
+    <GridLayout
+        android:id="@+id/gridlayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:columnCount="2"
+        android:orientation="horizontal"
+        android:rowCount="3">
+
+        <include
+            android:id="@+id/imu_30"
+            layout="@layout/imu_button" />
+
+        <include
+            android:id="@+id/imu_60"
+            layout="@layout/imu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/imu_margin_start" />
+
+        <include
+            android:id="@+id/imu_90"
+            layout="@layout/imu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/imu_margin_top" />
+
+        <include
+            android:id="@+id/imu_120"
+            layout="@layout/imu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/imu_margin_start"
+            android:layout_marginTop="@dimen/imu_margin_top" />
+
+        <include
+            android:id="@+id/imu_180"
+            layout="@layout/imu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/imu_margin_top" />
+
+    </GridLayout>
+
+</RelativeLayout>
