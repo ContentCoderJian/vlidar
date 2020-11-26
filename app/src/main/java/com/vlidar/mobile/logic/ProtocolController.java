@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -130,10 +131,10 @@ public class ProtocolController {
                 break;
             case Cmd.RADAR:
 //                if (data[4] != radarState) {
-                    radarState = data[4];
-                    for (ProtocolObserver protocolObserver : observers) {
-                        protocolObserver.updateRadarStatus(radarState);
-                    }
+                radarState = data[4];
+                for (ProtocolObserver protocolObserver : observers) {
+                    protocolObserver.updateRadarStatus(radarState);
+                }
 //                }
                 break;
             case Cmd.IMU:
@@ -176,20 +177,20 @@ public class ProtocolController {
                 break;
             case Cmd.MCU_UPDATE:
 //                if (data[4] != mcuState) {
-                    mcuState = data[4];
-                    for (ProtocolObserver protocolObserver : observers) {
-                        protocolObserver.updateMCUUpdateStatus(mcuState,
-                                getMCUpdateStatus(mcuState));
-                    }
+                mcuState = data[4];
+                for (ProtocolObserver protocolObserver : observers) {
+                    protocolObserver.updateMCUUpdateStatus(mcuState,
+                            getMCUpdateStatus(mcuState));
+                }
 //                }
                 break;
             case Cmd.APP_UPDATE:
 //                if (data[4] != appUpdateState) {
-                    appUpdateState = data[4];
-                    for (ProtocolObserver protocolObserver : observers) {
-                        protocolObserver.updateAppUpdateStatus(appUpdateState,
-                                getAppUpdateStatus(appUpdateState));
-                    }
+                appUpdateState = data[4];
+                for (ProtocolObserver protocolObserver : observers) {
+                    protocolObserver.updateAppUpdateStatus(appUpdateState,
+                            getAppUpdateStatus(appUpdateState));
+                }
 //                }
                 break;
             default:
@@ -212,8 +213,33 @@ public class ProtocolController {
     public List<ScanTimer> getScanTimes() {
         scanTimers = LitePal.findAll(ScanTimer.class);
         mLogTrace.d("getScanTimes", "scanTimers: " + scanTimers);
+        resetScanTimers();
+        mLogTrace.d("getScanTimes", "reset end, scanTimers: " + scanTimers);
         sortScanTimes();
         return scanTimers;
+    }
+
+    private void resetScanTimers() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+//        int currentYear = calendar.get(Calendar.YEAR) - 2000;
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+        int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+        int currentMinute = calendar.get(Calendar.MINUTE);
+        int currentSecond = calendar.get(Calendar.SECOND);
+        Iterator<ScanTimer> iterator = scanTimers.iterator();
+        while (iterator.hasNext()) {
+            ScanTimer scanTimer = iterator.next();
+            if (scanTimer.getBeginMonth() < currentMonth // 月小于
+                    || scanTimer.getBeginMonth() == currentMonth && scanTimer.getBeginDay() < currentDay  // 日小于
+                    || scanTimer.getBeginMonth() == currentMonth && scanTimer.getBeginDay() == currentDay
+                    && (scanTimer.getBeginHour() < currentHour) // 同一天，小时小于
+                    || (scanTimer.getBeginHour() == currentHour && scanTimer.getBeginMinute() < currentMinute)  // 同一天同小时，分钟小于
+                    || ((scanTimer.getBeginHour() == currentHour && scanTimer.getBeginMinute() == currentMinute) && scanTimer.getBeginSecond() < currentSecond - 5)) // 同一天同小时，秒钟小于当前秒钟-5 {
+                scanTimer.delete();
+                iterator.remove();
+        }
     }
 
     private void sortScanTimes() {

@@ -508,6 +508,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 }
                 mSendTimeCount++;
             }
+            mProtocolController.getScanTimes();
+            mBleSppUtils.send(mProtocolController.sendScanTimer());
         }).start();
     }
 
