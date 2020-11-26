@@ -15,7 +15,7 @@ android {
     }
 
     signingConfigs {
-        yishen_key {
+        vlidar_key {
             storeFile file('../vlidar.jks')
             storePassword 'android'
             keyAlias = 'vlidar'
@@ -30,7 +30,7 @@ android {
             //是否移除无用资源
             zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.yishen_key
+            signingConfig signingConfigs.vlidar_key
         }
         release {
             // 是否混淆
@@ -38,7 +38,7 @@ android {
             //是否移除无用资源
             zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.yishen_key
+            signingConfig signingConfigs.vlidar_key
         }
     }
     compileOptions {
@@ -88,4 +88,5 @@ dependencies {
 
     // 悬浮窗框架：https://github.com/getActivity/XToast
     implementation 'com.hjq:xtoast:6.2'
+    implementation 'com.hjq:xxpermissions:9.0'
 }

@@ -94,6 +94,27 @@ public class ProtocolController {
         }
     }
 
+    public void text() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateData(new byte[]{0x0D, 0x0A, 0x02, 0x02, 0x04, 0x0D, 0x0A});
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateData(new byte[]{0x0D, 0x0A, 0x02, 0x08, 0x02, 0x0D, 0x0A});
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                updateData(new byte[]{0x0D, 0x0A, 0x02, 0x08, 0x03, 0x0D, 0x0A});
+                            }
+                        }, 800);
+                    }
+                }, 800);
+            }
+        }, 1000);
+    }
+
     private void handleData(byte[] data) {
         mLogTrace.d("handleData", "data: " + Arrays.toString(data));
         int length = data[2];
@@ -108,12 +129,12 @@ public class ProtocolController {
                 }
                 break;
             case Cmd.RADAR:
-                if (data[4] != radarState) {
+//                if (data[4] != radarState) {
                     radarState = data[4];
                     for (ProtocolObserver protocolObserver : observers) {
                         protocolObserver.updateRadarStatus(radarState);
                     }
-                }
+//                }
                 break;
             case Cmd.IMU:
                 byte[] eularYaws = new byte[8];
@@ -154,22 +175,22 @@ public class ProtocolController {
 
                 break;
             case Cmd.MCU_UPDATE:
-                if (data[4] != mcuState) {
+//                if (data[4] != mcuState) {
                     mcuState = data[4];
                     for (ProtocolObserver protocolObserver : observers) {
                         protocolObserver.updateMCUUpdateStatus(mcuState,
                                 getMCUpdateStatus(mcuState));
                     }
-                }
+//                }
                 break;
             case Cmd.APP_UPDATE:
-                if (data[4] != appUpdateState) {
+//                if (data[4] != appUpdateState) {
                     appUpdateState = data[4];
                     for (ProtocolObserver protocolObserver : observers) {
                         protocolObserver.updateAppUpdateStatus(appUpdateState,
                                 getAppUpdateStatus(appUpdateState));
                     }
-                }
+//                }
                 break;
             default:
                 mLogTrace.w("handleData", "invalid cmdId.");

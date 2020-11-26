@@ -11,10 +11,13 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
 import com.vlidar.mobile.R;
 import com.vlidar.mobile.logic.BLESPPUtils;
 import com.vlidar.mobile.logic.ProtocolController;
 import com.vlidar.mobile.logic.ProtocolObserver;
+import com.vlidar.mobile.logic.Status;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -167,7 +170,15 @@ public class IMUActivity extends BaseActivity implements ProtocolObserver {
 
     @Override
     public void updateRadarStatus(int state) {
-
+        if (!XXPermissions.hasPermission(this, Permission.SYSTEM_ALERT_WINDOW)) {
+            runOnUiThread(() -> {
+                if (state == Status.RADAR.NO_TF) {
+                    showToast("未插卡，请插入TF卡", DEFAULT_TOAST_DURATION);
+                } else if (!isShowNoTFToast()) {
+                    xToast.cancel();
+                }
+            });
+        }
     }
 
     @Override
@@ -182,15 +193,19 @@ public class IMUActivity extends BaseActivity implements ProtocolObserver {
 
     @Override
     public void updateMCUUpdateStatus(int status, String info) {
-        if (status == 0 || status == 1 || status == 2) {
-            runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
+        if (!XXPermissions.hasPermission(this, Permission.SYSTEM_ALERT_WINDOW)) {
+            if (status == 0 || status == 1 || status == 2) {
+                runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
+            }
         }
     }
 
     @Override
     public void updateAppUpdateStatus(int status, String info) {
-        if (status == 1 || status == 2 || status == 3) {
-            runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
+        if (!XXPermissions.hasPermission(this, Permission.SYSTEM_ALERT_WINDOW)) {
+            if (status == 1 || status == 2 || status == 3) {
+                runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
+            }
         }
     }
 }

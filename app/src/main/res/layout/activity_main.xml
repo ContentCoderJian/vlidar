@@ -181,7 +181,7 @@
                 android:layout_marginStart="@dimen/bottom_button_margin_icon"
                 android:clickable="false"
                 android:text="@string/scan_once"
-                android:textColor="@drawable/common_button_value_text_selector"
+                android:textColor="@drawable/common_button_title_text_selector"
                 android:textSize="@dimen/bottom_button_text_size" />
         </LinearLayout>
 

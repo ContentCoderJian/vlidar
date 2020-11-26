@@ -18,12 +18,14 @@ import com.vlidar.mobile.logic.ProtocolController;
 import com.vlidar.mobile.logic.ProtocolObserver;
 import com.vlidar.mobile.logic.Status;
 import com.vlidar.mobile.ui.activity.amap.EnLargeMapActivity;
+import com.vlidar.mobile.ui.entity.ScanTimer;
 import com.vlidar.mobile.ui.view.CommonButton;
 import com.vlidar.mobile.utils.AppTools;
 import com.vlidar.mobile.utils.LatLngUtils;
 import com.vlidar.mobile.utils.ScreenUtils;
 
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindDimen;
 import butterknife.BindView;
@@ -145,9 +147,22 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         cbImu.setValueText("关");
 
         cbTimerScan.setTitleRes(R.string.time_scan);
-        // TODO 暂时开
         cbTimerScan.setEnabled(true);
         cbTimerScan.setPicSrcRes(R.drawable.timer_scan_selector);
+        cbTimerScan.setValueText("关");
+    }
+
+    private void updateTimerScanStatus() {
+        if (mProtocolController != null && mProtocolController.getScanTimes() != null) {
+            for (ScanTimer scanTimer : mProtocolController.getScanTimes()) {
+                if (scanTimer.isChecked()) {
+                    cbTimerScan.setSelected(true);
+                    cbTimerScan.setValueText("开");
+                    return;
+                }
+            }
+        }
+        cbTimerScan.setSelected(false);
         cbTimerScan.setValueText("关");
     }
 
@@ -161,6 +176,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbBt.startTwinkleAnim();
 //            cbRadar.setEnabled(true);
             cbRadar.setValueText("开");
+            updateTimerScanStatus();
         } else if (mBleSppUtils.isBluetoothEnable()) {
             cbBt.stopTwinkleAnim();
             cbBt.setActivated(false);
@@ -173,6 +189,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             tvScanOnce.setEnabled(false);
 //            cbRadar.setEnabled(false);
             cbRadar.setValueText("关");
+            cbTimerScan.setSelected(false);
+            cbTimerScan.setValueText("关");
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
@@ -186,6 +204,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
             tvScanOnce.setEnabled(false);
+            cbTimerScan.setSelected(false);
+            cbTimerScan.setValueText("关");
 //            cbRadar.setEnabled(false);
             cbRadar.setValueText("关");
             resetNoGps();
@@ -201,6 +221,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
             tvScanOnce.setEnabled(false);
+            cbTimerScan.setSelected(false);
+            cbTimerScan.setValueText("关");
 //            cbRadar.setEnabled(false);
             cbRadar.setValueText("关");
             resetNoGps();
@@ -215,9 +237,6 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         tvLatitude.setVisibility(View.INVISIBLE);
         tvLatitude.setText("0°0'0\"N");
         tvLongitude.setText("0°0'0\"E");
-
-//        cbTimerScan.setEnabled(false);  // 无GPS信息获取到，不可定时扫描
-        cbTimerScan.setValueText("关");
     }
 
     private void updatePower(int status) {
@@ -398,8 +417,6 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             tvLongitude.setText(LatLngUtils.DDtoDMS(mProtocolController.getLongitude()) + "E");
             tvLatitude.setVisibility(View.VISIBLE);
             tvLongitude.setVisibility(View.VISIBLE);
-            cbTimerScan.setEnabled(true);
-            cbTimerScan.setValueText("开");
         } else {
             resetNoGps();
         }
@@ -415,6 +432,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 cbImu.setActivated(true);
                 cbImu.setValue1Text("yaw: " + mProtocolController.getEularYaw() + "\npitch: " + mProtocolController.getEularPitch() + "\nroll: " + mProtocolController.getEularRoll());
             }
+            updateTimerScanStatus();
         }
     }
 
@@ -443,6 +461,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 
             case R.id.cb_bt:
                 cbBt.subViewCallOnClick();
+//                mProtocolController.text();
                 mBleSppUtils.startBtSettings();
                 break;
 
@@ -528,7 +547,13 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 
     @Override
     public void updateRadarStatus(int state) {
-        runOnUiThread(() -> updateRadar(state));
+        mLogTrace.d("updateRadarStatus, state: " + state);
+        runOnUiThread(() -> {
+            updateRadar(state);
+            if (state != Status.RADAR.NO_TF && isShowNoTFToast()) {
+                xToast.cancel();
+            }
+        });
     }
 
     @Override
@@ -554,15 +579,12 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             tvLongitude.setText(LatLngUtils.DDtoDMS(longitude) + "E");
             tvLatitude.setVisibility(View.VISIBLE);
             tvLongitude.setVisibility(View.VISIBLE);
-            rlScanOnce.setEnabled(true);
-            tvScanOnce.setEnabled(true);
-            cbTimerScan.setEnabled(true);
-            cbTimerScan.setValueText("开");
         });
     }
 
     @Override
     public void updateMCUUpdateStatus(int status, String info) {
+        mLogTrace.d("updateMCUUpdateStatus, status: " + status + ", info:" + info);
         if (status == 0 || status == 1 || status == 2) {
             runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
         }
@@ -570,6 +592,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 
     @Override
     public void updateAppUpdateStatus(int status, String info) {
+        mLogTrace.d("updateAppUpdateStatus, status: " + status + ", info:" + info);
         if (status == 1 || status == 2 || status == 3) {
             runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
         }

@@ -36,7 +36,7 @@ public abstract class AbstractBtActivity extends AbstractMapActivity implements 
 
     @Override
     public void onFoundDevice(BluetoothDevice device) {
-        mLogTrace.d("onFinishFoundDevice", "device=" + device);
+//        mLogTrace.d("onFinishFoundDevice", "device=" + device);
     }
 
 //    @Override

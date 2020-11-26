@@ -197,9 +197,9 @@ public abstract class AbstractMapActivity extends AbstractCheckPermissionsActivi
                 new AMap.CancelableCallback() {
                     @Override
                     public void onFinish() {
-                        mLogTrace.d("onLocationChanged",
-                                "longitude: " + aMapLocation.getLongitude() + ", " +
-                                        "latitude: " + aMapLocation.getLatitude() + ", bearing: " + aMapLocation.getBearing());
+//                        mLogTrace.d("onLocationChanged",
+//                                "longitude: " + aMapLocation.getLongitude() + ", " +
+//                                        "latitude: " + aMapLocation.getLatitude() + ", bearing: " + aMapLocation.getBearing());
                         addPOIMarker(latLng);
                         setMarkerRotateAngle(aMapLocation.getBearing());
                     }

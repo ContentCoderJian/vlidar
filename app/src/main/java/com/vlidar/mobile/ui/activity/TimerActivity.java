@@ -12,6 +12,8 @@ import android.widget.ImageView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
 import com.vlidar.jrecyclerview.JRecycleView;
 import com.vlidar.jrecyclerview.adapter.JRefreshAndLoadMoreAdapter;
 import com.vlidar.mobile.R;
@@ -201,11 +203,15 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
 
     @Override
     public void updateRadarStatus(int state) {
-        runOnUiThread(() -> {
-            if (state == Status.RADAR.NO_TF) {
-                showToast("未插卡，请插入TF卡", DEFAULT_TOAST_DURATION);
-            }
-        });
+        if (!XXPermissions.hasPermission(this, Permission.SYSTEM_ALERT_WINDOW)) {
+            runOnUiThread(() -> {
+                if (state == Status.RADAR.NO_TF) {
+                    showToast("未插卡，请插入TF卡", DEFAULT_TOAST_DURATION);
+                } else if (!isShowNoTFToast()) {
+                    xToast.cancel();
+                }
+            });
+        }
     }
 
     @Override
@@ -220,15 +226,19 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
 
     @Override
     public void updateMCUUpdateStatus(int status, String info) {
-        if (status == 0 || status == 1 || status == 2) {
-            runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
+        if (!XXPermissions.hasPermission(this, Permission.SYSTEM_ALERT_WINDOW)) {
+            if (status == 0 || status == 1 || status == 2) {
+                runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
+            }
         }
     }
 
     @Override
     public void updateAppUpdateStatus(int status, String info) {
-        if (status == 1 || status == 2 || status == 3) {
-            runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
+        if (!XXPermissions.hasPermission(this, Permission.SYSTEM_ALERT_WINDOW)) {
+            if (status == 1 || status == 2 || status == 3) {
+                runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
+            }
         }
     }
 }
