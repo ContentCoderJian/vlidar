@@ -9,7 +9,6 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -19,6 +18,7 @@ import com.vlidar.mobile.R;
 import com.vlidar.mobile.logic.BLESPPUtils;
 import com.vlidar.mobile.logic.ProtocolController;
 import com.vlidar.mobile.logic.ProtocolObserver;
+import com.vlidar.mobile.logic.Status;
 import com.vlidar.mobile.ui.adapter.TimerAdapter;
 import com.vlidar.mobile.ui.entity.ScanTimer;
 import com.vlidar.mobile.ui.view.SimpleDividerDecoration;
@@ -64,15 +64,24 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
         jRecycleView.addItemDecoration(new SimpleDividerDecoration(this,
                 mItemHeight, colorTransparent, false));
         mTimePopupWindow = new TimePopupWindow(this);
-        mTimePopupWindow.setOnAddTimeDoneListener(scanTimer -> {
-            mLogTrace.d("onAddTimeDone", "scanTimer:" + scanTimer);
-            if (mScanTimers.contains(scanTimer)) {
-                mScanTimers.get(mScanTimers.indexOf(scanTimer)).delete();
+        mTimePopupWindow.setOnAddTimeDoneListener(new TimePopupWindow.OnAddTimeDoneListener() {
+            @Override
+            public void onAddTimeError(String error) {
+                mLogTrace.w("onAddTimeError", "error:" + error);
+                showToast(error, DEFAULT_TOAST_DURATION);
             }
-            scanTimer.save();
-            mScanTimers = mProtocolController.getScanTimes();
-            mBleSppUtils.send(mProtocolController.sendScanTimer());
-            initRecyclerView(mScanTimers);
+
+            @Override
+            public void onAddTimeDone(ScanTimer scanTimer) {
+                mLogTrace.d("onAddTimeDone", "scanTimer:" + scanTimer);
+                if (mScanTimers.contains(scanTimer)) {
+                    mScanTimers.get(mScanTimers.indexOf(scanTimer)).delete();
+                }
+                scanTimer.save();
+                mScanTimers = mProtocolController.getScanTimes();
+                mBleSppUtils.send(mProtocolController.sendScanTimer());
+                initRecyclerView(mScanTimers);
+            }
         });
     }
 
@@ -192,7 +201,11 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
 
     @Override
     public void updateRadarStatus(int state) {
-
+        runOnUiThread(() -> {
+            if (state == Status.RADAR.NO_TF) {
+                showToast("未插卡，请插入TF卡", DEFAULT_TOAST_DURATION);
+            }
+        });
     }
 
     @Override
@@ -208,14 +221,14 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
     @Override
     public void updateMCUUpdateStatus(int status, String info) {
         if (status == 0 || status == 1 || status == 2) {
-            runOnUiThread(() -> Toast.makeText(TimerActivity.this, info, Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
         }
     }
 
     @Override
     public void updateAppUpdateStatus(int status, String info) {
-        if (status == 1 || status == 2) {
-            runOnUiThread(() -> Toast.makeText(TimerActivity.this, info, Toast.LENGTH_SHORT).show());
+        if (status == 1 || status == 2 || status == 3) {
+            runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
         }
     }
 }

@@ -281,11 +281,11 @@ public class ProtocolController {
     private String getMCUpdateStatus(int status) {
         switch (status) {
             case 0:
-                return "MCU升级成功。";
+                return "MCU升级成功";
             case 1:
-                return "MCU升级失败。";
+                return "MCU升级失败";
             case 2:
-                return "MCU升级中，切勿断电！";
+                return "MCU升级中，切勿断电";
             default:
                 return "";
         }
@@ -294,9 +294,11 @@ public class ProtocolController {
     private String getAppUpdateStatus(int status) {
         switch (status) {
             case 1:
-                return "APP升级成功。";
+                return "APP升级成功";
             case 2:
-                return "APP升级失败。";
+                return "APP升级失败";
+            case 3:
+                return "Updater升级成功";
             default:
                 return "";
         }

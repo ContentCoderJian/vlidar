@@ -8,6 +8,9 @@ import android.os.Message;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.hjq.xtoast.OnToastListener;
+import com.hjq.xtoast.XToast;
+import com.vlidar.mobile.R;
 import com.vlidar.mobile.utils.AppTools;
 import com.vlidar.mobile.utils.LogTrace;
 
@@ -20,6 +23,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected LogTrace mLogTrace = new LogTrace("UI", getClass().getSimpleName());
     protected MyHandler myHandler;
     private Unbinder unbinder;
+
+    protected static final int DEFAULT_TOAST_DURATION = 5000;
+    private XToast xToast;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,6 +74,35 @@ public abstract class BaseActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             mLogTrace.d("handlerMessage", "msg.what: " + msg.what);
             handleMessages(msg);
+        }
+    }
+
+    protected void showToast(String text, int duration) {
+        if (xToast != null && xToast.isShow()) {
+            xToast.setText(text).setDuration(duration).update();
+        } else {
+            xToast = new XToast(this)
+                    .setView(R.layout.toast_customer)
+                    .setDuration(duration)
+                    .setAnimStyle(android.R.style.Animation_Dialog)
+                    .setOutsideTouchable(false)
+                    .setText(text)
+                    .setOnTouchListener((toast, view1, event) -> {
+                        toast.cancel();
+                        return false;
+                    })
+                    .setOnToastListener(new OnToastListener() {
+                        @Override
+                        public void onShow(XToast toast) {
+
+                        }
+
+                        @Override
+                        public void onDismiss(XToast toast) {
+                            xToast = null;
+                        }
+                    })
+                    .show();
         }
     }
 

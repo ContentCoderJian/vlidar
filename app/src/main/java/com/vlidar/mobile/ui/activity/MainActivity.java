@@ -12,7 +12,6 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.vlidar.mobile.R;
 import com.vlidar.mobile.logic.ProtocolController;
@@ -155,6 +154,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     private void updateBtStatus() {
         if (mBleSppUtils.isSppConnected()) {
             rlScanOnce.setEnabled(true);
+            tvScanOnce.setEnabled(true);
             cbBt.setActivated(false);
             cbBt.setSelected(true);
             cbBt.setValueText("在线");
@@ -170,6 +170,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
+            tvScanOnce.setEnabled(false);
 //            cbRadar.setEnabled(false);
             cbRadar.setValueText("关");
             resetNoGps();
@@ -184,6 +185,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
+            tvScanOnce.setEnabled(false);
 //            cbRadar.setEnabled(false);
             cbRadar.setValueText("关");
             resetNoGps();
@@ -198,6 +200,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
+            tvScanOnce.setEnabled(false);
 //            cbRadar.setEnabled(false);
             cbRadar.setValueText("关");
             resetNoGps();
@@ -247,13 +250,17 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         switch (status) {
             case Status.RADAR.NO_SCAN:
                 rlScanOnce.setEnabled(mBleSppUtils.isSppConnected());
+                tvScanOnce.setEnabled(mBleSppUtils.isSppConnected());
                 cbRadar.setActivated(false);
+                cbRadar.setEnabled(true);
                 cbRadar.setSelected(false);
                 cbRadar.setValueText("停止");
                 cbRadar.stopRotateAnim();
                 break;
             case Status.RADAR.SCANNING:
+                cbRadar.setEnabled(true);
                 rlScanOnce.setEnabled(false);
+                tvScanOnce.setEnabled(false);
                 cbRadar.setActivated(true);
                 cbRadar.setSelected(false);
                 cbRadar.setValueText("扫描中");
@@ -261,11 +268,34 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 break;
 
             case Status.RADAR.DATA_PROCESSING:
+                cbRadar.setEnabled(true);
                 rlScanOnce.setEnabled(false);
+                tvScanOnce.setEnabled(false);
                 cbRadar.setActivated(true);
                 cbRadar.setSelected(false);
                 cbRadar.setValueText("数据处理中");
                 cbRadar.startRotateAnim();
+                break;
+
+            case Status.RADAR.INITTING:
+                rlScanOnce.setEnabled(false);
+                tvScanOnce.setEnabled(false);
+                cbRadar.setEnabled(false);
+                cbRadar.setActivated(true);
+                cbRadar.setSelected(false);
+                cbRadar.setValueText("初始化中");
+                cbRadar.stopRotateAnim();
+                break;
+
+            case Status.RADAR.NO_TF:
+                rlScanOnce.setEnabled(false);
+                tvScanOnce.setEnabled(false);
+                cbRadar.setEnabled(false);
+                cbRadar.setActivated(false);
+                cbRadar.setSelected(false);
+                cbRadar.setValueText("未插卡");
+                showToast("未插卡，请插入TF卡", DEFAULT_TOAST_DURATION);
+                cbRadar.stopRotateAnim();
                 break;
             default:
                 mLogTrace.d("updateRadar", "invalid status, " + status);
@@ -413,9 +443,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 
             case R.id.cb_bt:
                 cbBt.subViewCallOnClick();
-//                if (!mBleSppUtils.isSppConnected()) {
                 mBleSppUtils.startBtSettings();
-//                }
                 break;
 
             case R.id.cb_imu:
@@ -469,7 +497,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         mLogTrace.w("onConnectFailed", "msg=" + msg);
         runOnUiThread(() -> {
             updateBtStatus();
-            Toast.makeText(this, "receive data : " + msg, Toast.LENGTH_SHORT).show();
+            showToast(msg, DEFAULT_TOAST_DURATION);
         });
     }
 
@@ -527,6 +555,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             tvLatitude.setVisibility(View.VISIBLE);
             tvLongitude.setVisibility(View.VISIBLE);
             rlScanOnce.setEnabled(true);
+            tvScanOnce.setEnabled(true);
             cbTimerScan.setEnabled(true);
             cbTimerScan.setValueText("开");
         });
@@ -535,14 +564,14 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     @Override
     public void updateMCUUpdateStatus(int status, String info) {
         if (status == 0 || status == 1 || status == 2) {
-            runOnUiThread(() -> Toast.makeText(MainActivity.this, info, Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
         }
     }
 
     @Override
     public void updateAppUpdateStatus(int status, String info) {
-        if (status == 1 || status == 2) {
-            runOnUiThread(() -> Toast.makeText(MainActivity.this, info, Toast.LENGTH_SHORT).show());
+        if (status == 1 || status == 2 || status == 3) {
+            runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
         }
     }
 

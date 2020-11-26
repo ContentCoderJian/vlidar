@@ -36,6 +36,9 @@
     <dimen name="imu_margin_start">44dp</dimen>
     <dimen name="imu_margin_top">52dp</dimen>
 
+    <!-- Toast -->
+    <dimen name="toast_margin_bottom">140dp</dimen>
+
     <!-- Text Size-->
     <dimen name="guide_company_text_size">12sp</dimen>
     <dimen name="check_status_text_size">11sp</dimen>

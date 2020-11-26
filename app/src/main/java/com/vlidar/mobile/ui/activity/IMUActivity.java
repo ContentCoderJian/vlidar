@@ -2,7 +2,6 @@ package com.vlidar.mobile.ui.activity;
 
 import android.os.Bundle;
 import android.os.Message;
-import android.view.Gravity;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -10,28 +9,13 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.GridLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-
-import com.vlidar.jrecyclerview.JRecycleView;
-import com.vlidar.jrecyclerview.adapter.JRefreshAndLoadMoreAdapter;
 import com.vlidar.mobile.R;
 import com.vlidar.mobile.logic.BLESPPUtils;
 import com.vlidar.mobile.logic.ProtocolController;
 import com.vlidar.mobile.logic.ProtocolObserver;
-import com.vlidar.mobile.ui.adapter.TimerAdapter;
-import com.vlidar.mobile.ui.entity.ScanTimer;
-import com.vlidar.mobile.ui.view.SimpleDividerDecoration;
-import com.vlidar.mobile.ui.view.TimePopupWindow;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import butterknife.BindColor;
-import butterknife.BindDimen;
 import butterknife.BindView;
 import butterknife.OnClick;
 
@@ -199,14 +183,14 @@ public class IMUActivity extends BaseActivity implements ProtocolObserver {
     @Override
     public void updateMCUUpdateStatus(int status, String info) {
         if (status == 0 || status == 1 || status == 2) {
-            runOnUiThread(() -> Toast.makeText(IMUActivity.this, info, Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
         }
     }
 
     @Override
     public void updateAppUpdateStatus(int status, String info) {
-        if (status == 1 || status == 2) {
-            runOnUiThread(() -> Toast.makeText(IMUActivity.this, info, Toast.LENGTH_SHORT).show());
+        if (status == 1 || status == 2 || status == 3) {
+            runOnUiThread(() -> showToast(info, DEFAULT_TOAST_DURATION));
         }
     }
 }

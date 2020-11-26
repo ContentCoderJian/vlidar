@@ -12,6 +12,8 @@ public final class Status {
         public static final int NO_SCAN = 0;
         public static final int SCANNING = 1;
         public static final int DATA_PROCESSING = 2;
+        public static final int INITTING = 3;
+        public static final int NO_TF = 4;
     }
 
     public final static class MCU {

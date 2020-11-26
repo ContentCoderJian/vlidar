@@ -85,4 +85,7 @@ dependencies {
     implementation 'org.litepal.guolindev:core:3.2.2'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.kyleduo.switchbutton:library:2.0.2'
+
+    // 悬浮窗框架：https://github.com/getActivity/XToast
+    implementation 'com.hjq:xtoast:6.2'
 }
