@@ -130,7 +130,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         cbPower.setValueText("关");
 
         cbRadar.setTitleRes(R.string.radar);
-        cbRadar.setEnabled(false);
+        cbRadar.setEnabled(true);
         cbRadar.setPicSrcRes(R.drawable.radar_selector);
         cbRadar.setValueText("关");
 
@@ -147,7 +147,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 
         cbTimerScan.setTitleRes(R.string.time_scan);
         // TODO 暂时开
-        cbTimerScan.setEnabled(false);
+        cbTimerScan.setEnabled(true);
         cbTimerScan.setPicSrcRes(R.drawable.timer_scan_selector);
         cbTimerScan.setValueText("关");
     }
@@ -159,7 +159,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbBt.setSelected(true);
             cbBt.setValueText("在线");
             cbBt.startTwinkleAnim();
-            cbRadar.setEnabled(true);
+//            cbRadar.setEnabled(true);
             cbRadar.setValueText("开");
         } else if (mBleSppUtils.isBluetoothEnable()) {
             cbBt.stopTwinkleAnim();
@@ -170,7 +170,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
-            cbRadar.setEnabled(false);
+//            cbRadar.setEnabled(false);
             cbRadar.setValueText("关");
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
@@ -184,7 +184,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
-            cbRadar.setEnabled(false);
+//            cbRadar.setEnabled(false);
             cbRadar.setValueText("关");
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
@@ -198,7 +198,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
-            cbRadar.setEnabled(false);
+//            cbRadar.setEnabled(false);
             cbRadar.setValueText("关");
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
@@ -213,7 +213,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         tvLatitude.setText("0°0'0\"N");
         tvLongitude.setText("0°0'0\"E");
 
-        cbTimerScan.setEnabled(false);  // 无GPS信息获取到，不可定时扫描
+//        cbTimerScan.setEnabled(false);  // 无GPS信息获取到，不可定时扫描
         cbTimerScan.setValueText("关");
     }
 
@@ -365,7 +365,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             tvNoGps.setVisibility(View.INVISIBLE);
             setLatLng(mProtocolController.getLatitude(), mProtocolController.getLongitude());
             tvLatitude.setText(LatLngUtils.DDtoDMS(mProtocolController.getLatitude()) + "N");
-            tvLongitude.setText(LatLngUtils.DDtoDMS(mProtocolController.getLatitude()) + "E");
+            tvLongitude.setText(LatLngUtils.DDtoDMS(mProtocolController.getLongitude()) + "E");
             tvLatitude.setVisibility(View.VISIBLE);
             tvLongitude.setVisibility(View.VISIBLE);
             cbTimerScan.setEnabled(true);
@@ -377,8 +377,15 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 : R.drawable.down);
 
         updateBtStatus();
-        updatePower(mProtocolController.getPowerState());
-        updateRadar(mProtocolController.getRadarState());
+        if (mBleSppUtils.isSppConnected()) {
+            updatePower(mProtocolController.getPowerState());
+            updateRadar(mProtocolController.getRadarState());
+            if (mProtocolController.getEularYaw() != 0 || mProtocolController.getEularPitch() != 0 || mProtocolController.getEularRoll() != 0) {
+                cbImu.setValueText("开");
+                cbImu.setActivated(true);
+                cbImu.setValue1Text("yaw: " + mProtocolController.getEularYaw() + "\npitch: " + mProtocolController.getEularPitch() + "\nroll: " + mProtocolController.getEularRoll());
+            }
+        }
     }
 
     @OnClick({R.id.rl_show_hide_map, R.id.cb_power, R.id.cb_radar, R.id.cb_bt, R.id.cb_imu,

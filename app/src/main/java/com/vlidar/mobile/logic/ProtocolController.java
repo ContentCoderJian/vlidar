@@ -143,7 +143,7 @@ public class ProtocolController {
                 longitudeBuffer.append(".");
                 longitudeBuffer.append(0xff & data[10]);
                 longitudeBuffer.append(0xff & data[11]);
-                latitudeBuffer.append(0xff & data[12]);
+                longitudeBuffer.append(0xff & data[12]);
                 longitudeBuffer.append(0xff & data[13]);
 
                 latitude = Double.parseDouble(latitudeBuffer.toString());
@@ -285,7 +285,7 @@ public class ProtocolController {
             case 1:
                 return "MCU升级失败。";
             case 2:
-                return "MCU升级中，请勿断电！";
+                return "MCU升级中，切勿断电！";
             default:
                 return "";
         }
