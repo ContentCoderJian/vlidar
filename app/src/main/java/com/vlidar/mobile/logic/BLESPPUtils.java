@@ -128,6 +128,7 @@ public class BLESPPUtils {
                 UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
                 remoteDevice = bluetoothAdapter.getRemoteDevice(bluetoothDevicesMac[0]);
                 if (isCancelled()) {
+                    mProtocolController.resetData();
                     isRunning = false;
                     return null;
                 }
@@ -137,12 +138,14 @@ public class BLESPPUtils {
                 mLogTrace.e("doInBackground", "获取Socket失败");
                 isRunning = false;
                 mIsConnectSpp = false;
+                mProtocolController.resetData();
                 e.printStackTrace();
                 return null;
             }
 
             // 检查有没有获取到
             if (bluetoothSocket == null) {
+                mProtocolController.resetData();
                 if (onBluetoothAction != null) {
                     onBluetoothAction.onConnectFailed("连接失败:获取Socket失败");
                 }
@@ -167,6 +170,7 @@ public class BLESPPUtils {
             } catch (Exception connectException) {
                 connectException.printStackTrace();
                 mIsConnectSpp = false;
+                mProtocolController.resetData();
                 mLogTrace.e("doInBackground", "连接失败:" + connectException.getMessage());
                 if (onBluetoothAction != null) {
                     onBluetoothAction.onConnectFailed("连接失败:" + connectException.getMessage());
@@ -177,6 +181,7 @@ public class BLESPPUtils {
             // 开始监听数据接收
             try {
                 if (isCancelled()) {
+                    mProtocolController.resetData();
                     isRunning = false;
                     return null;
                 }
@@ -214,6 +219,7 @@ public class BLESPPUtils {
                             if (inputStream.available() == 0) break;
                         } catch (Exception e) {
                             e.printStackTrace();
+                            mProtocolController.resetData();
                             if (onBluetoothAction != null) {
                                 onBluetoothAction.onConnectFailed("接收数据单次失败：" + e.getMessage());
                             }
@@ -237,6 +243,7 @@ public class BLESPPUtils {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        mProtocolController.resetData();
                         if (onBluetoothAction != null) {
                             onBluetoothAction.onConnectFailed("验证收到数据结束标志出错：" + e.getMessage());
                         }
@@ -244,6 +251,7 @@ public class BLESPPUtils {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                mProtocolController.resetData();
                 if (onBluetoothAction != null) {
                     onBluetoothAction.onConnectFailed("接收数据失败：" + e.getMessage());
                 }
@@ -257,6 +265,7 @@ public class BLESPPUtils {
                 mLogTrace.d("onCancelled", "开始释放资源");
                 isRunning = false;
                 mIsConnectSpp = false;
+                mProtocolController.resetData();
                 if (bluetoothSocket != null)
                     bluetoothSocket.close();
             } catch (IOException e) {

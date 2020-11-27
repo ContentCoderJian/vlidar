@@ -325,6 +325,18 @@ public class ProtocolController {
         return payload;
     }
 
+    public void resetData() {
+        powerState = 0;
+        radarState = 0;
+        mcuState = 0;
+        appUpdateState = 0;
+        eularYaw = 0;
+        eularPitch = 0;
+        eularRoll = 0;
+        longitude = 0;
+        latitude = 0;
+    }
+
     private String getMCUpdateStatus(int status) {
         switch (status) {
             case 0:

@@ -161,10 +161,12 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
     }
 
     private void startOrStopRotate() {
-        for (ScanTimer scanTimer : mScanTimers) {
-            if (scanTimer.isChecked()) {
-                startRotateAnimation(ibScan);
-                return;
+        if (BLESPPUtils.getInstance(this).isSppConnected()) {
+            for (ScanTimer scanTimer : mScanTimers) {
+                if (scanTimer.isChecked()) {
+                    startRotateAnimation(ibScan);
+                    return;
+                }
             }
         }
         stopRotateAnimation(ibScan);

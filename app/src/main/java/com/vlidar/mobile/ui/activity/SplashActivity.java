@@ -44,7 +44,7 @@ public class SplashActivity extends BaseActivity {
 
                         @Override
                         public void noPermission(List<String> denied, boolean never) {
-                            showToast("请授予悬浮窗权限, 否则当应用处于后台时无法显示弹窗", 5000);
+                            showToast("请授予悬浮窗权限, 否则当应用处于后台时无法显示弹窗", 3000);
                         }
                     });
         }

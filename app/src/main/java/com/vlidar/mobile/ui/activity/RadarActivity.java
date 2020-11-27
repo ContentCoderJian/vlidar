@@ -22,7 +22,7 @@ import com.vlidar.mobile.logic.Status;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class IMUActivity extends BaseActivity implements ProtocolObserver {
+public class RadarActivity extends BaseActivity implements ProtocolObserver {
     @BindView(R.id.gridlayout)
     GridLayout gridLayout;
 
@@ -33,7 +33,7 @@ public class IMUActivity extends BaseActivity implements ProtocolObserver {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_imu);
+        setContentView(R.layout.activity_radar);
         super.onCreate(savedInstanceState);
         mProtocolController = ProtocolController.getInstance();
         mProtocolController.addObservers(this);

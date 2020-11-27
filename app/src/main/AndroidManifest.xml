@@ -44,7 +44,12 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name="com.vlidar.mobile.ui.activity.IMUActivity"
+            android:name="com.vlidar.mobile.ui.activity.RadarActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.vlidar.mobile.ui.activity.SpiritActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
 

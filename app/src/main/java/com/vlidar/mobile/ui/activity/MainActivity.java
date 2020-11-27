@@ -26,7 +26,6 @@ import com.vlidar.mobile.utils.LatLngUtils;
 import com.vlidar.mobile.utils.ScreenUtils;
 
 import java.util.Arrays;
-import java.util.List;
 
 import butterknife.BindDimen;
 import butterknife.BindView;
@@ -132,7 +131,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         cbPower.setValueText("关");
 
         cbRadar.setTitleRes(R.string.radar);
-        cbRadar.setEnabled(true);
+        cbRadar.setEnabled(false);
         cbRadar.setPicSrcRes(R.drawable.radar_selector);
         cbRadar.setValueText("关");
 
@@ -183,6 +182,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbBt.setActivated(false);
             cbBt.setSelected(false);
             cbBt.setValueText("离线");
+            cbImu.setEnabled(false);
             cbImu.setValueText("关");
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
@@ -200,6 +200,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbBt.setActivated(false);
             cbBt.setSelected(false);
             cbBt.setValueText("关闭");
+            cbImu.setEnabled(false);
             cbImu.setValueText("关");
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
@@ -217,6 +218,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbBt.setActivated(false);
             cbBt.setSelected(true);
             cbBt.setValueText("故障");
+            cbImu.setEnabled(false);
             cbImu.setValueText("关");
             cbImu.setActivated(false);
             cbImu.setValue1Text(null);
@@ -439,6 +441,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             updateRadar(mProtocolController.getRadarState());
             if (mProtocolController.getEularYaw() != 0 || mProtocolController.getEularPitch() != 0 || mProtocolController.getEularRoll() != 0) {
                 cbImu.setValueText("开");
+                cbImu.setEnabled(true);
                 cbImu.setActivated(true);
                 cbImu.setValue1Text("yaw: " + mProtocolController.getEularYaw() + "\npitch: " + mProtocolController.getEularPitch() + "\nroll: " + mProtocolController.getEularRoll());
             }
@@ -466,7 +469,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 
             case R.id.cb_radar:
                 cbRadar.subViewCallOnClick();
-                AppTools.startForwardActivity(this, IMUActivity.class);
+                AppTools.startForwardActivity(this, RadarActivity.class);
                 break;
 
             case R.id.cb_bt:
@@ -477,6 +480,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 
             case R.id.cb_imu:
                 cbImu.subViewCallOnClick();
+                AppTools.startForwardActivity(this, SpiritActivity.class);
                 break;
 
             case R.id.cb_timer_scan:
@@ -570,11 +574,11 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 
     @Override
     public void updateIMU(double eularYaw, double eularPitch, double eularRoll) {
-        mLogTrace.d("updateIMU", "eularYaw: " + eularYaw + ", eularPitch: " + eularPitch + "," +
-                " " +
-                "eularRoll: " + eularRoll);
+//        mLogTrace.d("updateIMU", "eularYaw: " + eularYaw + ", eularPitch: " + eularPitch + ", " +
+//                "eularRoll: " + eularRoll);
         runOnUiThread(() -> {
             cbImu.setValueText("开");
+            cbImu.setEnabled(true);
             cbImu.setActivated(true);
             cbImu.setValue1Text("yaw: " + eularYaw + "\npitch: " + eularPitch + "\nroll: " + eularRoll);
         });

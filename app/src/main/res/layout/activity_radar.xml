@@ -8,7 +8,7 @@
     android:paddingTop="@dimen/map_margin_top"
     android:paddingEnd="@dimen/main_margin_horizontal"
     android:paddingBottom="@dimen/timer_bottom_button_margin"
-    tools:context=".ui.activity.IMUActivity">
+    tools:context=".ui.activity.RadarActivity">
 
     <ImageButton
         android:id="@+id/ib_back"
