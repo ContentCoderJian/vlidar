@@ -16,6 +16,7 @@ import com.vlidar.mobile.utils.LogTrace;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
@@ -169,11 +170,24 @@ public class BLESPPUtils {
                 }
             } catch (Exception connectException) {
                 connectException.printStackTrace();
-                mIsConnectSpp = false;
-                mProtocolController.resetData();
-                mLogTrace.e("doInBackground", "连接失败:" + connectException.getMessage());
-                if (onBluetoothAction != null) {
-                    onBluetoothAction.onConnectFailed("连接失败:" + connectException.getMessage());
+                try {
+                    Method m = remoteDevice.getClass().getMethod("createRfcommSocket",
+                            new Class[]{int.class});
+                    bluetoothSocket = (BluetoothSocket) m.invoke(remoteDevice, 1);
+                    bluetoothSocket.connect();
+                } catch (Exception e) {
+                    mLogTrace.e("doInBackground", e.getMessage());
+                    try {
+                        bluetoothSocket.close();
+                    } catch (IOException ie) {
+                        mLogTrace.e("doInBackground", "close socket err: " + e.getMessage());
+                    }
+                    mIsConnectSpp = false;
+                    mProtocolController.resetData();
+                    mLogTrace.e("doInBackground", "连接失败:" + connectException.getMessage());
+                    if (onBluetoothAction != null) {
+                        onBluetoothAction.onConnectFailed("连接失败:" + connectException.getMessage());
+                    }
                 }
                 return null;
             }
