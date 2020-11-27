@@ -232,13 +232,13 @@ public class ProtocolController {
         while (iterator.hasNext()) {
             ScanTimer scanTimer = iterator.next();
             if (scanTimer.getBeginMonth() < currentMonth // 月小于
-                    || scanTimer.getBeginMonth() == currentMonth && scanTimer.getBeginDay() < currentDay  // 日小于
-                    || scanTimer.getBeginMonth() == currentMonth && scanTimer.getBeginDay() == currentDay
-                    && (scanTimer.getBeginHour() < currentHour) // 同一天，小时小于
+                    || (scanTimer.getBeginMonth() == currentMonth && scanTimer.getBeginDay() < currentDay)  // 日小于
+                    || (scanTimer.getBeginMonth() == currentMonth && scanTimer.getBeginDay() == currentDay && ((scanTimer.getBeginHour() < currentHour) // 同一天，小时小于
                     || (scanTimer.getBeginHour() == currentHour && scanTimer.getBeginMinute() < currentMinute)  // 同一天同小时，分钟小于
-                    || ((scanTimer.getBeginHour() == currentHour && scanTimer.getBeginMinute() == currentMinute) && scanTimer.getBeginSecond() < currentSecond - 5)) // 同一天同小时，秒钟小于当前秒钟-5 {
+                    || ((scanTimer.getBeginHour() == currentHour && scanTimer.getBeginMinute() == currentMinute) && scanTimer.getBeginSecond() < currentSecond - 5)))) {// 同一天同小时，秒钟小于当前秒钟-5 {
                 scanTimer.delete();
                 iterator.remove();
+            }
         }
     }
 

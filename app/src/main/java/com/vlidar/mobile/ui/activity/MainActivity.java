@@ -173,12 +173,12 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbBt.setActivated(false);
             cbBt.setSelected(true);
             cbBt.setValueText("在线");
-            cbBt.startTwinkleAnim();
-//            cbRadar.setEnabled(true);
+//            cbBt.startTwinkleAnim();
+            cbRadar.setEnabled(true);
             cbRadar.setValueText("开");
             updateTimerScanStatus();
         } else if (mBleSppUtils.isBluetoothEnable()) {
-            cbBt.stopTwinkleAnim();
+//            cbBt.stopTwinkleAnim();
             cbBt.setActivated(false);
             cbBt.setSelected(false);
             cbBt.setValueText("离线");
@@ -187,7 +187,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
             tvScanOnce.setEnabled(false);
-//            cbRadar.setEnabled(false);
+            cbRadar.setEnabled(false);
             cbRadar.setValueText("关");
             cbTimerScan.setSelected(false);
             cbTimerScan.setValueText("关");
@@ -195,7 +195,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
         } else if (!mBleSppUtils.isBluetoothEnable()) {
-            cbBt.stopTwinkleAnim();
+//            cbBt.stopTwinkleAnim();
             cbBt.setActivated(false);
             cbBt.setSelected(false);
             cbBt.setValueText("关闭");
@@ -206,13 +206,13 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             tvScanOnce.setEnabled(false);
             cbTimerScan.setSelected(false);
             cbTimerScan.setValueText("关");
-//            cbRadar.setEnabled(false);
+            cbRadar.setEnabled(false);
             cbRadar.setValueText("关");
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
         } else {
-            cbBt.stopTwinkleAnim();
+//            cbBt.stopTwinkleAnim();
             cbBt.setActivated(false);
             cbBt.setSelected(true);
             cbBt.setValueText("故障");
@@ -223,7 +223,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             tvScanOnce.setEnabled(false);
             cbTimerScan.setSelected(false);
             cbTimerScan.setValueText("关");
-//            cbRadar.setEnabled(false);
+            cbRadar.setEnabled(false);
             cbRadar.setValueText("关");
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
@@ -271,7 +271,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 rlScanOnce.setEnabled(mBleSppUtils.isSppConnected());
                 tvScanOnce.setEnabled(mBleSppUtils.isSppConnected());
                 cbRadar.setActivated(false);
-                cbRadar.setEnabled(true);
+                cbRadar.setEnabled(mBleSppUtils.isSppConnected());
                 cbRadar.setSelected(false);
                 cbRadar.setValueText("停止");
                 cbRadar.stopRotateAnim();

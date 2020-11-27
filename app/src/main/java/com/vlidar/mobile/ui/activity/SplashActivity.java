@@ -9,8 +9,8 @@ import com.hjq.permissions.OnPermission;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.vlidar.mobile.R;
-import com.vlidar.mobile.utils.AppTools;
 import com.vlidar.mobile.logic.BLESPPUtils;
+import com.vlidar.mobile.utils.AppTools;
 import com.vlidar.mobile.utils.StatusBarUtils;
 
 import java.util.List;
@@ -29,7 +29,8 @@ public class SplashActivity extends BaseActivity {
         StatusBarUtils.changeStatusBar(this, true);
         setContentView(R.layout.activity_guide);
         super.onCreate(savedInstanceState);
-        tvGuideCompany.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/PingFangSC-Thin" +
+        tvGuideCompany.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/PingFangSC" +
+                "-Thin" +
                 ".ttf"));
         BLESPPUtils.getInstance(this);
         if (!XXPermissions.hasPermission(this, Permission.SYSTEM_ALERT_WINDOW)) {
@@ -43,7 +44,7 @@ public class SplashActivity extends BaseActivity {
 
                         @Override
                         public void noPermission(List<String> denied, boolean never) {
-                            showToast("请授予悬浮窗权限, 否则当应用处于后台时无法提示弹窗", 5000);
+                            showToast("请授予悬浮窗权限, 否则当应用处于后台时无法显示弹窗", 5000);
                         }
                     });
         }
