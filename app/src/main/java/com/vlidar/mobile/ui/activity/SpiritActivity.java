@@ -48,10 +48,6 @@ public class SpiritActivity extends BaseActivity implements ProtocolObserver, Se
         mProtocolController.addObservers(this);
 
 //        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        initViews();
-    }
-
-    private void initViews() {
     }
 
     @Override

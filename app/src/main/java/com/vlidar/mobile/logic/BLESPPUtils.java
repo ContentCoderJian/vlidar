@@ -299,7 +299,7 @@ public class BLESPPUtils {
                     onBluetoothAction.onSendBytes(msg);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
 

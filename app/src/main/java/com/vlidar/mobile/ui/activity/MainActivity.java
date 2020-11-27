@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -55,6 +56,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     RelativeLayout rlScanOnce;
     @BindView(R.id.tv_scan_once)
     TextView tvScanOnce;
+    @BindView(R.id.iv_once_scan)
+    ImageView ivScanOnce;
     @BindView(R.id.rl_map_with_button)
     RelativeLayout rlMapWithButton;
     @BindView(R.id.tv_no_gps)
@@ -170,6 +173,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         if (mBleSppUtils.isSppConnected()) {
             rlScanOnce.setEnabled(true);
             tvScanOnce.setEnabled(true);
+            ivScanOnce.setEnabled(true);
             cbBt.setActivated(false);
             cbBt.setSelected(true);
             cbBt.setValueText("在线");
@@ -188,6 +192,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
             tvScanOnce.setEnabled(false);
+            ivScanOnce.setEnabled(false);
             cbRadar.setEnabled(false);
             cbRadar.setValueText("关");
             cbTimerScan.setSelected(false);
@@ -206,6 +211,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
             tvScanOnce.setEnabled(false);
+            ivScanOnce.setEnabled(false);
             cbTimerScan.setSelected(false);
             cbTimerScan.setValueText("关");
             cbRadar.setEnabled(false);
@@ -224,6 +230,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
             tvScanOnce.setEnabled(false);
+            ivScanOnce.setEnabled(false);
             cbTimerScan.setSelected(false);
             cbTimerScan.setValueText("关");
             cbRadar.setEnabled(false);
@@ -273,6 +280,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             case Status.RADAR.NO_SCAN:
                 rlScanOnce.setEnabled(mBleSppUtils.isSppConnected());
                 tvScanOnce.setEnabled(mBleSppUtils.isSppConnected());
+                ivScanOnce.setEnabled(mBleSppUtils.isSppConnected());
                 cbRadar.setActivated(false);
                 cbRadar.setEnabled(mBleSppUtils.isSppConnected());
                 cbRadar.setSelected(false);
@@ -283,6 +291,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 cbRadar.setEnabled(true);
                 rlScanOnce.setEnabled(false);
                 tvScanOnce.setEnabled(false);
+                ivScanOnce.setEnabled(false);
                 cbRadar.setActivated(true);
                 cbRadar.setSelected(false);
                 cbRadar.setValueText("扫描中");
@@ -293,6 +302,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 cbRadar.setEnabled(true);
                 rlScanOnce.setEnabled(false);
                 tvScanOnce.setEnabled(false);
+                ivScanOnce.setEnabled(false);
                 cbRadar.setActivated(true);
                 cbRadar.setSelected(false);
                 cbRadar.setValueText("数据处理中");
@@ -302,6 +312,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             case Status.RADAR.INITTING:
                 rlScanOnce.setEnabled(false);
                 tvScanOnce.setEnabled(false);
+                ivScanOnce.setEnabled(false);
                 cbRadar.setEnabled(false);
                 cbRadar.setActivated(true);
                 cbRadar.setSelected(false);
@@ -312,6 +323,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             case Status.RADAR.NO_TF:
                 rlScanOnce.setEnabled(false);
                 tvScanOnce.setEnabled(false);
+                ivScanOnce.setEnabled(false);
                 cbRadar.setEnabled(false);
                 cbRadar.setActivated(false);
                 cbRadar.setSelected(false);

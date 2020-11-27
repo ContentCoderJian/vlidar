@@ -40,6 +40,6 @@ public class LogUtil {
 
     //是否打印日志
     public static boolean isLogOut() {
-        return true;
+        return false;
     }
 }
