@@ -36,7 +36,7 @@
             app:bubbleColor="#e03524"
             app:bubbleRadius="18dp"
             app:bubbleRuleColor="@color/colorTranslateWhite1"
-            app:bubbleRuleRadius="20dp"
+            app:bubbleRuleRadius="20.5dp"
             app:bubbleRuleWidth="1dp"
             app:horizontalColor="#00ff00"
             app:limitCircleWidth="3dp"

@@ -189,7 +189,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setEnabled(false);
             cbImu.setValueText("关");
             cbImu.setActivated(false);
-            cbImu.setValue1Text(null);
+//            cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
             tvScanOnce.setEnabled(false);
             ivScanOnce.setEnabled(false);
@@ -200,6 +200,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
+            closeOtherActivity();
         } else if (!mBleSppUtils.isBluetoothEnable()) {
 //            cbBt.stopTwinkleAnim();
             cbBt.setActivated(false);
@@ -208,7 +209,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setEnabled(false);
             cbImu.setValueText("关");
             cbImu.setActivated(false);
-            cbImu.setValue1Text(null);
+//            cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
             tvScanOnce.setEnabled(false);
             ivScanOnce.setEnabled(false);
@@ -219,6 +220,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
+            closeOtherActivity();
         } else {
 //            cbBt.stopTwinkleAnim();
             cbBt.setActivated(false);
@@ -227,7 +229,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setEnabled(false);
             cbImu.setValueText("关");
             cbImu.setActivated(false);
-            cbImu.setValue1Text(null);
+//            cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
             tvScanOnce.setEnabled(false);
             ivScanOnce.setEnabled(false);
@@ -238,6 +240,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             resetNoGps();
             updatePower(Status.POWER.NOT_WORKING);
             updateRadar(Status.RADAR.NO_SCAN);
+            closeOtherActivity();
         }
     }
 
@@ -247,6 +250,12 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         tvLatitude.setVisibility(View.INVISIBLE);
         tvLatitude.setText("0°0'0\"N");
         tvLongitude.setText("0°0'0\"E");
+    }
+
+    private void closeOtherActivity() {
+        AppTools.finishActivity(RadarActivity.class);
+        AppTools.finishActivity(SpiritActivity.class);
+        AppTools.finishActivity(EnLargeMapActivity.class);
     }
 
     private void updatePower(int status) {
@@ -437,6 +446,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         if (mBleSppUtils.isSppConnected() && mProtocolController.getLatitude() != 0 && mProtocolController.getLongitude() != 0) {
             tvNoGps.setVisibility(View.INVISIBLE);
             setLatLng(mProtocolController.getLatitude(), mProtocolController.getLongitude());
+            setMarkerRotateAngle((float) mProtocolController.getEularYaw());
             tvLatitude.setText(LatLngUtils.DDtoDMS(mProtocolController.getLatitude()) + "N");
             tvLongitude.setText(LatLngUtils.DDtoDMS(mProtocolController.getLongitude()) + "E");
             tvLatitude.setVisibility(View.VISIBLE);
@@ -455,7 +465,9 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 cbImu.setValueText("开");
                 cbImu.setEnabled(true);
                 cbImu.setActivated(true);
-                cbImu.setValue1Text("yaw: " + mProtocolController.getEularYaw() + "\npitch: " + mProtocolController.getEularPitch() + "\nroll: " + mProtocolController.getEularRoll());
+//                cbImu.setValue1Text("yaw: " + mProtocolController.getEularYaw() + "\npitch: " +
+//                mProtocolController.getEularPitch() + "\nroll: " + mProtocolController
+//                .getEularRoll());
             }
             updateTimerScanStatus();
         }
@@ -545,6 +557,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
         runOnUiThread(() -> {
             updateBtStatus();
             showToast(msg, DEFAULT_TOAST_DURATION);
+            closeOtherActivity();
         });
     }
 
@@ -592,7 +605,11 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setValueText("开");
             cbImu.setEnabled(true);
             cbImu.setActivated(true);
-            cbImu.setValue1Text("yaw: " + eularYaw + "\npitch: " + eularPitch + "\nroll: " + eularRoll);
+//            cbImu.setValue1Text("yaw: " + eularYaw + "\npitch: " + eularPitch + "\nroll: " +
+//            eularRoll);
+            if (mProtocolController.getLatitude() != 0 && mProtocolController.getLongitude() != 0) {
+                setMarkerRotateAngle((float) eularYaw);
+            }
         });
     }
 

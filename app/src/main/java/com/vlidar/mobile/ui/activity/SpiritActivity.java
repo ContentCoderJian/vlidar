@@ -18,15 +18,16 @@ import com.vlidar.mobile.logic.ProtocolObserver;
 import com.vlidar.mobile.logic.Status;
 import com.vlidar.mobile.ui.view.SpiritLevelView;
 
-import butterknife.BindView;
+import java.util.Locale;
+
 import butterknife.OnClick;
 
 public class SpiritActivity extends BaseActivity implements ProtocolObserver, SensorEventListener {
-    @BindView(R.id.spiritLevelView)
+    //    @BindView(R.id.spiritLevelView)
     SpiritLevelView mSpiritLevelView;
-    @BindView(R.id.tvv_vertical)
+    //    @BindView(R.id.tvv_vertical)
     TextView tvVertical;
-    @BindView(R.id.tvv_horz)
+    //    @BindView(R.id.tvv_horz)
     TextView tvHorizontal;
 
     private ProtocolController mProtocolController;
@@ -46,6 +47,9 @@ public class SpiritActivity extends BaseActivity implements ProtocolObserver, Se
         super.onCreate(savedInstanceState);
         mProtocolController = ProtocolController.getInstance();
         mProtocolController.addObservers(this);
+        mSpiritLevelView = findViewById(R.id.spiritLevelView);
+        tvVertical = findViewById(R.id.tvv_vertical);
+        tvHorizontal = findViewById(R.id.tvv_horz);
 
 //        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
     }
@@ -123,6 +127,9 @@ public class SpiritActivity extends BaseActivity implements ProtocolObserver, Se
     public void onResume() {
         super.onResume();
 
+        onAngleChanged(mProtocolController.getEularRoll(), mProtocolController.getEularPitch(),
+                mProtocolController.getEularYaw());
+
         // 给传感器注册监听：
 //        sensorManager.registerListener(this,
 //                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
@@ -191,9 +198,17 @@ public class SpiritActivity extends BaseActivity implements ProtocolObserver, Se
     private void onAngleChanged(double rollAngle, double pitchAngle, double azimuth) {
         mLogTrace.d("onAngleChanged",
                 "rollAngle: " + rollAngle + ", pitchAngle: " + pitchAngle + ", azimuth: " + azimuth);
-        mSpiritLevelView.setAngle(rollAngle, pitchAngle, azimuth);
+        if (mSpiritLevelView != null && tvHorizontal != null || tvVertical != null) {
+            // 传感器返回的是弧度，直接使用，显示需要转换成角度
+            /*mSpiritLevelView.setAngle(rollAngle, pitchAngle, azimuth);
+            tvHorizontal.setText((int) Math.toDegrees(rollAngle) + "°");
+            tvVertical.setText((int) Math.toDegrees(pitchAngle) + "°");*/
 
-        tvHorizontal.setText((int) Math.toDegrees(rollAngle) + "°");
-        tvVertical.setText((int) Math.toDegrees(pitchAngle) + "°");
+            // 雷达返回的是角度，需要转成弧度绘制
+            mSpiritLevelView.setAngle(Math.toRadians(rollAngle), Math.toRadians(pitchAngle),
+                    azimuth);
+            tvHorizontal.setText(String.format(Locale.CHINESE, "%.1f°", rollAngle));
+            tvVertical.setText(String.format(Locale.CHINESE, "%.1f°", pitchAngle));
+        }
     }
 }

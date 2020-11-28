@@ -72,6 +72,7 @@ public class SpiritLevelView extends View {
      * 中心点坐标
      */
     private PointF centerPnt = new PointF();
+    private boolean hasCenterPnt = false;
 
     /**
      * 计算后的气泡点
@@ -79,7 +80,7 @@ public class SpiritLevelView extends View {
     private PointF bubblePoint;
     private double pitchAngle = -90;
     private double rollAngle = -90;
-    private double azimuth = 90;
+    private double azimuth = 0;
 //    private Vibrator vibrator;
 
     public SpiritLevelView(Context context) {
@@ -162,6 +163,10 @@ public class SpiritLevelView extends View {
         int height = MeasureSpec.makeMeasureSpec(heightMeasureSpec, MeasureSpec.UNSPECIFIED);
         int center = Math.min(width, height) / 2;
         centerPnt.set(center, center);
+        hasCenterPnt = true;
+        if (azimuth != 0) {
+            setAngle(rollAngle, pitchAngle, azimuth);
+        }
     }
 
     @Override
@@ -188,7 +193,7 @@ public class SpiritLevelView extends View {
         if (bubblePoint == null) {
             return false;
         }
-        return Math.abs(bubblePoint.x - centerPnt.x) < 3 && Math.abs(bubblePoint.y - centerPnt.y) < 3;
+        return Math.abs(bubblePoint.x - centerPnt.x) < 5.5 && Math.abs(bubblePoint.y - centerPnt.y) < 5.5;
     }
 
     private void drawBubble(Canvas canvas) {
@@ -226,6 +231,10 @@ public class SpiritLevelView extends View {
         this.pitchAngle = pitchAngle;
         this.rollAngle = rollAngle;
         this.azimuth = azimuth;
+
+        if (!hasCenterPnt) {
+            return;
+        }
 
         //考虑气泡边界不超出限制圆，此处减去气泡的显示半径，做为最终的限制圆半径
         float limitRadius = mLimitRadius - mBubbleRadius;

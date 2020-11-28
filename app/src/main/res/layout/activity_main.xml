@@ -97,6 +97,7 @@
                 android:layout_marginTop="@dimen/logo_margin_top"
                 android:layout_toEndOf="@id/tv_no_gps"
                 android:background="@android:color/transparent"
+                android:clickable="false"
                 android:src="@drawable/down" />
         </RelativeLayout>
 
