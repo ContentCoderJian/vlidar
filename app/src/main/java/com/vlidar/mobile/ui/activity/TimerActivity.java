@@ -81,7 +81,7 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
                 }
                 scanTimer.save();
                 mScanTimers = mProtocolController.getScanTimes();
-                mBleSppUtils.send(mProtocolController.sendScanTimer());
+//                mBleSppUtils.send(mProtocolController.sendScanTimer());
                 initRecyclerView(mScanTimers);
             }
         });

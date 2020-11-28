@@ -27,6 +27,7 @@ import com.vlidar.mobile.utils.LatLngUtils;
 import com.vlidar.mobile.utils.ScreenUtils;
 
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindDimen;
 import butterknife.BindView;
@@ -339,6 +340,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 cbRadar.setValueText("未插卡");
                 showToast("未插卡，请插入TF卡", DEFAULT_TOAST_DURATION);
                 cbRadar.stopRotateAnim();
+                AppTools.finishActivity(RadarActivity.class);
                 break;
             default:
                 mLogTrace.d("updateRadar", "invalid status, " + status);
@@ -546,8 +548,15 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 }
                 mSendTimeCount++;
             }
-            mProtocolController.getScanTimes();
-            mBleSppUtils.send(mProtocolController.sendScanTimer());
+            List<ScanTimer> scanTimers = mProtocolController.getScanTimes();
+            if (scanTimers != null && !scanTimers.isEmpty()) {
+                for (ScanTimer scanTimer : scanTimers) {
+                    if (scanTimer.isChecked()) {
+                        mBleSppUtils.send(mProtocolController.sendScanTimer());
+                        break;
+                    }
+                }
+            }
         }).start();
     }
 

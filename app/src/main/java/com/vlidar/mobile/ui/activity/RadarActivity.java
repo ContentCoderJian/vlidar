@@ -54,6 +54,16 @@ public class RadarActivity extends BaseActivity implements ProtocolObserver {
         for (int i = 0; i < gridLayout.getChildCount(); i++) {
             gridLayout.getChildAt(i).setOnClickListener(v -> {
                 mLogTrace.d("onClick", "v : " + v);
+                if (mProtocolController.getRadarState() == Status.RADAR.SCANNING) {
+                    showToast("正在扫描中，请稍候重试", 2000);
+                    return;
+                } else if (mProtocolController.getRadarState() == Status.RADAR.DATA_PROCESSING) {
+                    showToast("数据处理中，请稍候重试", 2000);
+                    return;
+                } else if (mProtocolController.getRadarState() == Status.RADAR.INITTING) {
+                    showToast("正在初始化，请稍候重试", 2000);
+                    return;
+                }
                 resetScanStatus();
                 v.findViewById(R.id.ib_scan).callOnClick();
                 setImuClicked(v);

@@ -13,7 +13,7 @@ public class ScanTimer extends LitePalSupport {
     private int intervalHour;
     private int intervalMinute;
     private int times;
-    private boolean checked = true;
+    private boolean checked = false;
 
     public ScanTimer(int beginMonth, int beginDay, int beginHour, int beginMinute,
                      int beginSecond, int intervalHour, int intervalMinute, int times) {
