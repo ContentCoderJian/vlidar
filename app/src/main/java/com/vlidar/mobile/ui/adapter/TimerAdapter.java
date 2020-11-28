@@ -86,7 +86,7 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         timeBuilder.append(scanTimer.getBeginSecond());
         viewHolder.tvTime.setText(timeBuilder.toString());
 
-        if (scanTimer.getTimes() > 0) {
+        if (scanTimer.getTimes() > 1) {
             StringBuilder intervalBuilder = new StringBuilder("间隔");
             if (scanTimer.getIntervalHour() < 10) {
                 intervalBuilder.append("0");

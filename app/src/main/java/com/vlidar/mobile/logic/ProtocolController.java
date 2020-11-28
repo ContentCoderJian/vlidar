@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Handler;
 
 import com.vlidar.mobile.ui.entity.ScanTimer;
+import com.vlidar.mobile.utils.DateTimeUtils;
 import com.vlidar.mobile.utils.LogTrace;
 
 import org.litepal.LitePal;
@@ -96,23 +97,20 @@ public class ProtocolController {
     }
 
     public void text() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                updateData(new byte[]{0x0D, 0x0A, 0x02, 0x02, 0x04, 0x0D, 0x0A});
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateData(new byte[]{0x0D, 0x0A, 0x02, 0x08, 0x02, 0x0D, 0x0A});
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                updateData(new byte[]{0x0D, 0x0A, 0x02, 0x08, 0x03, 0x0D, 0x0A});
-                            }
-                        }, 800);
-                    }
-                }, 800);
-            }
+        new Handler().postDelayed(() -> {
+            updateData(new byte[]{0x0D, 0x0A, 0x02, 0x02, 0x04, 0x0D, 0x0A});
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    updateData(new byte[]{0x0D, 0x0A, 0x02, 0x08, 0x02, 0x0D, 0x0A});
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateData(new byte[]{0x0D, 0x0A, 0x02, 0x08, 0x03, 0x0D, 0x0A});
+                        }
+                    }, 800);
+                }
+            }, 800);
         }, 1000);
     }
 
@@ -222,23 +220,39 @@ public class ProtocolController {
     private void resetScanTimers() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-//        int currentYear = calendar.get(Calendar.YEAR) - 2000;
+        int currentYear = calendar.get(Calendar.YEAR);
         int currentMonth = calendar.get(Calendar.MONTH) + 1;
-        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-        int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
-        int currentMinute = calendar.get(Calendar.MINUTE);
-        int currentSecond = calendar.get(Calendar.SECOND);
+        Calendar itemCalendar = Calendar.getInstance();
+
         Iterator<ScanTimer> iterator = scanTimers.iterator();
         while (iterator.hasNext()) {
             ScanTimer scanTimer = iterator.next();
-            if (scanTimer.getBeginMonth() < currentMonth // 月小于
-                    || (scanTimer.getBeginMonth() == currentMonth && scanTimer.getBeginDay() < currentDay)  // 日小于
-                    || (scanTimer.getBeginMonth() == currentMonth && scanTimer.getBeginDay() == currentDay && ((scanTimer.getBeginHour() < currentHour) // 同一天，小时小于
-                    || (scanTimer.getBeginHour() == currentHour && scanTimer.getBeginMinute() < currentMinute)  // 同一天同小时，分钟小于
-                    || ((scanTimer.getBeginHour() == currentHour && scanTimer.getBeginMinute() == currentMinute) && scanTimer.getBeginSecond() < currentSecond - 5)))) {// 同一天同小时，秒钟小于当前秒钟-5 {
+            if (currentMonth == 12 && scanTimer.getBeginMonth() == 1) {
+                currentYear += 1;
+            }
+            itemCalendar.setTime(DateTimeUtils.parse(currentYear + "-" + scanTimer.getBeginMonth() + "-" + scanTimer.getBeginDay() + " " + scanTimer.getBeginHour() + ":" + scanTimer.getBeginMinute() + ":" + scanTimer.getBeginSecond()));
+            itemCalendar.set(Calendar.MINUTE,
+                    itemCalendar.get(Calendar.MINUTE) + (scanTimer.getTimes() - 1) * (scanTimer.getIntervalHour() * 60 + scanTimer.getIntervalMinute()));
+
+            mLogTrace.d("itemCalendar:" + itemCalendar.getTimeInMillis());
+            if (itemCalendar.getTimeInMillis() + 5 <= System.currentTimeMillis()) {
                 scanTimer.delete();
                 iterator.remove();
             }
+
+            /*if (scanTimer.getBeginMonth() < currentMonth // 月小于
+                    || (scanTimer.getBeginMonth() == currentMonth && scanTimer.getBeginDay() <
+                    currentDay)  // 日小于
+                    || (scanTimer.getBeginMonth() == currentMonth && scanTimer.getBeginDay() ==
+                    currentDay && ((scanTimer.getBeginHour() < currentHour) // 同一天，小时小于
+                    || (scanTimer.getBeginHour() == currentHour && scanTimer.getBeginMinute() <
+                    currentMinute)  // 同一天同小时，分钟小于
+                    || ((scanTimer.getBeginHour() == currentHour && scanTimer.getBeginMinute()
+                    == currentMinute) && scanTimer.getBeginSecond() < currentSecond - 5)))) {//
+                    同一天同小时，秒钟小于当前秒钟-5 {
+                scanTimer.delete();
+                iterator.remove();
+            }*/
         }
     }
 

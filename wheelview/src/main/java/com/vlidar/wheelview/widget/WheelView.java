@@ -395,6 +395,16 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
         }, 50);
     }
 
+    public void setSelection(final int selection, final boolean join) {
+        mSelection = selection;
+//        setVisibility(View.INVISIBLE);
+        WheelView.this.postDelayed(() -> {
+            WheelView.super.setSelection(getRealPosition(selection));
+            refreshCurrentPosition(join);
+//            setVisibility(View.VISIBLE);
+        }, 50);
+    }
+
     /**
      * 连接副WheelView
      *

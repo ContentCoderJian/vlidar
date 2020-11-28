@@ -101,7 +101,7 @@ public class DateTimeUtils {
      * @param strDate 日期字符串
      * @return
      */
-    private static Date parse(String strDate) {
+    public static Date parse(String strDate) {
         return parse(strDate, getDatePattern());
     }
 

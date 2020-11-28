@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.hjq.xtoast.OnToastListener;
 import com.hjq.xtoast.XToast;
 import com.vlidar.mobile.R;
 import com.vlidar.mobile.ui.entity.ScanTimer;
+import com.vlidar.mobile.utils.DateTimeUtils;
 import com.vlidar.mobile.utils.LogTrace;
 import com.vlidar.wheelview.adapter.ArrayWheelAdapter;
 import com.vlidar.wheelview.widget.WheelView;
@@ -56,6 +58,7 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
 
     private int mCurrentTab = 0;
 
+    private int mBeginYear;
     private int mBeginMonth;
     private int mBeginDay;
     private int mBeginHour;
@@ -63,9 +66,9 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
     private int mBeginSecond;
 
     private int mIntervalHour;
-    private int mIntervalMinute;
+    private int mIntervalMinute = 20;
 
-    private int mLoopTimes;
+    private int mLoopTimes = 1;
     private OnAddTimeDoneListener mOnAddTimeDoneListener;
 
     private int mCurrentMonth;
@@ -223,6 +226,8 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
                 llDate.setVisibility(View.INVISIBLE);
                 llTimes.setVisibility(View.INVISIBLE);
                 llInterval.setVisibility(View.VISIBLE);
+//                setLimitIntervalHour();
+//                setLimitIntervalMinute();
                 break;
             default:
                 break;
@@ -244,8 +249,8 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
         setTabSelected(0);
 
         mIntervalHour = 0;
-        mIntervalMinute = 0;
-        mLoopTimes = 0;
+        mIntervalMinute = 20;
+        mLoopTimes = 1;
         mTimesWheelView.setSelection(0);
         mIntervalHourWheelView.setSelection(0);
         mIntervalMinuteWheelView.setSelection(0);
@@ -258,8 +263,8 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
         initWheelView(mMinuteWheelView, createMinutes(), "分", false);
         initWheelView(mSecondWheelView, createSeconds(), "秒", false);
         initWheelView(mTimesWheelView, createLoopTimes(), "次", true);
-        initWheelView(mIntervalHourWheelView, createHours(), "小时", true);
-        initWheelView(mIntervalMinuteWheelView, createMinutesSeconds(0), "分钟", true);
+        initWheelView(mIntervalHourWheelView, createInvalidTime(), "小时", true);
+        initWheelView(mIntervalMinuteWheelView, createInvalidTime(), "分钟", true);
     }
 
     private void initWheelView(WheelView<String> wheelView, ArrayList<String> data, String extra,
@@ -397,13 +402,19 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
 
     private ArrayList<String> createLoopTimes() {
         ArrayList<String> list = new ArrayList<>();
-        for (int i = 0; i <= 50; i++) {
+        for (int i = 1; i <= 50; i++) {
             if (i < 10) {
                 list.add("0" + i);
             } else {
                 list.add("" + i);
             }
         }
+        return list;
+    }
+
+    private ArrayList<String> createInvalidTime() {
+        ArrayList<String> list = new ArrayList<>();
+        list.add("-");
         return list;
     }
 
@@ -436,16 +447,23 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
     private boolean judgeDoneValue() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        int currentMonth = calendar.get(Calendar.MONTH) + 1;
-        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-        int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
-        int currentMinute = calendar.get(Calendar.MINUTE);
-        int currentSecond = calendar.get(Calendar.SECOND);
-        mLogTrace.d("judgeDoneValue",
-                "currentMonth: " + currentMonth + ", currentDay: " + currentDay + ", currentHour:" +
-                        " " + currentHour + ", currentMinute: " + currentMinute + ", " +
-                        "currentSecond: " + currentSecond);
-        if (mBeginMonth < currentMonth) {
+        int currentYear = calendar.get(Calendar.YEAR);
+        if (mCurrentMonth == 12 && mBeginMonth == 1) { // 跨年
+            currentYear += 1;
+        }
+        Calendar itemCalendar = Calendar.getInstance();
+        itemCalendar.setTime(DateTimeUtils.parse(currentYear + "-" + mBeginMonth + "-" + mBeginDay + " " + mBeginHour + ":" + mBeginMinute + ":" + mBeginSecond));
+        itemCalendar.set(Calendar.MINUTE,
+                itemCalendar.get(Calendar.MINUTE) + (mLoopTimes - 1) * (mIntervalHour * 60 + mIntervalMinute));
+
+        if (itemCalendar.getTimeInMillis() + 5 <= System.currentTimeMillis()) {
+            if (mOnAddTimeDoneListener != null) {
+                mOnAddTimeDoneListener.onAddTimeError("定时器设置过期，请重新设置");
+            }
+            return false;
+        }
+
+        /*if (mBeginMonth < currentMonth) {
             if (mOnAddTimeDoneListener != null) {
                 mOnAddTimeDoneListener.onAddTimeError("开始日期(" + mBeginMonth + "月)无效");
             }
@@ -460,12 +478,14 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
         if (mBeginMonth == currentMonth && mBeginDay == currentDay
                 && (mBeginHour < currentHour
                 || (mBeginHour == currentHour && mBeginMinute < currentMinute)
-                || ((mBeginHour == currentHour && mBeginMinute == currentMinute) && mBeginSecond < mCurrentSecond - 5))) {
+                || ((mBeginHour == currentHour && mBeginMinute == currentMinute) &&
+                mBeginSecond < mCurrentSecond - 5))) {
             if (mOnAddTimeDoneListener != null) {
-                mOnAddTimeDoneListener.onAddTimeError("开始时间(" + mBeginHour + ":" + mBeginMinute + ":" + mBeginSecond + ")无效");
+                mOnAddTimeDoneListener.onAddTimeError("开始时间(" + mBeginHour + ":" + mBeginMinute
+                + ":" + mBeginSecond + ")无效");
             }
             return false;
-        }
+        }*/
         return true;
     }
 
@@ -511,35 +531,60 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
                 mLogTrace.d("onItemSelected, loop times-->",
                         "position=" + position + ", str=" + str);
                 mLoopTimes = Integer.parseInt(str);
+                setLimitIntervalHour();
                 setLimitIntervalMinute();
                 break;
             case R.id.interval_hour_wheel_view:
                 mLogTrace.d("onItemSelected, interval hour-->",
                         "position=" + position + ", str=" + str);
-                mIntervalHour = Integer.parseInt(str);
+                if (TextUtils.equals("-", str)) {
+                    mIntervalHour = 0;
+                } else {
+                    mIntervalHour = Integer.parseInt(str);
+                }
                 setLimitIntervalMinute();
                 break;
 
             case R.id.interval_minute_wheel_view:
                 mLogTrace.d("onItemSelected, interval minute-->",
                         "position=" + position + ", str=" + str);
-                mIntervalMinute = Integer.parseInt(str);
+                if (TextUtils.equals("-", str)) {
+                    mIntervalMinute = 20;
+                } else {
+                    mIntervalMinute = Integer.parseInt(str);
+                }
                 break;
             default:
                 break;
         }
     }
 
+    private void setLimitIntervalHour() {
+        if (mLoopTimes > 1) {
+            mIntervalHour = 0;
+            updateWheel(mIntervalHourWheelView, createHours(), 0, "小时", true);
+        } else {
+            mIntervalHour = 0;
+            updateWheel(mIntervalHourWheelView, createInvalidTime(), 0, "小时", true);
+        }
+        mIntervalHourWheelView.setSelection(0);
+    }
+
     /**
      * 如果设了循环次数，间隔不能小于20分钟
      */
     private void setLimitIntervalMinute() {
-        if (mLoopTimes > 0 && mIntervalHour <= 0) {
-            mIntervalMinute = 20;
-            updateWheel(mIntervalMinuteWheelView, createMinutesSeconds(20), 0, "分钟", true);
+        if (mLoopTimes > 1) {
+            if (mIntervalHour <= 0) {
+                mIntervalMinute = 20;
+                updateWheel(mIntervalMinuteWheelView, createMinutesSeconds(20), 0, "分钟", true);
+            } else {
+                mIntervalMinute = 0;
+                updateWheel(mIntervalMinuteWheelView, createMinutesSeconds(0), 0, "分钟", true);
+            }
         } else {
-            mIntervalMinute = 0;
-            updateWheel(mIntervalMinuteWheelView, createMinutesSeconds(0), 0, "分钟", true);
+            mIntervalMinute = 20;
+            updateWheel(mIntervalMinuteWheelView, createInvalidTime(), 0, "分钟", true);
         }
         mIntervalMinuteWheelView.setSelection(0);
     }
@@ -573,6 +618,7 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
     }
 
     private void setLimitBeginMonth() {
+        updateWheel(mMonthWheelView, createMonths(), 0, "月", false);
         if (mCrossMonthDays > 0) { // 存在跨月
             if (mBeginDay > 0 && mBeginDay < 5) {
                 mBeginMonth = mBeginMonthAfter5Days;
@@ -585,6 +631,7 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
     }
 
     private void setLimitBeginDay() {
+        updateWheel(mDayWheelView, createDays(), 0, "日", false);
         if (mCrossMonthDays > 0) { // 存在跨月
             if (mBeginMonth > mCurrentMonth) {
                 mBeginDay = 1;
@@ -595,6 +642,7 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
             }
         }
     }
+
 
     public void setOnAddTimeDoneListener(OnAddTimeDoneListener onAddTimeDoneListener) {
         this.mOnAddTimeDoneListener = onAddTimeDoneListener;
