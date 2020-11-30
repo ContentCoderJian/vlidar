@@ -43,7 +43,7 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
     private int mWheelSize = WHEEL_SIZE;    // 滚轮个数
     private boolean mLoop = LOOP;   // 是否循环滚动
     private List<T> mList = null;   // 滚轮数据列表
-    private int mCurrentPositon = -1;    // 记录滚轮当前刻度
+    private int mCurrentPosition = -1;    // 记录滚轮当前刻度
     private String mExtraText;  // 添加滚轮选中位置附加文本
     private int mExtraTextColor;    // 附加文本颜色
     private int mExtraTextSize; // 附加文本大小
@@ -55,7 +55,7 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
     private Paint mTextPaint;   // 附加文本画笔
     private Paint mRectPaint;   // 居中选择框
 
-    private Skin mSkin = Skin.Holo; // 皮肤风格
+    private Skin mSkin = Skin.None; // 皮肤风格
 
     private WheelViewStyle mStyle;  // 滚轮样式
 
@@ -185,6 +185,8 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
     private void init() {
         if (mStyle == null) {
             mStyle = new WheelViewStyle();
+            mStyle.textSize = 16;
+            mStyle.selectedTextSize = 20;
         }
 
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -450,7 +452,7 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
      * @return
      */
     public int getCurrentPosition() {
-        return mCurrentPositon;
+        return mCurrentPosition;
     }
 
     /**
@@ -591,10 +593,10 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
         if (mLoop) {
             position = (position + mWheelSize / 2) % getWheelCount();
         }
-        if (position == mCurrentPositon && !join) {
+        if (position == mCurrentPosition && !join) {
             return;
         }
-        mCurrentPositon = position;
+        mCurrentPosition = position;
         mWheelAdapter.setCurrentPosition(position);
         mHandler.removeMessages(WheelConstants.WHEEL_SCROLL_HANDLER_WHAT);
         mHandler.sendEmptyMessageDelayed(WheelConstants

@@ -209,8 +209,8 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
                 llTimes.setVisibility(View.INVISIBLE);
                 llInterval.setVisibility(View.INVISIBLE);
                 llTime.setVisibility(View.VISIBLE);
-                setLimitBeginHour();
-                setLimitBeginMinute();
+//                setLimitBeginHour();
+//                setLimitBeginMinute();
 //                updateWheel(mHourWheelView, createValidHours(), 0, "时", false);
 //                updateWheel(mMinuteWheelView, createMinutes(), 0, "分", false);
                 updateWheel(mSecondWheelView, createSeconds(), 0, "秒", false);
@@ -270,12 +270,12 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
     private void initWheelView(WheelView<String> wheelView, ArrayList<String> data, String extra,
                                boolean isLoop) {
         wheelView.setWheelAdapter(new ArrayWheelAdapter<>(mContext));
-        wheelView.setSkin(WheelView.Skin.None);
+//        wheelView.setSkin(WheelView.Skin.None);
 
-        WheelView.WheelViewStyle style = new WheelView.WheelViewStyle();
+        /*WheelView.WheelViewStyle style = new WheelView.WheelViewStyle();
         style.textSize = 16;
         style.selectedTextSize = 20;
-        wheelView.setStyle(style);
+        wheelView.setStyle(style);*/
 
         updateWheel(wheelView, data, 0, extra, isLoop);
         wheelView.setOnWheelItemSelectedListener(this);
