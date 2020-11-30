@@ -3,9 +3,12 @@
     android:id="@+id/rl_bg"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="@dimen/common_button_padding">
+    android:paddingStart="@dimen/common_button_padding"
+    android:paddingTop="@dimen/common_button_padding"
+    android:paddingEnd="2dp"
+    android:paddingBottom="2dp">
 
-    <ImageView
+<ImageView
         android:id="@+id/iv_pic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

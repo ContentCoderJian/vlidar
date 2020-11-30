@@ -444,7 +444,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
 //        setLatLng(31.9325160, 118.8146760);  // gps座标
 //        setLatLng(31.929672, 118.820083);  // 高德座标
 //        tvLatitude.setText(LatLngUtils.DDtoDMS(31.929672) + "N");
-//        tvLongitude.setText(LatLngUtils.DDtoDMS(118.820083) + "E");
+//        tvLongitude.setText(LatLngUtils.DDtoDMS(118.820083) +   "E");
 //        setMarkerRotateAngle(-60F);
         if (mBleSppUtils.isSppConnected() && mProtocolController.getLatitude() != 0 && mProtocolController.getLongitude() != 0) {
             tvNoGps.setVisibility(View.INVISIBLE);
