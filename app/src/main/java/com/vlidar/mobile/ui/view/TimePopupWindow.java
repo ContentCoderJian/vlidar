@@ -306,6 +306,10 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
 
     private ArrayList<String> createMonths() {
         ArrayList<String> list = new ArrayList<>();
+        if (mCurrentMonth == 12 && mBeginMonthAfter5Days == 1) { // 跨年
+            list.add("12");
+            list.add("01");
+        }
         for (int i = mCurrentMonth; i <= mBeginMonthAfter5Days; i++) {
             if (i < 10) {
                 list.add("0" + i);
@@ -321,8 +325,8 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
         if (mBeginDayAfter5Days < mCurrentDay) { // 跨月
             mCrossMonthDays = mBeginDayAfter5Days;
             mLogTrace.d("createDays",
-                    "mCurrentDay:" + mCurrentDay + "mCrossMonthDays: " + mCrossMonthDays);
-            for (int i = mCurrentDay; i < mCurrentDay + 5 - mCrossMonthDays; i++) {
+                    ", mCurrentDay:" + mCurrentDay + ", mCrossMonthDays: " + mCrossMonthDays);
+            for (int i = mCurrentDay; i <= mCurrentDay + 5 - mCrossMonthDays; i++) {
                 list.add("" + i);
             }
             for (int i = 1; i <= mCrossMonthDays; i++) {
@@ -620,7 +624,7 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
     private void setLimitBeginMonth() {
         updateWheel(mMonthWheelView, createMonths(), 0, "月", false);
         if (mCrossMonthDays > 0) { // 存在跨月
-            if (mBeginDay > 0 && mBeginDay < 5) {
+            if (mBeginDay > 0 && mBeginDay <= 5) {
                 mBeginMonth = mBeginMonthAfter5Days;
                 mMonthWheelView.setSelection(1);
             } else {
@@ -631,18 +635,19 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
     }
 
     private void setLimitBeginDay() {
-        updateWheel(mDayWheelView, createDays(), 0, "日", false);
+        if (mCrossMonthDays > 0 && ((mBeginDay <= 5 && ((mBeginMonth > mCurrentMonth) || (mCurrentMonth == 12 && mBeginMonth == 1))) || (mBeginDay > 20 && mBeginMonth == mCurrentMonth)))
+            return;
         if (mCrossMonthDays > 0) { // 存在跨月
-            if (mBeginMonth > mCurrentMonth) {
+            updateWheel(mDayWheelView, createDays(), 0, "日", false);
+            if (mBeginMonth > mCurrentMonth || (mCurrentMonth == 12 && mBeginMonth == 1)) {
                 mBeginDay = 1;
-                mDayWheelView.setSelection(5 - mCrossMonthDays);
+                mDayWheelView.setSelection(6 - mCrossMonthDays);
             } else {
                 mBeginDay = mCurrentDay;
                 mDayWheelView.setSelection(0);
             }
         }
     }
-
 
     public void setOnAddTimeDoneListener(OnAddTimeDoneListener onAddTimeDoneListener) {
         this.mOnAddTimeDoneListener = onAddTimeDoneListener;

@@ -39,18 +39,17 @@
         android:id="@+id/recycle_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/ib_scan"
         android:layout_below="@id/ib_back"
         android:layout_marginTop="@dimen/timer_list_margin_top"
         android:layout_marginBottom="@dimen/timer_bottom_button_margin" />
 
-    <ImageButton
-        android:id="@+id/ib_scan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/timer_bottom_selector"
-        android:src="@drawable/scan_white" />
+    <!--    <ImageButton-->
+    <!--        android:id="@+id/ib_scan"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_alignParentBottom="true"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:background="@drawable/timer_bottom_selector"-->
+    <!--        android:src="@drawable/scan_white" />-->
 
 </RelativeLayout>

@@ -38,8 +38,8 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
     @BindView(R.id.recycle_view)
     JRecycleView jRecycleView;
 
-    @BindView(R.id.ib_scan)
-    ImageView ibScan;
+//    @BindView(R.id.ib_scan)
+//    ImageView ibScan;
 
     @BindDimen(R.dimen.list_margin)
     int mItemHeight;
@@ -96,7 +96,7 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
     protected void onResume() {
         super.onResume();
         mScanTimers = mProtocolController.getScanTimes();
-        startOrStopRotate();
+//        startOrStopRotate();
         initRecyclerView(mScanTimers);
     }
 
@@ -110,7 +110,7 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
         super.onDestroy();
     }
 
-    @OnClick({R.id.ib_back, R.id.ib_add, R.id.ib_scan})
+    @OnClick({R.id.ib_back, R.id.ib_add, /*R.id.ib_scan*/})
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.ib_back:
@@ -123,7 +123,7 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
                 mTimePopupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
                 break;
 
-            case R.id.ib_scan:
+/*            case R.id.ib_scan:
                 for (ScanTimer scanTimer : mScanTimers) {
                     scanTimer.setChecked(true);
                     scanTimer.save();
@@ -131,7 +131,7 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
                 mScanTimers = mProtocolController.getScanTimes();
                 initRecyclerView(mScanTimers);
                 mBleSppUtils.send(mProtocolController.sendScanTimer());
-                break;
+                break;*/
             default:
                 break;
         }
@@ -139,18 +139,21 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
 
     private void initRecyclerView(List<ScanTimer> scanTimers) {
         mTimerAdapter = new TimerAdapter(this, scanTimers);
-        startOrStopRotate();
+//        startOrStopRotate();
         mTimerAdapter.setOnDeleteListener(position -> {
             mLogTrace.d("onDeleteClick, position = " + position);
+            boolean needSend = mScanTimers.get(position).isChecked();  // 当前如果是关闭状态，删除就不发了
             mScanTimers.get(position).delete();
             mScanTimers.remove(position);
             mScanTimers = mProtocolController.getScanTimes();
-            mBleSppUtils.send(mProtocolController.sendScanTimer());
+            if (needSend) {
+                mBleSppUtils.send(mProtocolController.sendScanTimer());
+            }
             initRecyclerView(mScanTimers);
         });
         mTimerAdapter.setOnCheckedListener(checked -> {
             mScanTimers = mProtocolController.getScanTimes();
-            startOrStopRotate();
+//            startOrStopRotate();
             mBleSppUtils.send(ProtocolController.getInstance().sendScanTimer());
         });
         mRefreshAndLoadMoreAdapter = new JRefreshAndLoadMoreAdapter(this, mTimerAdapter);
@@ -161,15 +164,15 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
     }
 
     private void startOrStopRotate() {
-        if (BLESPPUtils.getInstance(this).isSppConnected()) {
-            for (ScanTimer scanTimer : mScanTimers) {
-                if (scanTimer.isChecked()) {
-                    startRotateAnimation(ibScan);
-                    return;
-                }
-            }
-        }
-        stopRotateAnimation(ibScan);
+//        if (BLESPPUtils.getInstance(this).isSppConnected()) {
+//            for (ScanTimer scanTimer : mScanTimers) {
+//                if (scanTimer.isChecked()) {
+//                    startRotateAnimation(ibScan);
+//                    return;
+//                }
+//            }
+//        }
+//        stopRotateAnimation(ibScan);
     }
 
     private void startRotateAnimation(ImageView imageView) {

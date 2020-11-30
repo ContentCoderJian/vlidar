@@ -190,7 +190,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setEnabled(false);
             cbImu.setValueText("关");
             cbImu.setActivated(false);
-//            cbImu.setValue1Text(null);
+            cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
             tvScanOnce.setEnabled(false);
             ivScanOnce.setEnabled(false);
@@ -210,7 +210,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setEnabled(false);
             cbImu.setValueText("关");
             cbImu.setActivated(false);
-//            cbImu.setValue1Text(null);
+            cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
             tvScanOnce.setEnabled(false);
             ivScanOnce.setEnabled(false);
@@ -230,7 +230,7 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setEnabled(false);
             cbImu.setValueText("关");
             cbImu.setActivated(false);
-//            cbImu.setValue1Text(null);
+            cbImu.setValue1Text(null);
             rlScanOnce.setEnabled(false);
             tvScanOnce.setEnabled(false);
             ivScanOnce.setEnabled(false);
@@ -441,7 +441,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     @SuppressLint("SetTextI18n")
     private void updateViews() {
         // TODO 测试，先用景枫中心经纬度
-//        setLatLng(31.929672, 118.820083);
+//        setLatLng(31.9325160, 118.8146760);  // gps座标
+//        setLatLng(31.929672, 118.820083);  // 高德座标
 //        tvLatitude.setText(LatLngUtils.DDtoDMS(31.929672) + "N");
 //        tvLongitude.setText(LatLngUtils.DDtoDMS(118.820083) + "E");
 //        setMarkerRotateAngle(-60F);
@@ -467,9 +468,9 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
                 cbImu.setValueText("开");
                 cbImu.setEnabled(true);
                 cbImu.setActivated(true);
-//                cbImu.setValue1Text("yaw: " + mProtocolController.getEularYaw() + "\npitch: " +
-//                mProtocolController.getEularPitch() + "\nroll: " + mProtocolController
-//                .getEularRoll());
+                cbImu.setValue1Text("yaw: " + mProtocolController.getEularYaw() + "\npitch: " +
+                        mProtocolController.getEularPitch() + "\nroll: " + mProtocolController
+                        .getEularRoll());
             }
             updateTimerScanStatus();
         }
@@ -614,8 +615,8 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
             cbImu.setValueText("开");
             cbImu.setEnabled(true);
             cbImu.setActivated(true);
-//            cbImu.setValue1Text("yaw: " + eularYaw + "\npitch: " + eularPitch + "\nroll: " +
-//            eularRoll);
+            cbImu.setValue1Text("yaw: " + eularYaw + "\npitch: " + eularPitch + "\nroll: " +
+                    eularRoll);
             if (mProtocolController.getLatitude() != 0 && mProtocolController.getLongitude() != 0) {
                 setMarkerRotateAngle((float) eularYaw);
             }

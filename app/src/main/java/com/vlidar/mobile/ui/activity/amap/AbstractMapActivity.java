@@ -18,6 +18,7 @@ import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.CoordinateConverter;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.TextureMapView;
 import com.amap.api.maps.UiSettings;
@@ -131,6 +132,17 @@ public abstract class AbstractMapActivity extends AbstractCheckPermissionsActivi
     protected void setLatLng(double latitude, double longitude) {
         deactivate();
         mLatLng = new LatLng(latitude, longitude);
+        mLogTrace.d("setLatLng, begin. latitude:" + mLatLng.latitude + ", longitude: " + mLatLng.longitude);
+        // 从GPS座标转成高德座标  WGS-84 --> GCJ-02
+        try {
+            CoordinateConverter converter = new CoordinateConverter(this);
+            converter.from(CoordinateConverter.CoordType.GPS);
+            converter.coord(mLatLng);
+            mLatLng = converter.convert();
+        } catch (Exception e) {
+            mLogTrace.e("setLatLng", "e: " + e);
+        }
+        mLogTrace.d("setLatLng, end. latitude:" + mLatLng.latitude + ", longitude: " + mLatLng.longitude);
         animMap(mLatLng);
         addPOIMarker(mLatLng);
     }
@@ -199,7 +211,8 @@ public abstract class AbstractMapActivity extends AbstractCheckPermissionsActivi
                     public void onFinish() {
 //                        mLogTrace.d("onLocationChanged",
 //                                "longitude: " + aMapLocation.getLongitude() + ", " +
-//                                        "latitude: " + aMapLocation.getLatitude() + ", bearing: " + aMapLocation.getBearing());
+//                                        "latitude: " + aMapLocation.getLatitude() + ", bearing:
+//                                        " + aMapLocation.getBearing());
                         addPOIMarker(latLng);
                         setMarkerRotateAngle(aMapLocation.getBearing());
                     }

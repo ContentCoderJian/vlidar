@@ -66,25 +66,27 @@ public class RadarActivity extends BaseActivity implements ProtocolObserver {
                 }
                 resetScanStatus();
                 v.findViewById(R.id.ib_scan).callOnClick();
-                setImuClicked(v);
-                switch (v.getId()) {
-                    case R.id.imu_30:
-                        mBleSppUtils.send(mProtocolController.sendOnceScan((byte) 0x04));
-                        break;
-                    case R.id.imu_60:
-                        mBleSppUtils.send(mProtocolController.sendOnceScan((byte) 0x05));
-                        break;
-                    case R.id.imu_90:
-                        mBleSppUtils.send(mProtocolController.sendOnceScan((byte) 0x06));
-                        break;
-                    case R.id.imu_120:
-                        mBleSppUtils.send(mProtocolController.sendOnceScan((byte) 0x07));
-                        break;
-                    case R.id.imu_180:
-                        mBleSppUtils.send(mProtocolController.sendOnceScan((byte) 0x08));
-                        break;
-                    default:
-                        break;
+                if (mProtocolController.getRadarState() == Status.RADAR.NO_SCAN) {
+                    setImuClicked(v);
+                    switch (v.getId()) {
+                        case R.id.imu_30:
+                            mBleSppUtils.send(mProtocolController.sendOnceScan((byte) 0x04));
+                            break;
+                        case R.id.imu_60:
+                            mBleSppUtils.send(mProtocolController.sendOnceScan((byte) 0x05));
+                            break;
+                        case R.id.imu_90:
+                            mBleSppUtils.send(mProtocolController.sendOnceScan((byte) 0x06));
+                            break;
+                        case R.id.imu_120:
+                            mBleSppUtils.send(mProtocolController.sendOnceScan((byte) 0x07));
+                            break;
+                        case R.id.imu_180:
+                            mBleSppUtils.send(mProtocolController.sendOnceScan((byte) 0x08));
+                            break;
+                        default:
+                            break;
+                    }
                 }
             });
         }
@@ -180,15 +182,18 @@ public class RadarActivity extends BaseActivity implements ProtocolObserver {
 
     @Override
     public void updateRadarStatus(int state) {
-        if (!XXPermissions.hasPermission(this, Permission.SYSTEM_ALERT_WINDOW)) {
-            runOnUiThread(() -> {
+        runOnUiThread(() -> {
+            if (state == Status.RADAR.NO_SCAN || state == Status.RADAR.INITTING || state == Status.RADAR.NO_TF) {
+                resetScanStatus();
+            }
+            if (!XXPermissions.hasPermission(this, Permission.SYSTEM_ALERT_WINDOW)) {
                 if (state == Status.RADAR.NO_TF) {
                     showToast("未插卡，请插入TF卡", DEFAULT_TOAST_DURATION);
                 } else if (!isShowNoTFToast()) {
                     xToast.cancel();
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override

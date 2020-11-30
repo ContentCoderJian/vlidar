@@ -222,6 +222,14 @@ public class ProtocolController {
         calendar.setTimeInMillis(System.currentTimeMillis());
         int currentYear = calendar.get(Calendar.YEAR);
         int currentMonth = calendar.get(Calendar.MONTH) + 1;
+
+        Calendar fiveDaysCalendar = Calendar.getInstance();
+        fiveDaysCalendar.setTimeInMillis(System.currentTimeMillis());
+        fiveDaysCalendar.set(Calendar.DAY_OF_MONTH,
+                fiveDaysCalendar.get(Calendar.DAY_OF_MONTH) + 5);
+        long fiveDaysTimeInMillis = fiveDaysCalendar.getTimeInMillis();
+        mLogTrace.d("fiveDaysTimeInMillis:" + fiveDaysTimeInMillis);
+
         Calendar itemCalendar = Calendar.getInstance();
 
         Iterator<ScanTimer> iterator = scanTimers.iterator();
@@ -234,8 +242,9 @@ public class ProtocolController {
             itemCalendar.set(Calendar.MINUTE,
                     itemCalendar.get(Calendar.MINUTE) + (scanTimer.getTimes() - 1) * (scanTimer.getIntervalHour() * 60 + scanTimer.getIntervalMinute()));
 
+            currentYear = calendar.get(Calendar.YEAR);
             mLogTrace.d("itemCalendar:" + itemCalendar.getTimeInMillis());
-            if (itemCalendar.getTimeInMillis() + 5 <= System.currentTimeMillis()) {
+            if (itemCalendar.getTimeInMillis() + 5 <= System.currentTimeMillis() || itemCalendar.getTimeInMillis() > fiveDaysTimeInMillis) {
                 scanTimer.delete();
                 iterator.remove();
             }
@@ -259,7 +268,13 @@ public class ProtocolController {
     private void sortScanTimes() {
         Collections.sort(scanTimers, (o1, o2) -> {
             if (o1.getBeginMonth() != o2.getBeginMonth()) {
-                return o1.getBeginMonth() - o2.getBeginMonth();
+                if (o1.getBeginMonth() == 12 && o2.getBeginMonth() == 1) {
+                    return -1;
+                } else if (o2.getBeginMonth() == 12 && o1.getBeginMonth() == 1) {
+                    return 1;
+                } else {
+                    return o1.getBeginMonth() - o2.getBeginMonth();
+                }
             } else if (o1.getBeginDay() != o2.getBeginDay()) {
                 return o1.getBeginDay() - o2.getBeginDay();
             } else if (o1.getBeginHour() != o2.getBeginHour()) {
