@@ -21,11 +21,12 @@ import com.google.android.material.tabs.TabLayout;
 import com.hjq.xtoast.OnToastListener;
 import com.hjq.xtoast.XToast;
 import com.vlidar.mobile.R;
+import com.vlidar.mobile.ui.VlidarApplication;
 import com.vlidar.mobile.ui.entity.ScanTimer;
+import com.vlidar.mobile.ui.view.wheelview.adapter.ArrayWheelAdapter;
+import com.vlidar.mobile.ui.view.wheelview.widget.WheelView;
 import com.vlidar.mobile.utils.DateTimeUtils;
 import com.vlidar.mobile.utils.LogTrace;
-import com.vlidar.wheelview.adapter.ArrayWheelAdapter;
-import com.vlidar.wheelview.widget.WheelView;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -109,15 +110,11 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
         this.setBackgroundDrawable(dw);
 
         Button btnCancel = mView.findViewById(R.id.btn_cancel);
-        btnCancel.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "fonts/PingFangSC" +
-                "-Regular" +
-                ".ttf"));
+        btnCancel.setTypeface(VlidarApplication.PingFangSC_Regular);
         btnCancel.setOnClickListener(v -> dismiss());
 
         Button btnDone = mView.findViewById(R.id.btn_done);
-        btnDone.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "fonts/PingFangSC" +
-                "-Regular" +
-                ".ttf"));
+        btnDone.setTypeface(VlidarApplication.PingFangSC_Regular);
         btnDone.setOnClickListener(v -> {
             mLogTrace.d("onDoneClick", "mBeginMonth: " + mBeginMonth + ", mBeginDay: " + mBeginDay +
                     ", mBeginHour: " + mBeginHour + ", mBeginMinute: " + mBeginMinute + ", " +
@@ -151,9 +148,7 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
         mTabLayout.addTab(mTabLayout.newTab().setCustomView(R.layout.tab_item), 3, false);
         for (int i = 0; i < mTabLayout.getTabCount(); i++) {
             ((TextView) mTabLayout.getTabAt(i).getCustomView().findViewById(R.id.tv_tab)).setText(tabs[i]);
-            ((TextView) mTabLayout.getTabAt(i).getCustomView().findViewById(R.id.tv_tab)).setTypeface(Typeface.createFromAsset(mContext.getAssets(), "fonts/PingFangSC" +
-                    "-Regular" +
-                    ".ttf"));
+            ((TextView) mTabLayout.getTabAt(i).getCustomView().findViewById(R.id.tv_tab)).setTypeface(VlidarApplication.PingFangSC_Regular);
         }
 
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -191,6 +186,7 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
         mIntervalHourWheelView = mView.findViewById(R.id.interval_hour_wheel_view);
         mIntervalMinuteWheelView = mView.findViewById(R.id.interval_minute_wheel_view);
 
+        initData();
         setOnDismissListener(() -> darkenBackground(1F));
     }
 
@@ -237,10 +233,23 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
     private void updateWheel(WheelView<String> wheelView, ArrayList<String> data, int selectedIndex,
                              String sign, boolean isLoop) {
         wheelView.setLoop(isLoop);
-        wheelView.setWheelData(data);
-//        wheelView.setSelection(selectedIndex);
         wheelView.setExtraText(sign, Color.WHITE,
                 (int) mContext.getResources().getDimension(R.dimen.time_extra_text_size), 0);
+        wheelView.setWheelData(data);
+//        wheelView.setSelection(selectedIndex);
+    }
+
+    private void initData() {
+        setTime();
+
+        initWheelView(mMonthWheelView, createMonths(), "月", false);
+        initWheelView(mDayWheelView, createDays(), "日", false);
+        initWheelView(mHourWheelView, createValidHours(), "时", false);
+        initWheelView(mMinuteWheelView, createMinutes(), "分", false);
+        initWheelView(mSecondWheelView, createSeconds(), "秒", false);
+        initWheelView(mTimesWheelView, createLoopTimes(), "次", true);
+        initWheelView(mIntervalHourWheelView, createInvalidTime(), "小时", true);
+        initWheelView(mIntervalMinuteWheelView, createInvalidTime(), "分钟", true);
     }
 
     public void resetData() {
@@ -257,14 +266,14 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
 
         setTime();
 
-        initWheelView(mMonthWheelView, createMonths(), "月", false);
-        initWheelView(mDayWheelView, createDays(), "日", false);
-        initWheelView(mHourWheelView, createValidHours(), "时", false);
-        initWheelView(mMinuteWheelView, createMinutes(), "分", false);
-        initWheelView(mSecondWheelView, createSeconds(), "秒", false);
-        initWheelView(mTimesWheelView, createLoopTimes(), "次", true);
-        initWheelView(mIntervalHourWheelView, createInvalidTime(), "小时", true);
-        initWheelView(mIntervalMinuteWheelView, createInvalidTime(), "分钟", true);
+        updateWheel(mMonthWheelView, createMonths(), 0, "月", false);
+        updateWheel(mDayWheelView, createDays(), 0, "日", false);
+        updateWheel(mHourWheelView, createValidHours(), 0, "时", false);
+        updateWheel(mMinuteWheelView, createMinutes(), 0, "分", false);
+        updateWheel(mSecondWheelView, createSeconds(), 0, "秒", false);
+        updateWheel(mTimesWheelView, createLoopTimes(), 0, "次", true);
+        updateWheel(mIntervalHourWheelView, createInvalidTime(), 0, "小时", true);
+        updateWheel(mIntervalMinuteWheelView, createInvalidTime(), 0, "分钟", true);
     }
 
     private void initWheelView(WheelView<String> wheelView, ArrayList<String> data, String extra,

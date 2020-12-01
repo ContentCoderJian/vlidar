@@ -19,6 +19,7 @@ import com.vlidar.mobile.R;
 import com.vlidar.mobile.logic.ProtocolController;
 import com.vlidar.mobile.logic.ProtocolObserver;
 import com.vlidar.mobile.logic.Status;
+import com.vlidar.mobile.ui.VlidarApplication;
 import com.vlidar.mobile.ui.activity.amap.EnLargeMapActivity;
 import com.vlidar.mobile.ui.entity.ScanTimer;
 import com.vlidar.mobile.ui.view.CommonButton;
@@ -115,19 +116,13 @@ public class MainActivity extends AbstractBtActivity implements ProtocolObserver
     }
 
     private void initViews() {
-        tvLatitude.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/PingFangSC" +
-                "-Regular" +
-                ".ttf"));
-        tvLongitude.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/PingFangSC" +
-                "-Regular" +
-                ".ttf"));
+        tvLatitude.setTypeface(VlidarApplication.PingFangSC_Regular);
+        tvLongitude.setTypeface(VlidarApplication.PingFangSC_Regular);
 //        tvSelfCheckingStatus.setTypeface(Typeface.createFromAsset(getAssets(),
 //        "fonts/PingFangSC" +
 //                "-Regular" +
 //                ".ttf"));
-        tvScanOnce.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/PingFangSC" +
-                "-Regular" +
-                ".ttf"));
+        tvScanOnce.setTypeface(VlidarApplication.PingFangSC_Regular);
         cbPower.setTitleRes(R.string.power);
         cbPower.setEnabled(false);
         cbPower.setPicBgRes(R.drawable.power_out_selector);

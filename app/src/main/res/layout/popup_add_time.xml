@@ -83,16 +83,16 @@
             android:layout_marginTop="@dimen/wheel_margin_top"
             android:orientation="horizontal">
 
-            <com.vlidar.wheelview.widget.WheelView
+            <com.vlidar.mobile.ui.view.wheelview.widget.WheelView
                 android:id="@+id/month_wheel_view"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1" />
 
-            <com.vlidar.wheelview.widget.WheelView
+            <com.vlidar.mobile.ui.view.wheelview.widget.WheelView
                 android:id="@+id/day_wheel_view"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1" />
 
         </LinearLayout>
@@ -106,22 +106,22 @@
             android:orientation="horizontal"
             android:visibility="invisible">
 
-            <com.vlidar.wheelview.widget.WheelView
+            <com.vlidar.mobile.ui.view.wheelview.widget.WheelView
                 android:id="@+id/hour_wheel_view"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1" />
 
-            <com.vlidar.wheelview.widget.WheelView
+            <com.vlidar.mobile.ui.view.wheelview.widget.WheelView
                 android:id="@+id/minute_wheel_view"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1" />
 
-            <com.vlidar.wheelview.widget.WheelView
+            <com.vlidar.mobile.ui.view.wheelview.widget.WheelView
                 android:id="@+id/second_wheel_view"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1" />
 
         </LinearLayout>
@@ -135,10 +135,10 @@
             android:orientation="horizontal"
             android:visibility="invisible">
 
-            <com.vlidar.wheelview.widget.WheelView
+            <com.vlidar.mobile.ui.view.wheelview.widget.WheelView
                 android:id="@+id/times_wheel_view"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1" />
 
         </LinearLayout>
@@ -152,16 +152,16 @@
             android:orientation="horizontal"
             android:visibility="invisible">
 
-            <com.vlidar.wheelview.widget.WheelView
+            <com.vlidar.mobile.ui.view.wheelview.widget.WheelView
                 android:id="@+id/interval_hour_wheel_view"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1" />
 
-            <com.vlidar.wheelview.widget.WheelView
+            <com.vlidar.mobile.ui.view.wheelview.widget.WheelView
                 android:id="@+id/interval_minute_wheel_view"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1" />
 
         </LinearLayout>

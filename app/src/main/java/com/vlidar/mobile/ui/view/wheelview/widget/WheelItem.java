@@ -1,4 +1,4 @@
-package com.vlidar.wheelview.widget;
+package com.vlidar.mobile.ui.view.wheelview.widget;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -11,8 +11,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.vlidar.wheelview.common.WheelConstants;
-import com.vlidar.wheelview.util.WheelUtils;
+import com.vlidar.mobile.ui.view.wheelview.common.WheelConstants;
+import com.vlidar.mobile.ui.view.wheelview.util.WheelUtils;
 
 /**
  * 滚轮Item布局，包含图片和文本
@@ -54,13 +54,13 @@ public class WheelItem extends FrameLayout {
         addView(layout, layoutParams);
 
         // 图片
-        mImage = new ImageView(getContext());
-        mImage.setTag(WheelConstants.WHEEL_ITEM_IMAGE_TAG);
-        mImage.setVisibility(View.GONE);
-        LayoutParams imageParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT);
-        imageParams.rightMargin = WheelConstants.WHEEL_ITEM_MARGIN;
-        layout.addView(mImage, imageParams);
+//        mImage = new ImageView(getContext());
+//        mImage.setTag(WheelConstants.WHEEL_ITEM_IMAGE_TAG);
+//        mImage.setVisibility(View.GONE);
+//        LayoutParams imageParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
+//                LayoutParams.WRAP_CONTENT);
+//        imageParams.rightMargin = WheelConstants.WHEEL_ITEM_MARGIN;
+//        layout.addView(mImage, imageParams);
 
         // 文本
         mText = new TextView(getContext());
@@ -69,10 +69,10 @@ public class WheelItem extends FrameLayout {
         mText.setSingleLine();
         mText.setIncludeFontPadding(false);
         mText.setGravity(Gravity.CENTER);
-        mText.setTextColor(Color.BLACK);
+        mText.setTextColor(Color.WHITE);
         LayoutParams textParams = new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT);
-        layout.addView(mText, textParams);
+        addView(mText, textParams);
     }
 
     /**

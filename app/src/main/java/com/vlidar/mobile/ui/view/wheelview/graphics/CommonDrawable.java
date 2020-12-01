@@ -1,11 +1,11 @@
-package com.vlidar.wheelview.graphics;
+package com.vlidar.mobile.ui.view.wheelview.graphics;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.GradientDrawable;
 
-import com.vlidar.wheelview.common.WheelConstants;
-import com.vlidar.wheelview.widget.WheelView;
+import com.vlidar.mobile.ui.view.wheelview.common.WheelConstants;
+import com.vlidar.mobile.ui.view.wheelview.widget.WheelView;
 
 /**
  * common滚轮样式

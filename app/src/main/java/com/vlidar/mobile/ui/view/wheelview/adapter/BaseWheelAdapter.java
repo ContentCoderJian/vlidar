@@ -1,11 +1,11 @@
-package com.vlidar.wheelview.adapter;
+package com.vlidar.mobile.ui.view.wheelview.adapter;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.vlidar.wheelview.util.WheelUtils;
-import com.vlidar.wheelview.widget.IWheelView;
+import com.vlidar.mobile.ui.view.wheelview.util.WheelUtils;
+import com.vlidar.mobile.ui.view.wheelview.widget.IWheelView;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public abstract class BaseWheelAdapter<T> extends BaseAdapter {
 
     private boolean mClickable = IWheelView.CLICKABLE;
 
-    private int mCurrentPositon = -1;
+    private int mCurrentPosition = -1;
 
     private OnClickListener mOnClickListener;
 
@@ -34,7 +34,7 @@ public abstract class BaseWheelAdapter<T> extends BaseAdapter {
      * @param position
      */
     public final void setCurrentPosition(int position) {
-        mCurrentPositon = position;
+        mCurrentPosition = position;
     }
 
     public void setOnClickListener(OnClickListener onClickListener) {
@@ -68,11 +68,11 @@ public abstract class BaseWheelAdapter<T> extends BaseAdapter {
     public boolean isEnabled(int position) {
         if (mClickable) {
             if (mLoop) {
-                if (position % mList.size() == mCurrentPositon) {
+                if (position % mList.size() == mCurrentPosition) {
                     return true;
                 }
             } else {
-                if (position == (mCurrentPositon + mWheelSize / 2)) {
+                if (position == (mCurrentPosition + mWheelSize / 2)) {
                     return true;
                 }
             }
@@ -116,7 +116,7 @@ public abstract class BaseWheelAdapter<T> extends BaseAdapter {
     public final BaseWheelAdapter setClickable(boolean clickable) {
         if (clickable != mClickable) {
             mClickable = clickable;
-            super.notifyDataSetChanged();
+//            super.notifyDataSetChanged();
         }
         return this;
     }
@@ -124,14 +124,14 @@ public abstract class BaseWheelAdapter<T> extends BaseAdapter {
     public final BaseWheelAdapter setLoop(boolean loop) {
         if (loop != mLoop) {
             mLoop = loop;
-            super.notifyDataSetChanged();
+//            super.notifyDataSetChanged();
         }
         return this;
     }
 
     public final BaseWheelAdapter setWheelSize(int wheelSize) {
         mWheelSize = wheelSize;
-        super.notifyDataSetChanged();
+//        super.notifyDataSetChanged();
         return this;
     }
 

@@ -1,4 +1,4 @@
-package com.vlidar.wheelview.widget;
+package com.vlidar.mobile.ui.view.wheelview.widget;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.vlidar.wheelview.adapter.ArrayWheelAdapter;
-import com.vlidar.wheelview.common.WheelConstants;
-import com.vlidar.wheelview.util.WheelUtils;
+import com.vlidar.mobile.ui.view.wheelview.adapter.ArrayWheelAdapter;
+import com.vlidar.mobile.ui.view.wheelview.common.WheelConstants;
+import com.vlidar.mobile.ui.view.wheelview.util.WheelUtils;
 
 import java.util.Arrays;
 import java.util.List;

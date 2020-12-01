@@ -1,4 +1,4 @@
-package com.vlidar.wheelview.common;
+package com.vlidar.mobile.ui.view.wheelview.common;
 
 import android.graphics.Color;
 

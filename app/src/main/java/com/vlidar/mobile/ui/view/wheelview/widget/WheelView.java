@@ -1,4 +1,4 @@
-package com.vlidar.wheelview.widget;
+package com.vlidar.mobile.ui.view.wheelview.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
@@ -23,13 +22,13 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.vlidar.wheelview.adapter.ArrayWheelAdapter;
-import com.vlidar.wheelview.adapter.BaseWheelAdapter;
-import com.vlidar.wheelview.adapter.SimpleWheelAdapter;
-import com.vlidar.wheelview.common.WheelConstants;
-import com.vlidar.wheelview.common.WheelViewException;
-import com.vlidar.wheelview.graphics.DrawableFactory;
-import com.vlidar.wheelview.util.WheelUtils;
+import com.vlidar.mobile.ui.VlidarApplication;
+import com.vlidar.mobile.ui.view.wheelview.adapter.ArrayWheelAdapter;
+import com.vlidar.mobile.ui.view.wheelview.adapter.BaseWheelAdapter;
+import com.vlidar.mobile.ui.view.wheelview.adapter.SimpleWheelAdapter;
+import com.vlidar.mobile.ui.view.wheelview.common.WheelConstants;
+import com.vlidar.mobile.ui.view.wheelview.common.WheelViewException;
+import com.vlidar.mobile.ui.view.wheelview.util.WheelUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +37,6 @@ import java.util.List;
  * 滚轮控件
  */
 public class WheelView<T> extends ListView implements IWheelView<T> {
-
     private int mItemH = 0; // 每一项高度
     private int mWheelSize = WHEEL_SIZE;    // 滚轮个数
     private boolean mLoop = LOOP;   // 是否循环滚动
@@ -620,9 +618,8 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
             }
             if (mWheelAdapter instanceof ArrayWheelAdapter || mWheelAdapter
                     instanceof SimpleWheelAdapter) {
-                TextView textView = itemView.findViewWithTag
-                        (WheelConstants.WHEEL_ITEM_TEXT_TAG);
-                refreshTextView(i, curPosition, itemView, textView);
+                refreshTextView(i, curPosition, itemView, itemView.findViewWithTag
+                        (WheelConstants.WHEEL_ITEM_TEXT_TAG));
             } else {    // 自定义类型
                 TextView textView = WheelUtils.findTextView(itemView);
                 if (textView != null) {
@@ -680,16 +677,14 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
                              float textAlpha, boolean textBold, boolean selected) {
         textView.setTextColor(textColor);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
-        textView.setTypeface(Typeface.createFromAsset(getContext().getAssets(), "fonts/PingFangSC" +
-                "-Regular" +
-                ".ttf"));
 //        textView.setBackgroundColor(selected ? Color.parseColor("#6006D4") : Color.TRANSPARENT);
-        itemView.setAlpha(textAlpha);
-        try {
-            textView.getPaint().setFakeBoldText(textBold);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        textView.setAlpha(textAlpha);
+
+//        try {
+//            textView.getPaint().setFakeBoldText(textBold);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override
@@ -698,10 +693,7 @@ public class WheelView<T> extends ListView implements IWheelView<T> {
             Rect targetRect = new Rect(0, mItemH * (mWheelSize / 2), getWidth
                     (), mItemH * (mWheelSize / 2 + 1));
             mTextPaint.setTextSize(mExtraTextSize);
-            mTextPaint.setTypeface(Typeface.createFromAsset(getContext().getAssets(), "fonts" +
-                    "/PingFangSC" +
-                    "-Regular" +
-                    ".ttf"));
+            mTextPaint.setTypeface(VlidarApplication.PingFangSC_Regular);
             mTextPaint.setColor(mExtraTextColor);
             Paint.FontMetricsInt fontMetrics = mTextPaint.getFontMetricsInt();
             int baseline = (targetRect.bottom + targetRect.top - fontMetrics

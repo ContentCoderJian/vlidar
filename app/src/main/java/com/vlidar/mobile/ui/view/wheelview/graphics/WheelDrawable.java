@@ -1,4 +1,4 @@
-package com.vlidar.wheelview.graphics;
+package com.vlidar.mobile.ui.view.wheelview.graphics;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
@@ -6,8 +6,8 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 
-import com.vlidar.wheelview.common.WheelConstants;
-import com.vlidar.wheelview.widget.WheelView;
+import com.vlidar.mobile.ui.view.wheelview.common.WheelConstants;
+import com.vlidar.mobile.ui.view.wheelview.widget.WheelView;
 
 /**
  * 滚轮样式

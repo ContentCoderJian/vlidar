@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.vlidar.mobile.R;
+import com.vlidar.mobile.ui.VlidarApplication;
 
 public class CommonButton extends RelativeLayout {
     private static final String TAG = "CommonButton";
@@ -49,13 +50,11 @@ public class CommonButton extends RelativeLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        Log.d(TAG, "onAttachedToWindow");
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        Log.d(TAG, "onDetachedFromWindow");
     }
 
     private void initViews() {
@@ -64,12 +63,8 @@ public class CommonButton extends RelativeLayout {
         tvTitle = mRootLayout.findViewById(R.id.tv_title);
         tvValue = mRootLayout.findViewById(R.id.tv_value);
         tvValue1 = mRootLayout.findViewById(R.id.tv_value1);
-        tvTitle.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "fonts/PingFangSC" +
-                "-Regular" +
-                ".ttf"));
-        tvValue.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "fonts/PingFangSC" +
-                "-Regular" +
-                ".ttf"));
+        tvTitle.setTypeface(VlidarApplication.PingFangSC_Regular);
+        tvValue.setTypeface(VlidarApplication.PingFangSC_Regular);
     }
 
     @Override

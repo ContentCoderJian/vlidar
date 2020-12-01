@@ -1,11 +1,11 @@
-package com.vlidar.wheelview.widget;
+package com.vlidar.mobile.ui.view.wheelview.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ScrollView;
 
-import com.vlidar.wheelview.common.WheelConstants;
+import com.vlidar.mobile.ui.view.wheelview.common.WheelConstants;
 
 /**
  * 嵌套ScrollView

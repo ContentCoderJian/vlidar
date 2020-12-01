@@ -1,11 +1,11 @@
-package com.vlidar.wheelview.adapter;
+package com.vlidar.mobile.ui.view.wheelview.adapter;
 
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.vlidar.wheelview.common.WheelData;
-import com.vlidar.wheelview.widget.WheelItem;
+import com.vlidar.mobile.ui.view.wheelview.common.WheelData;
+import com.vlidar.mobile.ui.view.wheelview.widget.WheelItem;
 
 /**
  * 滚轮图片和文本适配器

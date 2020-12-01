@@ -1,6 +1,6 @@
-package com.vlidar.wheelview.widget;
+package com.vlidar.mobile.ui.view.wheelview.widget;
 
-import com.vlidar.wheelview.adapter.BaseWheelAdapter;
+import com.vlidar.mobile.ui.view.wheelview.adapter.BaseWheelAdapter;
 
 import java.util.HashMap;
 import java.util.List;

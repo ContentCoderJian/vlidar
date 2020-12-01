@@ -1,4 +1,4 @@
-package com.vlidar.wheelview.util;
+package com.vlidar.mobile.ui.view.wheelview.util;
 
 import android.content.Context;
 import android.text.TextUtils;

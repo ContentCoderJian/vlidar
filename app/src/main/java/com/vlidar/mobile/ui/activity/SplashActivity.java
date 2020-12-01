@@ -10,6 +10,7 @@ import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.vlidar.mobile.R;
 import com.vlidar.mobile.logic.BLESPPUtils;
+import com.vlidar.mobile.ui.VlidarApplication;
 import com.vlidar.mobile.utils.AppTools;
 import com.vlidar.mobile.utils.StatusBarUtils;
 
@@ -29,9 +30,7 @@ public class SplashActivity extends BaseActivity {
         StatusBarUtils.changeStatusBar(this, true);
         setContentView(R.layout.activity_guide);
         super.onCreate(savedInstanceState);
-        tvGuideCompany.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/PingFangSC" +
-                "-Thin" +
-                ".ttf"));
+        tvGuideCompany.setTypeface(VlidarApplication.PingFangSC_Thin);
         BLESPPUtils.getInstance(this);
         if (!XXPermissions.hasPermission(this, Permission.SYSTEM_ALERT_WINDOW)) {
             XXPermissions.with(this)

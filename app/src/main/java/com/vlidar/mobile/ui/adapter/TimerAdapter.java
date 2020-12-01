@@ -20,6 +20,7 @@ import com.vlidar.jrecyclerview.swipe.JSwipeViewHolder;
 import com.vlidar.mobile.R;
 import com.vlidar.mobile.logic.BLESPPUtils;
 import com.vlidar.mobile.logic.ProtocolController;
+import com.vlidar.mobile.ui.VlidarApplication;
 import com.vlidar.mobile.ui.entity.ScanTimer;
 import com.vlidar.mobile.utils.LogTrace;
 
@@ -163,21 +164,13 @@ public class TimerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         public void initItem(FrameLayout frameLayout) {
             rlTimerBg = frameLayout.findViewById(R.id.rl_timer_background);
             tvDate = frameLayout.findViewById(R.id.tv_date);
-            tvDate.setTypeface(Typeface.createFromAsset(mActivity.getAssets(), "fonts" +
-                    "/PingFangSC" +
-                    "-Medium.ttf"));
+            tvDate.setTypeface(VlidarApplication.PingFangSC_Medium);
             tvTime = frameLayout.findViewById(R.id.tv_time);
-            tvTime.setTypeface(Typeface.createFromAsset(mActivity.getAssets(), "fonts" +
-                    "/PingFangSC" +
-                    "-Medium.ttf"));
+            tvTime.setTypeface(VlidarApplication.PingFangSC_Medium);
             tvInterval = frameLayout.findViewById(R.id.tv_interval);
-            tvInterval.setTypeface(Typeface.createFromAsset(mActivity.getAssets(), "fonts" +
-                    "/PingFangSC" +
-                    "-Medium.ttf"));
+            tvInterval.setTypeface(VlidarApplication.PingFangSC_Medium);
             tvTimes = frameLayout.findViewById(R.id.tv_times);
-            tvTimes.setTypeface(Typeface.createFromAsset(mActivity.getAssets(), "fonts" +
-                    "/PingFangSC" +
-                    "-Medium.ttf"));
+            tvTimes.setTypeface(VlidarApplication.PingFangSC_Medium);
             switchButton = frameLayout.findViewById(R.id.switch_button);
             ibSwipeDelete = frameLayout.findViewById(R.id.ib_swipe_delete);
         }

@@ -1,8 +1,8 @@
-package com.vlidar.wheelview.graphics;
+package com.vlidar.mobile.ui.view.wheelview.graphics;
 
 import android.graphics.drawable.Drawable;
 
-import com.vlidar.wheelview.widget.WheelView;
+import com.vlidar.mobile.ui.view.wheelview.widget.WheelView;
 
 public class DrawableFactory {
 
