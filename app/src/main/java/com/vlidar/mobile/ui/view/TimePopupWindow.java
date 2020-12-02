@@ -415,7 +415,7 @@ public class TimePopupWindow extends PopupWindow implements WheelView.OnWheelIte
 
     private ArrayList<String> createLoopTimes() {
         ArrayList<String> list = new ArrayList<>();
-        for (int i = 1; i <= 50; i++) {
+        for (int i = 1; i <= 20; i++) {
             if (i < 10) {
                 list.add("0" + i);
             } else {

@@ -118,6 +118,10 @@ public class TimerActivity extends BaseActivity implements ProtocolObserver {
                 break;
 
             case R.id.ib_add:
+                if (mScanTimers != null && mScanTimers.size() >=5) {
+                    showToast("最多添加5个定时器，如需添加请先向右滑动删除任意定时器", 5000);
+                    return;
+                }
                 mTimePopupWindow.darkenBackground(0.6F);
                 mTimePopupWindow.resetData();
                 mTimePopupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
